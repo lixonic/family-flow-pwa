@@ -89,33 +89,35 @@ export function BreatheTimer() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex flex-col pb-28">
-      <div className="flex-1 flex items-center justify-center px-6">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center pb-28">
         <div className="text-center">
           <h1 className="text-4xl mb-10 text-white">
             Breathe Together
           </h1>
           
-          {/* Breathing Circle */}
-          <div className="relative mb-10">
-            <div 
-              className={`w-80 h-80 rounded-full bg-gradient-to-br ${getCircleColor()} opacity-20 absolute inset-0 transition-transform duration-1000 ease-in-out`}
-              style={{ 
-                transform: `scale(${getCircleScale() * 1.5})`,
-                filter: 'blur(20px)'
-              }}
-            />
-            <div 
-              className={`w-80 h-80 rounded-full bg-gradient-to-br ${getCircleColor()} transition-transform duration-1000 ease-in-out flex items-center justify-center relative z-10`}
-              style={{ transform: `scale(${getCircleScale()})` }}
-            >
-              <div className="text-white text-center">
-                <div className="text-8xl mb-4">🌸</div>
-                {isActive && (
-                  <div className="text-2xl">
-                    {getInstructions()}
-                  </div>
-                )}
+          {/* Breathing Circle - Fixed centering */}
+          <div className="flex justify-center items-center mb-10">
+            <div className="relative">
+              <div 
+                className={`w-80 h-80 rounded-full bg-gradient-to-br ${getCircleColor()} opacity-20 absolute inset-0 transition-transform duration-1000 ease-in-out`}
+                style={{ 
+                  transform: `scale(${getCircleScale() * 1.5})`,
+                  filter: 'blur(20px)'
+                }}
+              />
+              <div 
+                className={`w-80 h-80 rounded-full bg-gradient-to-br ${getCircleColor()} transition-transform duration-1000 ease-in-out flex items-center justify-center relative z-10`}
+                style={{ transform: `scale(${getCircleScale()})` }}
+              >
+                <div className="text-white text-center">
+                  <div className="text-8xl mb-4">🌸</div>
+                  {isActive && (
+                    <div className="text-2xl">
+                      {getInstructions()}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
