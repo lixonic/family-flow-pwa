@@ -213,7 +213,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           <p className="text-gray-600 text-xl">Export your family's digital memories</p>
         </div>
 
-        {/* Install App Section */}
+        {/* Install App Section - Only show if prompt is available */}
         {deferredPrompt && (
           <Card className="p-6 mb-8 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
             <div className="text-center">
@@ -366,8 +366,8 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           </div>
         )}
 
-        {/* About Link */}
-        <div className="mb-8">
+        {/* About and Install Section */}
+        <div className="space-y-4 mb-8">
           <Button
             onClick={() => onNavigate('about')}
             variant="outline"
@@ -375,6 +375,20 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           >
             <Info className="w-5 h-5 mr-3" />
             About Family Flow
+          </Button>
+          
+          {/* Install button - always show even if no prompt */}
+          <Button
+            onClick={handleInstallClick}
+            disabled={!deferredPrompt}
+            className={`w-full text-lg py-4 h-auto ${
+              deferredPrompt 
+                ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600' 
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <Smartphone className="w-5 h-5 mr-3" />
+            {deferredPrompt ? 'Install FAMILY FLOW' : 'Already Installed'}
           </Button>
         </div>
 
