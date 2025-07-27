@@ -5,6 +5,7 @@ import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
+import { QuestionButton } from './ui/QuestionButton';
 import { Plus, Play, Pause, SkipBack, SkipForward, X } from 'lucide-react';
 
 interface GratitudeFlipbookProps {
@@ -12,9 +13,10 @@ interface GratitudeFlipbookProps {
   gratitudeEntries: GratitudeEntry[];
   onAddGratitudeEntry: (entry: Omit<GratitudeEntry, 'id'>) => void;
   onDeleteGratitudeEntry?: (id: string) => void;
+  onNavigate?: (screen: string) => void;
 }
 
-export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratitudeEntry, onDeleteGratitudeEntry }: GratitudeFlipbookProps) {
+export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratitudeEntry, onDeleteGratitudeEntry, onNavigate }: GratitudeFlipbookProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [gratitudeText, setGratitudeText] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -95,7 +97,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
       <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
         {/* Confetti animation */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(50)].map((_, i) => (
+          {[...Array(17)].map((_, i) => (
             <div
               key={i}
               className="absolute animate-bounce"
@@ -206,7 +208,8 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 pb-28">
+    <div className="min-h-screen px-6 py-8 pb-28 relative">
+      {onNavigate && <QuestionButton onNavigate={onNavigate} />}
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-4xl mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
@@ -303,17 +306,33 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
               <div className="mb-8">
                 <h4 className="text-xl mb-6">Who's adding gratitude?</h4>
                 <div className="grid grid-cols-2 gap-4">
-                  {familyMembers.map(member => (
-                    <button
-                      key={member.id}
-                      onClick={() => setSelectedMember(member)}
-                      className="p-6 rounded-3xl border-3 border-yellow-200 hover:border-yellow-400 transition-colors min-h-[120px] flex flex-col items-center justify-center"
-                      style={{ backgroundColor: member.color }}
-                    >
-                      <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
-                      <div className="text-lg font-medium">{member.name}</div>
-                    </button>
-                  ))}
+                  {familyMembers.map(member => {
+                    const todayEntry = getMemberTodayGratitudeEntry(member.id);
+                    return (
+                      <button
+                        key={member.id}
+                        onClick={() => todayEntry ? null : setSelectedMember(member)}
+                        className={`p-6 rounded-3xl border-3 transition-colors min-h-[120px] flex flex-col items-center justify-center relative ${
+                          todayEntry 
+                            ? 'border-green-200 bg-green-50 cursor-not-allowed opacity-75'
+                            : 'border-yellow-200 hover:border-yellow-400 cursor-pointer'
+                        }`}
+                        style={{ backgroundColor: todayEntry ? '#F0FDF4' : member.color }}
+                        disabled={!!todayEntry}
+                      >
+                        <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
+                        <div className="text-lg font-medium">{member.name}</div>
+                        {todayEntry && (
+                          <>
+                            <div className="absolute top-2 right-2 text-green-600">
+                              <div className="text-lg">🙏</div>
+                            </div>
+                            <div className="text-sm text-green-600 mt-1">Already grateful</div>
+                          </>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             ) : (

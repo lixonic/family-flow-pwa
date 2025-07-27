@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { LoaderScreen } from "./components/LoaderScreen";
+import { WelcomeCards } from "./components/WelcomeCards";
 import { DayGlowScreen } from "./components/DayGlowScreen";
 import { DayEntriesView } from "./components/DayEntriesView";
 import { ScreenTimeReflector } from "./components/ScreenTimeReflector";
@@ -7,6 +8,7 @@ import { GratitudeFlipbook } from "./components/GratitudeFlipbook";
 import { BreatheTimer } from "./components/BreatheTimer";
 import { MemoryCapsule } from "./components/MemoryCapsule";
 import { AboutPage } from "./components/AboutPage";
+import { FAQPage } from "./components/FAQPage";
 import { Navigation } from "./components/Navigation";
 
 export type FamilyMember = {
@@ -50,6 +52,7 @@ export type AppData = {
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState("loader");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
   const [appData, setAppData] = useState<AppData>({
     familyMembers: [],
     moodEntries: [],
@@ -103,10 +106,17 @@ export default function App() {
       );
     }
 
+    // Check if welcome should be shown
+    const welcomeShown = localStorage.getItem('familyFlowWelcomeShown');
+    
     // Auto-navigate from loader after 2 seconds
     const timer = setTimeout(() => {
       if (currentScreen === "loader") {
-        setCurrentScreen("day-glow");
+        if (!welcomeShown) {
+          setShowWelcome(true);
+        } else {
+          setCurrentScreen("day-glow");
+        }
       }
     }, 2000);
 
@@ -301,6 +311,11 @@ export default function App() {
     setCurrentScreen("day-glow");
   };
 
+  const handleWelcomeComplete = () => {
+    setShowWelcome(false);
+    setCurrentScreen("day-glow");
+  };
+
   // Scroll to top whenever screen changes
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -308,6 +323,10 @@ export default function App() {
 
 
   const renderCurrentScreen = () => {
+    if (showWelcome) {
+      return <WelcomeCards onComplete={handleWelcomeComplete} />;
+    }
+    
     switch (currentScreen) {
       case "loader":
         return <LoaderScreen />;
@@ -323,6 +342,7 @@ export default function App() {
             getStreakData={getStreakData}
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
+            onNavigate={setCurrentScreen}
           />
         );
       case "day-entries":
@@ -349,6 +369,7 @@ export default function App() {
             getStreakData={getStreakData}
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
+            onNavigate={setCurrentScreen}
           />
         );
       case "screen-time":
@@ -358,6 +379,7 @@ export default function App() {
             reflectionEntries={appData.reflectionEntries}
             onAddReflectionEntry={addReflectionEntry}
             onDeleteReflectionEntry={deleteReflectionEntry}
+            onNavigate={setCurrentScreen}
           />
         );
       case "gratitude":
@@ -367,6 +389,7 @@ export default function App() {
             gratitudeEntries={appData.gratitudeEntries}
             onAddGratitudeEntry={addGratitudeEntry}
             onDeleteGratitudeEntry={deleteGratitudeEntry}
+            onNavigate={setCurrentScreen}
           />
         );
       case "breathe":
@@ -384,6 +407,10 @@ export default function App() {
         return (
           <AboutPage onNavigate={setCurrentScreen} />
         );
+      case "faq":
+        return (
+          <FAQPage onNavigate={setCurrentScreen} />
+        );
       default:
         return (
           <DayGlowScreen
@@ -396,6 +423,7 @@ export default function App() {
             getStreakData={getStreakData}
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
+            onNavigate={setCurrentScreen}
           />
         );
     }
@@ -411,7 +439,7 @@ export default function App() {
       )}
 
       {renderCurrentScreen()}
-      {currentScreen !== "loader" && currentScreen !== "about" && (
+      {!showWelcome && currentScreen !== "loader" && currentScreen !== "about" && (
         <Navigation
           currentScreen={currentScreen}
           onNavigate={setCurrentScreen}
