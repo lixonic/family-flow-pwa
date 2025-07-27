@@ -216,30 +216,19 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
 
         {/* Install App Section - Only show if prompt is available */}
         {deferredPrompt && (
-          <Card className="p-6 mb-8 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
+          <Card className="p-4 mb-8 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
             <div className="text-center">
-              <Smartphone className="w-12 h-12 mx-auto mb-4 text-blue-600" />
-              <h3 className="text-2xl mb-4">Install FAMILY FLOW</h3>
-              <p className="text-gray-600 mb-6 text-lg">
-                Add Family Flow to your home screen for quick access and a native app experience.
+              <Smartphone className="w-8 h-8 mx-auto mb-3 text-blue-600" />
+              <p className="text-gray-600 mb-4">
+                Add to your home screen for quick access
               </p>
               <Button
                 onClick={handleInstallClick}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xl py-4 h-auto mb-3"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-lg py-3 h-auto"
               >
-                <Smartphone className="w-6 h-6 mr-3" />
-                Install FAMILY FLOW
+                <Smartphone className="w-5 h-5 mr-2" />
+                Add to Home Screen
               </Button>
-              <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
-                <div className="flex items-center space-x-1">
-                  <Shield className="w-4 h-4" />
-                  <span>Privacy-first</span>
-                </div>
-                <span>•</span>
-                <span>Works offline</span>
-                <span>•</span>
-                <span>No accounts</span>
-              </div>
             </div>
           </Card>
         )}
