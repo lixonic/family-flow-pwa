@@ -19,6 +19,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
   const [slideshowMode, setSlideshowMode] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const thisWeekEntries = gratitudeEntries.filter(entry => {
     const entryDate = new Date(entry.date);
@@ -35,9 +36,15 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
         date: new Date().toISOString()
       });
       
-      setGratitudeText('');
-      setShowAddForm(false);
-      setSelectedMember(null);
+      setShowSuccess(true);
+      
+      // Reset form and hide success after 3 seconds
+      setTimeout(() => {
+        setGratitudeText('');
+        setShowAddForm(false);
+        setSelectedMember(null);
+        setShowSuccess(false);
+      }, 3000);
     }
   };
 
@@ -79,6 +86,40 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
     }
     return () => clearInterval(interval);
   }, [isPlaying, slideshowMode, currentSlideIndex]);
+
+  // Confetti celebration screen
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+        {/* Confetti animation */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute animate-bounce"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${1 + Math.random()}s`,
+                fontSize: `${20 + Math.random() * 20}px`,
+              }}
+            >
+              {['🌟', '✨', '🎉', '💫', '🌸', '🎊', '💝', '🦋'][Math.floor(Math.random() * 8)]}
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center z-10">
+          <div className="text-8xl mb-6">🙏</div>
+          <h2 className="text-3xl mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+            Gratitude Saved!
+          </h2>
+          <p className="text-gray-600 text-xl">Thank you for sharing what you're grateful for</p>
+        </div>
+      </div>
+    );
+  }
 
   if (slideshowMode) {
     const currentEntry = thisWeekEntries[currentSlideIndex];

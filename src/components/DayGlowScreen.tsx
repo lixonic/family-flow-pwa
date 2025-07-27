@@ -49,6 +49,8 @@ interface DayGlowScreenProps {
   onAddFamilyMember: (member: Omit<FamilyMember, 'id'>) => boolean;
   onUpdateFamilyMember: (id: string, updates: Partial<FamilyMember>) => void;
   onDeleteFamilyMember: (id: string) => boolean;
+  getStreakData: () => { currentStreak: number; totalActiveDays: number; activityDates: string[] };
+  getDayActivityLevel: (date: Date) => 'none' | 'low' | 'medium' | 'high';
 }
 
 export function DayGlowScreen({ 
@@ -57,7 +59,9 @@ export function DayGlowScreen({
   onAddMoodEntry,
   onAddFamilyMember,
   onUpdateFamilyMember,
-  onDeleteFamilyMember
+  onDeleteFamilyMember,
+  getStreakData,
+  getDayActivityLevel
 }: DayGlowScreenProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [selectedMood, setSelectedMood] = useState<{ emoji: string; color: string; name: string } | null>(null);
@@ -74,6 +78,25 @@ export function DayGlowScreen({
 
   const today = new Date().toDateString();
   const todayEntries = moodEntries.filter(entry => new Date(entry.date).toDateString() === today);
+  const streakData = getStreakData();
+
+  const getStreakMessage = (streak: number) => {
+    if (streak === 0) return "Start your family journey today! 🌱";
+    if (streak === 1) return "Great start! Keep the momentum going! ⭐";
+    if (streak <= 3) return "Building beautiful habits together! 🌿";
+    if (streak <= 7) return "Amazing streak! Your family is glowing! ✨";
+    if (streak <= 14) return "Incredible dedication! Keep shining! 🌟";
+    return "Legendary family flow! You're inspiring! 🏆";
+  };
+
+  const getActivityLevelColor = (level: 'none' | 'low' | 'medium' | 'high') => {
+    switch (level) {
+      case 'none': return 'bg-gray-200';
+      case 'low': return 'bg-orange-200';
+      case 'medium': return 'bg-orange-400';
+      case 'high': return 'bg-gradient-to-br from-orange-400 to-pink-400';
+    }
+  };
 
   const isChildMember = (member: FamilyMember) => {
     return member.avatar === 'child' || member.avatar === 'child2';
@@ -225,11 +248,33 @@ export function DayGlowScreen({
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6 relative">
+      <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
         {showCooldownBanner && <CooldownBanner />}
-        <div className="text-center">
+        
+        {/* Confetti animation */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(45)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute animate-bounce"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${1 + Math.random()}s`,
+                fontSize: `${16 + Math.random() * 24}px`,
+              }}
+            >
+              {['😊', '❤️', '✨', '🌟', '🎉', '💖', '🌈', '☀️', '🦋', '🌸'][Math.floor(Math.random() * 10)]}
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center z-10">
           <div className="text-8xl mb-6">✨</div>
-          <h2 className="text-3xl mb-4">Thank you!</h2>
+          <h2 className="text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+            Thank you!
+          </h2>
           <p className="text-gray-600 text-xl">Your mood has been saved</p>
         </div>
       </div>
@@ -248,31 +293,41 @@ export function DayGlowScreen({
           <p className="text-gray-600 text-xl">How was your day?</p>
         </div>
 
-        {/* Week view redesigned without horizontal scroll */}
+
+        {/* Enhanced Week view with activity levels */}
         <div className="mb-10">
-          <h3 className="text-lg text-gray-500 mb-4">This week</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg text-gray-500">This week</h3>
+            <div className="text-sm text-gray-400">
+              {streakData.totalActiveDays} active days total
+            </div>
+          </div>
           <div className="grid grid-cols-7 gap-2">
             {getWeekDays().map((date, index) => {
               const dayMoods = getDayMoods(date);
               const isToday = date.toDateString() === today;
+              const activityLevel = getDayActivityLevel(date);
               
               return (
                 <div key={index} className="text-center">
                   <div className={`text-sm mb-2 ${isToday ? 'font-medium text-orange-600' : 'text-gray-500'}`}>
                     {date.toLocaleDateString('en', { weekday: 'short' })}
                   </div>
-                  <div className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative`}>
+                  <div className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative ${getActivityLevelColor(activityLevel)}`}>
                     {dayMoods.length > 0 ? (
                       <div className="text-lg">
                         {dayMoods[dayMoods.length - 1].emoji}
                       </div>
                     ) : (
-                      <div className={`w-2 h-2 rounded-full ${isToday ? 'bg-orange-400' : 'bg-orange-200'}`}></div>
+                      <div className={`w-3 h-3 rounded-full ${isToday ? 'bg-orange-400' : activityLevel === 'none' ? 'bg-gray-300' : 'bg-white/60'}`}></div>
                     )}
                     {dayMoods.length > 1 && (
                       <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
                         {dayMoods.length}
                       </div>
+                    )}
+                    {activityLevel === 'high' && (
+                      <div className="absolute -bottom-1 -right-1 text-xs">⭐</div>
                     )}
                   </div>
                   <div className="text-xs text-gray-400 mt-1">
@@ -281,6 +336,26 @@ export function DayGlowScreen({
                 </div>
               );
             })}
+          </div>
+          
+          {/* Activity level legend */}
+          <div className="mt-4 flex justify-center space-x-4 text-xs text-gray-500">
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded-full bg-gray-200"></div>
+              <span>No activity</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded-full bg-orange-200"></div>
+              <span>Light</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded-full bg-orange-400"></div>
+              <span>Active</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-br from-orange-400 to-pink-400"></div>
+              <span>High ⭐</span>
+            </div>
           </div>
         </div>
 
@@ -505,6 +580,29 @@ export function DayGlowScreen({
             >
               Save my mood
             </Button>
+          </div>
+        )}
+
+        {/* Streak Banner - Moved to bottom */}
+        {streakData.currentStreak > 0 ? (
+          <div className="mt-10 p-6 rounded-3xl bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-200">
+            <div className="text-center">
+              <div className="text-4xl mb-2">🔥</div>
+              <div className="text-2xl font-bold text-orange-700 mb-1">
+                {streakData.currentStreak} Day Streak!
+              </div>
+              <div className="text-orange-600">{getStreakMessage(streakData.currentStreak)}</div>
+            </div>
+          </div>
+        ) : streakData.totalActiveDays > 0 && (
+          <div className="mt-10 p-6 rounded-3xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+            <div className="text-center">
+              <div className="text-4xl mb-2">🌱</div>
+              <div className="text-lg text-blue-700 mb-1">
+                Ready to start a new streak?
+              </div>
+              <div className="text-blue-600">You've been active {streakData.totalActiveDays} days total!</div>
+            </div>
           </div>
         )}
       </div>
