@@ -12,8 +12,8 @@ export function LoaderScreen() {
       
       <div className="relative z-10 text-center px-6">
         <div className="mb-8">
-          <h1 className="text-6xl font-medium mb-4 text-white">
-            FAMILY FLOW
+          <h1 className="font-title text-6xl font-medium mb-4 text-white">
+            Family Flow
           </h1>
           <p className="text-xl text-white/90 max-w-md mx-auto leading-relaxed">
             A gentle space for family connection and digital wellness

@@ -212,7 +212,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
       {onNavigate && <QuestionButton onNavigate={onNavigate} />}
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-4xl mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+          <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
             Gratitude Flipbook
           </h1>
           <p className="text-gray-600 text-xl">Capture daily moments of gratitude</p>

@@ -118,7 +118,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
                 <div className="p-8">
-                  <h2 className="text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                  <h2 className="font-title text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                     {card.title}
                   </h2>
                   <p className="text-xl text-gray-700 mb-6">
@@ -132,7 +132,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
             ) : (
               <div className="p-8">
                 <div className="text-8xl mb-6">{card.emoji}</div>
-                <h2 className="text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                <h2 className="font-title text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                   {card.title}
                 </h2>
                 <p className="text-xl text-gray-700 mb-6">
