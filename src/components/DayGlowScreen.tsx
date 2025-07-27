@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FamilyMember, MoodEntry } from '../App';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
-import { Plus, Edit2, Trash2, Check, X, Heart, UserCheck, Baby, User, Crown, Users, ChevronRight } from 'lucide-react';
+import { formatDate } from './ui/utils';
+import { Plus, Edit2, Trash2, Check, X, User, ChevronRight } from 'lucide-react';
 
 const MOOD_OPTIONS = [
   { emoji: '😊', color: '#FFF0E5', name: 'Happy' },
@@ -20,12 +21,20 @@ const MOOD_OPTIONS = [
 ];
 
 const AVATAR_OPTIONS = [
-  { id: 'mother', icon: Heart, label: 'Mother', color: 'text-pink-600' },
-  { id: 'father', icon: UserCheck, label: 'Father', color: 'text-blue-600' },
-  { id: 'child', icon: Baby, label: 'Child', color: 'text-green-600' },
-  { id: 'child2', icon: User, label: 'Teen', color: 'text-purple-600' },
-  { id: 'grandmother', icon: Crown, label: 'Grandmother', color: 'text-violet-600' },
-  { id: 'grandfather', icon: Users, label: 'Grandfather', color: 'text-indigo-600' },
+  // Mother options - Blonde, Black, Grey hair
+  { id: 'mother', emoji: '👱‍♀️', label: 'Mother', category: 'Mother' },
+  { id: 'mother2', emoji: '👩', label: 'Mother', category: 'Mother' },
+  { id: 'mother3', emoji: '👩‍🦳', label: 'Mother', category: 'Mother' },
+  
+  // Father options - Blonde, Black, Grey hair
+  { id: 'father', emoji: '👱‍♂️', label: 'Father', category: 'Father' },
+  { id: 'father2', emoji: '👨', label: 'Father', category: 'Father' },
+  { id: 'father3', emoji: '👨‍🦳', label: 'Father', category: 'Father' },
+  
+  // Child options - Blonde, Black, Girl
+  { id: 'child', emoji: '👶', label: 'Child', category: 'Child' },
+  { id: 'child2', emoji: '👦', label: 'Child', category: 'Child' },
+  { id: 'child3', emoji: '👧', label: 'Child', category: 'Child' },
 ];
 
 const MEMBER_COLORS = [
@@ -51,6 +60,7 @@ interface DayGlowScreenProps {
   onDeleteFamilyMember: (id: string) => boolean;
   getStreakData: () => { currentStreak: number; totalActiveDays: number; activityDates: string[] };
   getDayActivityLevel: (date: Date) => 'none' | 'low' | 'medium' | 'high';
+  onDaySelect: (date: Date) => void;
 }
 
 export function DayGlowScreen({ 
@@ -61,7 +71,8 @@ export function DayGlowScreen({
   onUpdateFamilyMember,
   onDeleteFamilyMember,
   getStreakData,
-  getDayActivityLevel
+  getDayActivityLevel,
+  onDaySelect
 }: DayGlowScreenProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [selectedMood, setSelectedMood] = useState<{ emoji: string; color: string; name: string } | null>(null);
@@ -69,6 +80,7 @@ export function DayGlowScreen({
   const [showSuccess, setShowSuccess] = useState(false);
   const [showManageMembers, setShowManageMembers] = useState(false);
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
+  const [editingAvatar, setEditingAvatar] = useState<FamilyMember | null>(null);
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberAvatar, setNewMemberAvatar] = useState('mother');
   const [editingName, setEditingName] = useState('');
@@ -77,7 +89,6 @@ export function DayGlowScreen({
   const [cooldownSuggestions, setCooldownSuggestions] = useState<string[]>([]);
 
   const today = new Date().toDateString();
-  const todayEntries = moodEntries.filter(entry => new Date(entry.date).toDateString() === today);
   const streakData = getStreakData();
 
   const getStreakMessage = (streak: number) => {
@@ -203,6 +214,31 @@ export function DayGlowScreen({
     }
   };
 
+  const handleEditAvatar = (member: FamilyMember) => {
+    setEditingAvatar(member);
+  };
+
+  const handleSaveAvatar = (newAvatar: string) => {
+    if (editingAvatar) {
+      onUpdateFamilyMember(editingAvatar.id, { avatar: newAvatar });
+      setEditingAvatar(null);
+    }
+  };
+
+  const handleCancelAvatarEdit = () => {
+    setEditingAvatar(null);
+  };
+
+  // Group avatar options by category
+  const getAvatarsByCategory = (category: string) => {
+    return AVATAR_OPTIONS.filter(option => option.category === category);
+  };
+
+  // Get descriptive label for avatar styles
+  const getStyleLabel = (id: string, category: string) => {
+    return '';
+  };
+
   // Cooldown Banner Component
   const CooldownBanner = () => (
     <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-teal-500 text-white z-40 animate-in slide-in-from-top duration-500">
@@ -288,7 +324,7 @@ export function DayGlowScreen({
       <div className={`max-w-md mx-auto ${showCooldownBanner ? 'mt-32' : ''}`}>
         <div className="text-center mb-10">
           <h1 className="text-4xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
-            Day-Glow
+            Day Glow
           </h1>
           <p className="text-gray-600 text-xl">How was your day?</p>
         </div>
@@ -313,7 +349,11 @@ export function DayGlowScreen({
                   <div className={`text-sm mb-2 ${isToday ? 'font-medium text-orange-600' : 'text-gray-500'}`}>
                     {date.toLocaleDateString('en', { weekday: 'short' })}
                   </div>
-                  <div className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative ${getActivityLevelColor(activityLevel)}`}>
+                  <button
+                    onClick={() => onDaySelect(date)}
+                    className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative ${getActivityLevelColor(activityLevel)} hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
+                    title={`View entries for ${formatDate(date)}`}
+                  >
                     {dayMoods.length > 0 ? (
                       <div className="text-lg">
                         {dayMoods[dayMoods.length - 1].emoji}
@@ -329,7 +369,7 @@ export function DayGlowScreen({
                     {activityLevel === 'high' && (
                       <div className="absolute -bottom-1 -right-1 text-xs">⭐</div>
                     )}
-                  </div>
+                  </button>
                   <div className="text-xs text-gray-400 mt-1">
                     {date.getDate()}
                   </div>
@@ -421,24 +461,30 @@ export function DayGlowScreen({
                     placeholder="Enter name"
                     className="text-lg"
                   />
-                  <div className="grid grid-cols-3 gap-3">
-                    {AVATAR_OPTIONS.map(option => {
-                      const IconComponent = option.icon;
-                      return (
-                        <button
-                          key={option.id}
-                          onClick={() => setNewMemberAvatar(option.id)}
-                          className={`p-4 rounded-2xl border-2 transition-colors flex flex-col items-center ${
-                            newMemberAvatar === option.id 
-                              ? 'border-orange-400 bg-orange-100' 
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <IconComponent className={`w-8 h-8 mb-2 ${option.color}`} />
-                          <span className="text-sm">{option.label}</span>
-                        </button>
-                      );
-                    })}
+                  <div className="space-y-4">
+                    {['Mother', 'Father', 'Child'].map(category => (
+                      <div key={category}>
+                        <h5 className="text-sm font-medium text-gray-600 mb-2">{category}</h5>
+                        <div className="grid grid-cols-3 gap-2">
+                          {getAvatarsByCategory(category).map(option => {
+                            return (
+                              <button
+                                key={option.id}
+                                onClick={() => setNewMemberAvatar(option.id)}
+                                className={`p-3 rounded-xl border-2 transition-colors flex flex-col items-center ${
+                                  newMemberAvatar === option.id 
+                                    ? 'border-orange-400 bg-orange-100' 
+                                    : 'border-gray-200 hover:border-gray-300'
+                                }`}
+                              >
+                                <span className="text-2xl mb-1">{option.emoji}</span>
+                                <span className="text-xs">{getStyleLabel(option.id, option.category)}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   <Button
                     onClick={handleAddMember}
@@ -496,8 +542,16 @@ export function DayGlowScreen({
                           <button
                             onClick={() => handleEditMember(member)}
                             className="text-blue-600 hover:text-blue-700 p-2"
+                            title="Edit name"
                           >
                             <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEditAvatar(member)}
+                            className="text-purple-600 hover:text-purple-700 p-2"
+                            title="Change avatar"
+                          >
+                            <User className="w-4 h-4" />
                           </button>
                           {familyMembers.length > 1 && (
                             <button
@@ -514,6 +568,53 @@ export function DayGlowScreen({
                 </Card>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Avatar editing modal */}
+        {editingAvatar && (
+          <div className="mb-10">
+            <div className="flex items-center mb-8">
+              <button
+                onClick={handleCancelAvatarEdit}
+                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
+              >
+                ← Back
+              </button>
+              <h3 className="text-2xl">Change Avatar for {editingAvatar.name}</h3>
+            </div>
+
+            <Card className="p-6 bg-purple-50">
+              <h4 className="text-lg mb-4">Choose New Avatar</h4>
+              <div className="space-y-4">
+                {['Mother', 'Father', 'Child'].map(category => (
+                  <div key={category}>
+                    <h5 className="text-sm font-medium text-gray-600 mb-2">{category}</h5>
+                    <div className="grid grid-cols-3 gap-3">
+                      {getAvatarsByCategory(category).map(option => {
+                        return (
+                          <button
+                            key={option.id}
+                            onClick={() => handleSaveAvatar(option.id)}
+                            className={`p-4 rounded-xl border-2 transition-colors flex flex-col items-center hover:border-purple-400 hover:bg-purple-100 ${
+                              editingAvatar.avatar === option.id 
+                                ? 'border-purple-500 bg-purple-200' 
+                                : 'border-gray-200'
+                            }`}
+                          >
+                            <span className="text-3xl mb-2">{option.emoji}</span>
+                            <span className="text-sm">{getStyleLabel(option.id, option.category)}</span>
+                            {editingAvatar.avatar === option.id && (
+                              <span className="text-xs text-purple-600 mt-1">Current</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
           </div>
         )}
 
