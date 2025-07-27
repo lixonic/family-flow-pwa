@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { LoaderScreen } from "./components/LoaderScreen";
 import { DayGlowScreen } from "./components/DayGlowScreen";
+import { DayEntriesView } from "./components/DayEntriesView";
 import { ScreenTimeReflector } from "./components/ScreenTimeReflector";
 import { GratitudeFlipbook } from "./components/GratitudeFlipbook";
 import { BreatheTimer } from "./components/BreatheTimer";
@@ -48,6 +49,7 @@ export type AppData = {
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState("loader");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [appData, setAppData] = useState<AppData>({
     familyMembers: [],
     moodEntries: [],
@@ -80,14 +82,8 @@ export default function App() {
           },
           {
             id: "3",
-            name: "Alex",
-            avatar: "child",
-            color: "#FFF5E5",
-          },
-          {
-            id: "4",
             name: "Elisa",
-            avatar: "child2", 
+            avatar: "child", 
             color: "#E5FFE5",
           },
         ],
@@ -220,6 +216,24 @@ export default function App() {
     });
   };
 
+  const deleteMoodEntry = (id: string) => {
+    updateAppData({
+      moodEntries: appData.moodEntries.filter(entry => entry.id !== id),
+    });
+  };
+
+  const deleteReflectionEntry = (id: string) => {
+    updateAppData({
+      reflectionEntries: appData.reflectionEntries.filter(entry => entry.id !== id),
+    });
+  };
+
+  const deleteGratitudeEntry = (id: string) => {
+    updateAppData({
+      gratitudeEntries: appData.gratitudeEntries.filter(entry => entry.id !== id),
+    });
+  };
+
   // Streak tracking helper functions
   const getStreakData = () => {
     const allEntries = [
@@ -269,6 +283,16 @@ export default function App() {
     return 'low';
   };
 
+  const handleDaySelect = (date: Date) => {
+    setSelectedDate(date);
+    setCurrentScreen("day-entries");
+  };
+
+  const handleBackToDayGlow = () => {
+    setSelectedDate(null);
+    setCurrentScreen("day-glow");
+  };
+
 
   const renderCurrentScreen = () => {
     switch (currentScreen) {
@@ -285,6 +309,33 @@ export default function App() {
             onDeleteFamilyMember={deleteFamilyMember}
             getStreakData={getStreakData}
             getDayActivityLevel={getDayActivityLevel}
+            onDaySelect={handleDaySelect}
+          />
+        );
+      case "day-entries":
+        return selectedDate ? (
+          <DayEntriesView
+            selectedDate={selectedDate}
+            familyMembers={appData.familyMembers}
+            moodEntries={appData.moodEntries}
+            reflectionEntries={appData.reflectionEntries}
+            gratitudeEntries={appData.gratitudeEntries}
+            onDeleteMoodEntry={deleteMoodEntry}
+            onDeleteReflectionEntry={deleteReflectionEntry}
+            onDeleteGratitudeEntry={deleteGratitudeEntry}
+            onNavigateBack={handleBackToDayGlow}
+          />
+        ) : (
+          <DayGlowScreen
+            familyMembers={appData.familyMembers}
+            moodEntries={appData.moodEntries}
+            onAddMoodEntry={addMoodEntry}
+            onAddFamilyMember={addFamilyMember}
+            onUpdateFamilyMember={updateFamilyMember}
+            onDeleteFamilyMember={deleteFamilyMember}
+            getStreakData={getStreakData}
+            getDayActivityLevel={getDayActivityLevel}
+            onDaySelect={handleDaySelect}
           />
         );
       case "screen-time":
@@ -327,6 +378,9 @@ export default function App() {
             onAddFamilyMember={addFamilyMember}
             onUpdateFamilyMember={updateFamilyMember}
             onDeleteFamilyMember={deleteFamilyMember}
+            getStreakData={getStreakData}
+            getDayActivityLevel={getDayActivityLevel}
+            onDaySelect={handleDaySelect}
           />
         );
     }

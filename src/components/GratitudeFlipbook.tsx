@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
+import { formatDate } from './ui/utils';
 import { Plus, Play, Pause, SkipBack, SkipForward, X } from 'lucide-react';
 
 interface GratitudeFlipbookProps {
@@ -149,7 +150,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
               </h3>
               <p className="text-2xl mb-8">{currentEntry.text}</p>
               <div className="text-lg text-gray-400">
-                {new Date(currentEntry.date).toLocaleDateString()}
+                {formatDate(currentEntry.date)}
               </div>
             </Card>
           ) : (
@@ -259,7 +260,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                           <div className="flex-1">
                             <div className="text-lg mb-2">{entry.text}</div>
                             <div className="text-sm text-gray-400">
-                              {member?.name} • {new Date(entry.date).toLocaleDateString()}
+                              {member?.name} • {formatDate(entry.date)}
                             </div>
                           </div>
                         </div>

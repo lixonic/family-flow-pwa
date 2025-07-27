@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
+import { formatDate } from './ui/utils';
 
 const BASE_REFLECTION_PROMPTS = [
   "What was your best offline moment today?",
@@ -385,7 +386,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
                         <div className="text-lg text-gray-600 mb-2">{entry.prompt}</div>
                         <div className="text-lg">{entry.response}</div>
                         <div className="text-sm text-gray-400 mt-2">
-                          {member?.name} • {new Date(entry.date).toLocaleDateString()}
+                          {member?.name} • {formatDate(entry.date)}
                         </div>
                       </div>
                     </div>

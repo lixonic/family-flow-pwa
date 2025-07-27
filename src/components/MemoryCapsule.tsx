@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { formatDate } from './ui/utils';
 import { Download, FileText, Database, Smartphone, Info, Shield } from 'lucide-react';
 
 interface MemoryCapsuleProps {
@@ -39,7 +40,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
       csvData.push([
         'Mood',
         member?.name || 'Unknown',
-        new Date(entry.date).toLocaleDateString(),
+        formatDate(entry.date),
         `${entry.emoji} (${entry.color})`,
         entry.note || ''
       ]);
@@ -51,7 +52,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
       csvData.push([
         'Reflection',
         member?.name || 'Unknown',
-        new Date(entry.date).toLocaleDateString(),
+        formatDate(entry.date),
         entry.prompt,
         entry.response
       ]);
@@ -63,7 +64,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
       csvData.push([
         'Gratitude',
         member?.name || 'Unknown',
-        new Date(entry.date).toLocaleDateString(),
+        formatDate(entry.date),
         entry.text,
         ''
       ]);
@@ -82,14 +83,14 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     let pdfContent = 'FAMILY FLOW MEMORY CAPSULE\n';
     pdfContent += '='.repeat(40) + '\n\n';
     
-    pdfContent += `Export Date: ${new Date().toLocaleDateString()}\n`;
+    pdfContent += `Export Date: ${formatDate(new Date())}\n`;
     pdfContent += `Family Members: ${appData.familyMembers.map(m => m.name).join(', ')}\n\n`;
     
     pdfContent += 'MOOD ENTRIES\n';
     pdfContent += '-'.repeat(20) + '\n';
     appData.moodEntries.forEach(entry => {
       const member = appData.familyMembers.find(m => m.id === entry.memberId);
-      pdfContent += `${new Date(entry.date).toLocaleDateString()} - ${member?.name}: ${entry.emoji}\n`;
+      pdfContent += `${formatDate(entry.date)} - ${member?.name}: ${entry.emoji}\n`;
       if (entry.note) pdfContent += `  Note: ${entry.note}\n`;
       pdfContent += '\n';
     });
@@ -98,7 +99,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     pdfContent += '-'.repeat(20) + '\n';
     appData.reflectionEntries.forEach(entry => {
       const member = appData.familyMembers.find(m => m.id === entry.memberId);
-      pdfContent += `${new Date(entry.date).toLocaleDateString()} - ${member?.name}\n`;
+      pdfContent += `${formatDate(entry.date)} - ${member?.name}\n`;
       pdfContent += `Q: ${entry.prompt}\n`;
       pdfContent += `A: ${entry.response}\n\n`;
     });
@@ -107,7 +108,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     pdfContent += '-'.repeat(20) + '\n';
     appData.gratitudeEntries.forEach(entry => {
       const member = appData.familyMembers.find(m => m.id === entry.memberId);
-      pdfContent += `${new Date(entry.date).toLocaleDateString()} - ${member?.name}\n`;
+      pdfContent += `${formatDate(entry.date)} - ${member?.name}\n`;
       pdfContent += `${entry.text}\n\n`;
     });
     
@@ -176,7 +177,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     const earliest = new Date(Math.min(...allDates.map(d => d.getTime())));
     const latest = new Date(Math.max(...allDates.map(d => d.getTime())));
     
-    return `${earliest.toLocaleDateString()} - ${latest.toLocaleDateString()}`;
+    return `${formatDate(earliest)} - ${formatDate(latest)}`;
   };
 
   if (exportComplete) {
