@@ -12,61 +12,21 @@
   "categories": ["health", "lifestyle", "education"],
   "icons": [
     {
-      "src": "/family-icon-192.png",
+      "src": "/images/app_icon.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "any"
     },
     {
-      "src": "/family-icon-512.png", 
+      "src": "/images/app_icon.png", 
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable any"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshot-narrow.png", 
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow"
+      "purpose": "any"
     }
   ],
   "features": [
     "offline-capable",
     "privacy-focused",
     "family-friendly"
-  ],
-  "shortcuts": [
-    {
-      "name": "Check Mood",
-      "short_name": "Mood", 
-      "description": "Quick mood check-in",
-      "url": "/#/day-glow",
-      "icons": [
-        {
-          "src": "/mood-shortcut.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Reflect",
-      "short_name": "Reflect",
-      "description": "Screen time reflection", 
-      "url": "/#/screen-time",
-      "icons": [
-        {
-          "src": "/reflect-shortcut.png", 
-          "sizes": "192x192"
-        }
-      ]
-    }
   ]
 }

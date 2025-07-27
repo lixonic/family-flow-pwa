@@ -3,7 +3,7 @@ import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { formatDate } from './ui/utils';
-import { Download, FileText, Database, Smartphone, Info, Shield } from 'lucide-react';
+import { Download, FileText, Database, Smartphone, Info, Shield, HelpCircle } from 'lucide-react';
 
 interface MemoryCapsuleProps {
   appData: AppData;
@@ -278,7 +278,25 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
 
         {!exportFormat && (
           <div className="mb-10">
-            <h3 className="text-2xl mb-6">Choose Export Format</h3>
+            <div className="flex items-center justify-center mb-6">
+              <h3 className="text-2xl mr-3">Export your Family data</h3>
+              <div className="relative group">
+                <HelpCircle className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-help" />
+                <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block">
+                  <div className="bg-gray-800 text-white text-sm rounded-lg p-3 w-64 shadow-lg">
+                    <p className="mb-2">Why export your family data?</p>
+                    <ul className="text-xs space-y-1">
+                      <li>• Create backups of your memories</li>
+                      <li>• Share insights with family therapists</li>
+                      <li>• Print physical journals or scrapbooks</li>
+                      <li>• Track long-term family patterns</li>
+                      <li>• Keep records before device changes</li>
+                    </ul>
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="space-y-4">
               <button
                 onClick={() => setExportFormat('csv')}
@@ -367,7 +385,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           </div>
         )}
 
-        {/* About and Install Section */}
+        {/* About Section */}
         <div className="space-y-4 mb-8">
           <Button
             onClick={() => onNavigate('about')}
@@ -376,20 +394,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           >
             <Info className="w-5 h-5 mr-3" />
             About Family Flow
-          </Button>
-          
-          {/* Install button - always show even if no prompt */}
-          <Button
-            onClick={handleInstallClick}
-            disabled={!deferredPrompt}
-            className={`w-full text-lg py-4 h-auto ${
-              deferredPrompt 
-                ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600' 
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            <Smartphone className="w-5 h-5 mr-3" />
-            {deferredPrompt ? 'Install FAMILY FLOW' : 'Already Installed'}
           </Button>
         </div>
 

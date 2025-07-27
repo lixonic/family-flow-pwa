@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FamilyMember, GratitudeEntry } from '../App';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
@@ -11,9 +11,10 @@ interface GratitudeFlipbookProps {
   familyMembers: FamilyMember[];
   gratitudeEntries: GratitudeEntry[];
   onAddGratitudeEntry: (entry: Omit<GratitudeEntry, 'id'>) => void;
+  onDeleteGratitudeEntry?: (id: string) => void;
 }
 
-export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratitudeEntry }: GratitudeFlipbookProps) {
+export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratitudeEntry, onDeleteGratitudeEntry }: GratitudeFlipbookProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [gratitudeText, setGratitudeText] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -80,7 +81,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
   };
 
   // Auto-advance slideshow
-  React.useEffect(() => {
+  useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isPlaying && slideshowMode) {
       interval = setInterval(nextSlide, 3000);
@@ -263,6 +264,15 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                               {member?.name} • {formatDate(entry.date)}
                             </div>
                           </div>
+                          {onDeleteGratitudeEntry && (
+                            <button
+                              onClick={() => onDeleteGratitudeEntry(entry.id)}
+                              className="text-gray-400 hover:text-red-500 transition-colors p-2"
+                              title="Delete gratitude entry"
+                            >
+                              🗑️
+                            </button>
+                          )}
                         </div>
                       </Card>
                     );
