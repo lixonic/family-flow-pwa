@@ -5,7 +5,6 @@ import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
-import { QuestionButton } from './ui/QuestionButton';
 import { Plus, Play, Pause, SkipBack, SkipForward, X } from 'lucide-react';
 
 interface GratitudeFlipbookProps {
@@ -24,6 +23,14 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const getMemberTodayGratitudeEntry = (memberId: string) => {
+    const today = new Date().toISOString().split('T')[0];
+    return gratitudeEntries.find(entry => 
+      entry.memberId === memberId && 
+      entry.date.startsWith(today)
+    );
+  };
 
   const thisWeekEntries = gratitudeEntries.filter(entry => {
     const entryDate = new Date(entry.date);
@@ -209,7 +216,6 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
 
   return (
     <div className="min-h-screen px-6 py-8 pb-28 relative">
-      {onNavigate && <QuestionButton onNavigate={onNavigate} />}
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
@@ -220,10 +226,10 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
 
         {!showAddForm && (
           <>
-            <div className="flex space-x-4 mb-10">
+            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-10">
               <Button
                 onClick={() => setShowAddForm(true)}
-                className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-xl py-4 h-auto"
+                className="w-full sm:flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-xl py-4 h-auto"
               >
                 <Plus className="w-6 h-6 mr-3" />
                 Add Gratitude
@@ -232,7 +238,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
               <Button
                 onClick={startSlideshow}
                 variant="outline"
-                className="flex-1 text-xl py-4 h-auto"
+                className="w-full sm:flex-1 text-xl py-4 h-auto"
                 disabled={thisWeekEntries.length === 0}
               >
                 <Play className="w-6 h-6 mr-3" />
