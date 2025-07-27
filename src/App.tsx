@@ -60,6 +60,11 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
+    // Disable scroll restoration
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
     // Load data from localStorage
     const savedData = localStorage.getItem("familyFlowData");
     if (savedData) {
@@ -104,6 +109,9 @@ export default function App() {
         setCurrentScreen("day-glow");
       }
     }, 2000);
+
+    // Ensure page starts at top
+    window.scrollTo(0, 0);
 
     return () => clearTimeout(timer);
   }, [currentScreen]);
@@ -293,6 +301,11 @@ export default function App() {
     setCurrentScreen("day-glow");
   };
 
+  // Scroll to top whenever screen changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentScreen]);
+
 
   const renderCurrentScreen = () => {
     switch (currentScreen) {
@@ -344,6 +357,7 @@ export default function App() {
             familyMembers={appData.familyMembers}
             reflectionEntries={appData.reflectionEntries}
             onAddReflectionEntry={addReflectionEntry}
+            onDeleteReflectionEntry={deleteReflectionEntry}
           />
         );
       case "gratitude":
@@ -352,6 +366,7 @@ export default function App() {
             familyMembers={appData.familyMembers}
             gratitudeEntries={appData.gratitudeEntries}
             onAddGratitudeEntry={addGratitudeEntry}
+            onDeleteGratitudeEntry={deleteGratitudeEntry}
           />
         );
       case "breathe":

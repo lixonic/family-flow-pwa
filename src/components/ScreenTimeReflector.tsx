@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FamilyMember, ReflectionEntry } from '../App';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
@@ -54,9 +54,10 @@ interface ScreenTimeReflectorProps {
   familyMembers: FamilyMember[];
   reflectionEntries: ReflectionEntry[];
   onAddReflectionEntry: (entry: Omit<ReflectionEntry, 'id'>) => void;
+  onDeleteReflectionEntry?: (id: string) => void;
 }
 
-export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddReflectionEntry }: ScreenTimeReflectorProps) {
+export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddReflectionEntry, onDeleteReflectionEntry }: ScreenTimeReflectorProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [currentPrompts, setCurrentPrompts] = useState<string[]>([]);
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
@@ -389,6 +390,15 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
                           {member?.name} • {formatDate(entry.date)}
                         </div>
                       </div>
+                      {onDeleteReflectionEntry && (
+                        <button
+                          onClick={() => onDeleteReflectionEntry(entry.id)}
+                          className="text-gray-400 hover:text-red-500 transition-colors p-2"
+                          title="Delete reflection"
+                        >
+                          🗑️
+                        </button>
+                      )}
                     </div>
                   </Card>
                 );

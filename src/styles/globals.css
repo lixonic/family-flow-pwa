@@ -50,6 +50,7 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    overscroll-behavior: none; /* Prevent pull-to-refresh and scroll chaining */
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -79,4 +80,28 @@
   button {
     @apply font-medium;
   }
+}
+
+/* Hide scrollbar for mobile navigation */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}
+
+/* Prevent auto-focus scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reset scroll position on page load */
+html, body {
+  scroll-behavior: auto;
+}
+
+/* Prevent focus scrolling for buttons and inputs */
+button:focus, input:focus, textarea:focus {
+  scroll-margin: 0;
 }

@@ -47,8 +47,6 @@ export function BreatheTimer() {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsActive(false);
-      // Play completion sound (gong effect)
-      // Note: In a real app, you'd use audio API here
     }
     
     return () => clearInterval(interval);

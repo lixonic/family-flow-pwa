@@ -338,7 +338,7 @@ export function DayGlowScreen({
               {streakData.totalActiveDays} active days total
             </div>
           </div>
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-3">
             {getWeekDays().map((date, index) => {
               const dayMoods = getDayMoods(date);
               const isToday = date.toDateString() === today;
@@ -351,7 +351,7 @@ export function DayGlowScreen({
                   </div>
                   <button
                     onClick={() => onDaySelect(date)}
-                    className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative ${getActivityLevelColor(activityLevel)} hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
+                    className={`w-10 h-10 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative ${getActivityLevelColor(activityLevel)} hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
                     title={`View entries for ${formatDate(date)}`}
                   >
                     {dayMoods.length > 0 ? (
