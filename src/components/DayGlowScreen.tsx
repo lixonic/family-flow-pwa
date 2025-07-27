@@ -6,6 +6,7 @@ import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
+import { QuestionButton } from './ui/QuestionButton';
 import { Plus, Edit2, Trash2, Check, X, User, ChevronRight } from 'lucide-react';
 
 const MOOD_OPTIONS = [
@@ -61,6 +62,7 @@ interface DayGlowScreenProps {
   getStreakData: () => { currentStreak: number; totalActiveDays: number; activityDates: string[] };
   getDayActivityLevel: (date: Date) => 'none' | 'low' | 'medium' | 'high';
   onDaySelect: (date: Date) => void;
+  onNavigate?: (screen: string) => void;
 }
 
 export function DayGlowScreen({ 
@@ -72,7 +74,8 @@ export function DayGlowScreen({
   onDeleteFamilyMember,
   getStreakData,
   getDayActivityLevel,
-  onDaySelect
+  onDaySelect,
+  onNavigate
 }: DayGlowScreenProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [selectedMood, setSelectedMood] = useState<{ emoji: string; color: string; name: string } | null>(null);
@@ -89,6 +92,14 @@ export function DayGlowScreen({
   const [cooldownSuggestions, setCooldownSuggestions] = useState<string[]>([]);
 
   const today = new Date().toDateString();
+  
+  // Check if member already has mood entry today
+  const getMemberTodayMoodEntry = (memberId: string) => {
+    return moodEntries.find(entry => 
+      entry.memberId === memberId && 
+      new Date(entry.date).toDateString() === today
+    );
+  };
   const streakData = getStreakData();
 
   const getStreakMessage = (streak: number) => {
@@ -289,7 +300,7 @@ export function DayGlowScreen({
         
         {/* Confetti animation */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(45)].map((_, i) => (
+          {[...Array(15)].map((_, i) => (
             <div
               key={i}
               className="absolute animate-bounce"
@@ -319,19 +330,23 @@ export function DayGlowScreen({
 
   return (
     <div className="min-h-screen px-6 py-8 pb-28 relative">
+      {onNavigate && <QuestionButton onNavigate={onNavigate} />}
       {showCooldownBanner && <CooldownBanner />}
       
       <div className={`max-w-md mx-auto ${showCooldownBanner ? 'mt-32' : ''}`}>
-        <div className="text-center mb-10">
-          <h1 className="text-4xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
-            Day Glow
-          </h1>
-          <p className="text-gray-600 text-xl">How was your day?</p>
-        </div>
+        {!showManageMembers && (
+          <div className="text-center mb-10">
+            <h1 className="text-4xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+              Day Glow
+            </h1>
+            <p className="text-gray-600 text-xl">How was your day?</p>
+          </div>
+        )}
 
 
         {/* Enhanced Week view with activity levels */}
-        <div className="mb-10">
+        {!showManageMembers && (
+          <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg text-gray-500">This week</h3>
             <div className="text-sm text-gray-400">
@@ -398,6 +413,7 @@ export function DayGlowScreen({
             </div>
           </div>
         </div>
+        )}
 
         {/* Family member management */}
         {!selectedMember && !showManageMembers && (
@@ -405,7 +421,16 @@ export function DayGlowScreen({
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl">Who's checking in?</h3>
               <button
-                onClick={() => setShowManageMembers(true)}
+                onClick={() => {
+                  setShowManageMembers(true);
+                  // Scroll to members list after a brief delay to ensure DOM is updated
+                  setTimeout(() => {
+                    const membersList = document.getElementById('members-list-section');
+                    if (membersList) {
+                      membersList.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}
                 className="text-orange-600 hover:text-orange-700 p-2"
                 title="Manage family members"
               >
@@ -413,20 +438,45 @@ export function DayGlowScreen({
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {familyMembers.map(member => (
-                <button
-                  key={member.id}
-                  onClick={() => setSelectedMember(member)}
-                  className="p-6 rounded-3xl border-3 border-orange-200 hover:border-orange-400 transition-colors min-h-[120px] flex flex-col items-center justify-center"
-                  style={{ backgroundColor: member.color }}
-                >
-                  <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
-                  <div className="text-lg font-medium">{member.name}</div>
-                </button>
-              ))}
+              {familyMembers.map(member => {
+                const todayEntry = getMemberTodayMoodEntry(member.id);
+                return (
+                  <button
+                    key={member.id}
+                    onClick={() => todayEntry ? null : setSelectedMember(member)}
+                    className={`p-6 rounded-3xl border-3 transition-colors min-h-[120px] flex flex-col items-center justify-center relative ${
+                      todayEntry 
+                        ? 'border-green-200 bg-green-50 cursor-not-allowed opacity-75'
+                        : 'border-orange-200 hover:border-orange-400 cursor-pointer'
+                    }`}
+                    style={{ backgroundColor: todayEntry ? '#F0FDF4' : member.color }}
+                    disabled={!!todayEntry}
+                  >
+                    <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
+                    <div className="text-lg font-medium">{member.name}</div>
+                    {todayEntry && (
+                      <>
+                        <div className="absolute top-2 right-2 text-green-600">
+                          <div className="text-2xl">{todayEntry.emoji}</div>
+                        </div>
+                        <div className="text-sm text-green-600 mt-1">Already checked in</div>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
               {familyMembers.length < 6 && (
                 <button
-                  onClick={() => setShowManageMembers(true)}
+                  onClick={() => {
+                    setShowManageMembers(true);
+                    // Scroll to add member form after a brief delay to ensure DOM is updated
+                    setTimeout(() => {
+                      const addMemberSection = document.getElementById('manage-members-section');
+                      if (addMemberSection) {
+                        addMemberSection.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }, 100);
+                  }}
                   className="p-6 rounded-3xl border-3 border-dashed border-orange-300 hover:border-orange-400 transition-colors min-h-[120px] flex flex-col items-center justify-center text-orange-600"
                 >
                   <Plus className="w-12 h-12 mb-3" />
@@ -439,7 +489,7 @@ export function DayGlowScreen({
 
         {/* Manage members screen */}
         {showManageMembers && (
-          <div className="mb-10">
+          <div className="mb-10" id="manage-members-section">
             <div className="flex items-center mb-8">
               <button
                 onClick={() => setShowManageMembers(false)}
@@ -498,7 +548,7 @@ export function DayGlowScreen({
             )}
 
             {/* Existing members */}
-            <div className="space-y-4">
+            <div className="space-y-4" id="members-list-section">
               <h4 className="text-lg">Family Members ({familyMembers.length}/6)</h4>
               {familyMembers.map(member => (
                 <Card key={member.id} className="p-4">

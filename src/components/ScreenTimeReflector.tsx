@@ -5,6 +5,7 @@ import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
+import { QuestionButton } from './ui/QuestionButton';
 
 const BASE_REFLECTION_PROMPTS = [
   "What was your best offline moment today?",
@@ -55,10 +56,21 @@ interface ScreenTimeReflectorProps {
   reflectionEntries: ReflectionEntry[];
   onAddReflectionEntry: (entry: Omit<ReflectionEntry, 'id'>) => void;
   onDeleteReflectionEntry?: (id: string) => void;
+  onNavigate?: (screen: string) => void;
 }
 
-export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddReflectionEntry, onDeleteReflectionEntry }: ScreenTimeReflectorProps) {
+export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddReflectionEntry, onDeleteReflectionEntry, onNavigate }: ScreenTimeReflectorProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
+  
+  const today = new Date().toDateString();
+  
+  // Check if member already has reflection entry today
+  const getMemberTodayReflectionEntry = (memberId: string) => {
+    return reflectionEntries.find(entry => 
+      entry.memberId === memberId && 
+      new Date(entry.date).toDateString() === today
+    );
+  };
   const [currentPrompts, setCurrentPrompts] = useState<string[]>([]);
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [response, setResponse] = useState('');
@@ -196,7 +208,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
       <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
         {/* Confetti animation */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(60)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <div
               key={i}
               className="absolute animate-bounce"
@@ -225,7 +237,8 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 pb-28">
+    <div className="min-h-screen px-6 py-8 pb-28 relative">
+      {onNavigate && <QuestionButton onNavigate={onNavigate} />}
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-4xl mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
@@ -243,17 +256,33 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
           <div className="mb-10">
             <h3 className="text-2xl mb-6">Who's reflecting?</h3>
             <div className="grid grid-cols-2 gap-4">
-              {familyMembers.map(member => (
-                <button
-                  key={member.id}
-                  onClick={() => handleMemberSelect(member)}
-                  className="p-6 rounded-3xl border-3 border-blue-200 hover:border-blue-400 transition-colors min-h-[120px] flex flex-col items-center justify-center"
-                  style={{ backgroundColor: member.color }}
-                >
-                  <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
-                  <div className="text-lg font-medium">{member.name}</div>
-                </button>
-              ))}
+              {familyMembers.map(member => {
+                const todayEntry = getMemberTodayReflectionEntry(member.id);
+                return (
+                  <button
+                    key={member.id}
+                    onClick={() => todayEntry ? null : handleMemberSelect(member)}
+                    className={`p-6 rounded-3xl border-3 transition-colors min-h-[120px] flex flex-col items-center justify-center relative ${
+                      todayEntry 
+                        ? 'border-green-200 bg-green-50 cursor-not-allowed opacity-75'
+                        : 'border-blue-200 hover:border-blue-400 cursor-pointer'
+                    }`}
+                    style={{ backgroundColor: todayEntry ? '#F0FDF4' : member.color }}
+                    disabled={!!todayEntry}
+                  >
+                    <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
+                    <div className="text-lg font-medium">{member.name}</div>
+                    {todayEntry && (
+                      <>
+                        <div className="absolute top-2 right-2 text-green-600">
+                          <div className="text-lg">💭</div>
+                        </div>
+                        <div className="text-sm text-green-600 mt-1">Already reflected</div>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

@@ -3,6 +3,7 @@ import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { formatDate } from './ui/utils';
+import { QuestionButton } from './ui/QuestionButton';
 import { Download, FileText, Database, Smartphone, Info, Shield, HelpCircle } from 'lucide-react';
 
 interface MemoryCapsuleProps {
@@ -17,6 +18,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
   const [showInstallSuccess, setShowInstallSuccess] = useState(false);
+  const [showExportHelp, setShowExportHelp] = useState(false);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
@@ -205,7 +207,8 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 pb-28">
+    <div className="min-h-screen px-6 py-8 pb-28 relative">
+      <QuestionButton onNavigate={onNavigate} />
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-4xl mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -269,23 +272,50 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           <div className="mb-10">
             <div className="flex items-center justify-center mb-6">
               <h3 className="text-2xl mr-3">Export your Family data</h3>
-              <div className="relative group">
-                <HelpCircle className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-help" />
-                <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block">
-                  <div className="bg-gray-800 text-white text-sm rounded-lg p-3 w-64 shadow-lg">
-                    <p className="mb-2">Why export your family data?</p>
-                    <ul className="text-xs space-y-1">
-                      <li>• Create backups of your memories</li>
-                      <li>• Share insights with family therapists</li>
-                      <li>• Print physical journals or scrapbooks</li>
-                      <li>• Track long-term family patterns</li>
-                      <li>• Keep records before device changes</li>
-                    </ul>
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
-                  </div>
-                </div>
-              </div>
+              <button
+                onClick={() => setShowExportHelp(!showExportHelp)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+                title="Why export family data?"
+              >
+                <HelpCircle className="w-5 h-5" />
+              </button>
             </div>
+            
+            {showExportHelp && (
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-start justify-between mb-3">
+                  <h4 className="text-lg font-medium text-blue-800">Why export your family data?</h4>
+                  <button
+                    onClick={() => setShowExportHelp(false)}
+                    className="text-blue-600 hover:text-blue-800 text-xl leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+                <ul className="text-blue-700 space-y-2">
+                  <li className="flex items-start">
+                    <span className="text-blue-500 mr-2 mt-1">•</span>
+                    <span>Create backups of your precious family memories</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-500 mr-2 mt-1">•</span>
+                    <span>Share insights with family therapists or counselors</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-500 mr-2 mt-1">•</span>
+                    <span>Print physical journals or create scrapbooks</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-500 mr-2 mt-1">•</span>
+                    <span>Track long-term family patterns and growth</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-500 mr-2 mt-1">•</span>
+                    <span>Keep records safe before device changes</span>
+                  </li>
+                </ul>
+              </div>
+            )}
             <div className="space-y-4">
               <button
                 onClick={() => setExportFormat('csv')}
