@@ -336,7 +336,7 @@ export function DayGlowScreen({
       <div className={`max-w-md mx-auto ${showCooldownBanner ? 'mt-32' : ''}`}>
         {!showManageMembers && (
           <div className="text-center mb-10">
-            <h1 className="text-4xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
               Day Glow
             </h1>
             <p className="text-gray-600 text-xl">How was your day?</p>

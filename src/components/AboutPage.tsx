@@ -21,7 +21,7 @@ export function AboutPage({ onNavigate }: AboutPageProps) {
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-3xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="font-title text-3xl bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             About Family Flow
           </h1>
         </div>

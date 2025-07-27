@@ -125,7 +125,7 @@ export function FAQPage({ onNavigate }: FAQPageProps) {
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="font-title text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Frequently Asked Questions
           </h1>
         </div>
