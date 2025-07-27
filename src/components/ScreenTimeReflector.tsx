@@ -36,7 +36,18 @@ const SOCIAL_MEDIA_MICRO_ACTIONS = [
   "Put your phone in another room for an hour"
 ];
 
-const WEEKLY_REFLECTION_PROMPT = "Did you see something online that made you feel upset or unsure? Pause—can you tell who posted it and why?";
+const CHECK_THE_SOURCE_PROMPTS = [
+  "Did you see something online that made you feel upset or unsure? Pause—can you tell who posted it and why?",
+  "What's one thing you saw online today that made you compare yourself to others? How did that feel?",
+  "Did you notice any posts that seemed too good to be true? What made you think that?",
+  "Can you spot the difference between news, opinions, and ads in your feed today?",
+  "What's one account you follow that always makes you feel good? What makes it different?",
+  "Did you see any content that tried to make you angry or scared? Why do you think it was made that way?",
+  "How do you know if something you see online is real or edited? What clues do you look for?",
+  "What's one thing you learned today—online or offline? Which source do you trust more and why?",
+  "Did you feel pressured to like, share, or comment on something today? What was driving that feeling?",
+  "If you could fact-check one thing you saw online today, what would it be and how would you do it?"
+];
 
 interface ScreenTimeReflectorProps {
   familyMembers: FamilyMember[];
@@ -50,6 +61,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [response, setResponse] = useState('');
   const [completedResponses, setCompletedResponses] = useState<{ prompt: string; response: string }[]>([]);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Get the app start date from localStorage or set it
   const getAppStartDate = () => {
@@ -74,9 +86,10 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
   const getReflectionPrompts = () => {
     let allPrompts = [...BASE_REFLECTION_PROMPTS, ...SOCIAL_MEDIA_MICRO_ACTIONS];
     
-    // Add weekly prompt if it's the 7th day
+    // Add Check-the-Source prompt if it's the 7th day
     if (isSeventhDay()) {
-      allPrompts = [WEEKLY_REFLECTION_PROMPT, ...allPrompts];
+      const randomSourcePrompt = CHECK_THE_SOURCE_PROMPTS[Math.floor(Math.random() * CHECK_THE_SOURCE_PROMPTS.length)];
+      allPrompts = [randomSourcePrompt, ...allPrompts];
     }
     
     return allPrompts;
@@ -126,12 +139,18 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
         });
       }
       
-      // Reset
-      setSelectedMember(null);
-      setCurrentPrompts([]);
-      setCurrentPromptIndex(0);
-      setResponse('');
-      setCompletedResponses([]);
+      // Show success celebration
+      setShowSuccess(true);
+      
+      // Reset after celebration
+      setTimeout(() => {
+        setSelectedMember(null);
+        setCurrentPrompts([]);
+        setCurrentPromptIndex(0);
+        setResponse('');
+        setCompletedResponses([]);
+        setShowSuccess(false);
+      }, 3000);
     }
   };
 
@@ -150,18 +169,58 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
         });
       });
       
-      // Reset
-      setSelectedMember(null);
-      setCurrentPrompts([]);
-      setCurrentPromptIndex(0);
-      setResponse('');
-      setCompletedResponses([]);
+      // Show success celebration
+      setShowSuccess(true);
+      
+      // Reset after celebration
+      setTimeout(() => {
+        setSelectedMember(null);
+        setCurrentPrompts([]);
+        setCurrentPromptIndex(0);
+        setResponse('');
+        setCompletedResponses([]);
+        setShowSuccess(false);
+      }, 3000);
     }
   };
 
-  // Check if current prompt is the special weekly prompt
-  const isWeeklyPrompt = currentPrompts[currentPromptIndex] === WEEKLY_REFLECTION_PROMPT;
+  // Check if current prompt is a Check-the-Source weekly prompt
+  const isWeeklyPrompt = CHECK_THE_SOURCE_PROMPTS.includes(currentPrompts[currentPromptIndex]);
   const isSocialMediaAction = SOCIAL_MEDIA_MICRO_ACTIONS.includes(currentPrompts[currentPromptIndex]);
+
+  // Confetti celebration screen
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+        {/* Confetti animation */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(60)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute animate-bounce"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${1 + Math.random()}s`,
+                fontSize: `${18 + Math.random() * 22}px`,
+              }}
+            >
+              {['🧠', '💭', '✨', '🌟', '💡', '🎯', '📱', '🌿', '🎉', '💫'][Math.floor(Math.random() * 10)]}
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center z-10">
+          <div className="text-8xl mb-6">🧘</div>
+          <h2 className="text-3xl mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+            Reflection Complete!
+          </h2>
+          <p className="text-gray-600 text-xl">Thank you for taking time to reflect mindfully</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-6 py-8 pb-28">
@@ -173,7 +232,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
           <p className="text-gray-600 text-xl">Quick reflection on today's digital habits</p>
           {isSeventhDay() && !selectedMember && (
             <div className="mt-4 p-3 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg">
-              <p className="text-sm text-purple-700">✨ Weekly reflection available today</p>
+              <p className="text-sm text-purple-700">🔍 Check-the-Source reflection available today</p>
             </div>
           )}
         </div>
@@ -223,7 +282,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
                   {isWeeklyPrompt ? '🔍' : isSocialMediaAction ? '📱' : '💭'}
                 </div>
                 {isWeeklyPrompt && (
-                  <div className="text-sm text-purple-600 mb-2 font-medium">Weekly Reflection</div>
+                  <div className="text-sm text-purple-600 mb-2 font-medium">🔍 Check-the-Source</div>
                 )}
                 {isSocialMediaAction && (
                   <div className="text-sm text-teal-600 mb-2 font-medium">Digital Wellness Action</div>
@@ -240,7 +299,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
                 onChange={(e) => setResponse(e.target.value)}
                 placeholder={
                   isWeeklyPrompt 
-                    ? "Take your time to reflect on this..."
+                    ? "Think critically about what you saw and felt..."
                     : isSocialMediaAction
                     ? "How did this action feel? What did you notice?"
                     : "Share your thoughts..."
@@ -301,7 +360,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
             <div className="space-y-4">
               {reflectionEntries.slice(-3).map(entry => {
                 const member = familyMembers.find(m => m.id === entry.memberId);
-                const isWeeklyEntry = entry.prompt === WEEKLY_REFLECTION_PROMPT;
+                const isWeeklyEntry = CHECK_THE_SOURCE_PROMPTS.includes(entry.prompt);
                 const isSocialMediaEntry = SOCIAL_MEDIA_MICRO_ACTIONS.includes(entry.prompt);
                 
                 return (
@@ -320,7 +379,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
                               ? 'text-purple-600' 
                               : 'text-teal-600'
                           }`}>
-                            {isWeeklyEntry ? '✨ Weekly Reflection' : '📱 Digital Action'}
+                            {isWeeklyEntry ? '🔍 Check-the-Source' : '📱 Digital Action'}
                           </div>
                         )}
                         <div className="text-lg text-gray-600 mb-2">{entry.prompt}</div>

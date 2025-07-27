@@ -220,6 +220,56 @@ export default function App() {
     });
   };
 
+  // Streak tracking helper functions
+  const getStreakData = () => {
+    const allEntries = [
+      ...appData.moodEntries,
+      ...appData.reflectionEntries,
+      ...appData.gratitudeEntries
+    ];
+
+    // Get unique dates with any family activity
+    const activityDates = new Set(
+      allEntries.map(entry => new Date(entry.date).toDateString())
+    );
+
+    // Calculate current streak
+    let currentStreak = 0;
+    const today = new Date();
+    
+    for (let i = 0; i < 30; i++) { // Check last 30 days max
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() - i);
+      
+      if (activityDates.has(checkDate.toDateString())) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    return {
+      currentStreak,
+      totalActiveDays: activityDates.size,
+      activityDates: Array.from(activityDates)
+    };
+  };
+
+  const getDayActivityLevel = (date: Date) => {
+    const dateString = date.toDateString();
+    const dayEntries = [
+      ...appData.moodEntries.filter(e => new Date(e.date).toDateString() === dateString),
+      ...appData.reflectionEntries.filter(e => new Date(e.date).toDateString() === dateString),
+      ...appData.gratitudeEntries.filter(e => new Date(e.date).toDateString() === dateString)
+    ];
+
+    if (dayEntries.length === 0) return 'none';
+    if (dayEntries.length >= 3) return 'high';
+    if (dayEntries.length >= 2) return 'medium';
+    return 'low';
+  };
+
+
   const renderCurrentScreen = () => {
     switch (currentScreen) {
       case "loader":
@@ -233,6 +283,8 @@ export default function App() {
             onAddFamilyMember={addFamilyMember}
             onUpdateFamilyMember={updateFamilyMember}
             onDeleteFamilyMember={deleteFamilyMember}
+            getStreakData={getStreakData}
+            getDayActivityLevel={getDayActivityLevel}
           />
         );
       case "screen-time":
