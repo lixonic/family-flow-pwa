@@ -3,7 +3,6 @@ import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { formatDate } from './ui/utils';
-import { QuestionButton } from './ui/QuestionButton';
 import { Download, FileText, Database, Smartphone, Info, Shield, HelpCircle } from 'lucide-react';
 
 interface MemoryCapsuleProps {
@@ -208,7 +207,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
 
   return (
     <div className="min-h-screen px-6 py-8 pb-28 relative">
-      <QuestionButton onNavigate={onNavigate} />
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -221,7 +219,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
         {deferredPrompt && (
           <Card className="p-4 mb-8 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
             <div className="text-center">
-              <Smartphone className="w-8 h-8 mx-auto mb-3 text-blue-600" />
               <p className="text-gray-600 mb-4">
                 Add to your home screen for quick access
               </p>
