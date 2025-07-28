@@ -23,6 +23,12 @@
   
   /* Border radius */
   --radius: 0.5rem;
+  
+  /* Safe area insets for mobile devices */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
 }
 
 .dark {
@@ -120,4 +126,33 @@ button:focus, input:focus, textarea:focus {
   padding-bottom: 0.25em;
   margin-top: 0.15em;
   margin-bottom: 0.15em;
+}
+
+/* Safe area utilities for mobile devices */
+.safe-top {
+  padding-top: calc(2rem + var(--safe-area-inset-top));
+}
+
+.safe-bottom {
+  padding-bottom: calc(7rem + var(--safe-area-inset-bottom));
+}
+
+.safe-bottom-nav {
+  padding-bottom: calc(0.5rem + var(--safe-area-inset-bottom));
+}
+
+.safe-left {
+  padding-left: calc(1.5rem + var(--safe-area-inset-left));
+}
+
+.safe-right {
+  padding-right: calc(1.5rem + var(--safe-area-inset-right));
+}
+
+/* Combined safe area class for main content */
+.safe-area-content {
+  padding-top: calc(2rem + var(--safe-area-inset-top));
+  padding-bottom: calc(7rem + var(--safe-area-inset-bottom));
+  padding-left: calc(1.5rem + var(--safe-area-inset-left));
+  padding-right: calc(1.5rem + var(--safe-area-inset-right));
 }

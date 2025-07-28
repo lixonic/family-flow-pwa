@@ -5,10 +5,10 @@ import { DayGlowScreen } from "./components/DayGlowScreen";
 import { DayEntriesView } from "./components/DayEntriesView";
 import { ScreenTimeReflector } from "./components/ScreenTimeReflector";
 import { GratitudeFlipbook } from "./components/GratitudeFlipbook";
-import { BreatheTimer } from "./components/BreatheTimer";
 import { MemoryCapsule } from "./components/MemoryCapsule";
 import { AboutPage } from "./components/AboutPage";
 import { FAQPage } from "./components/FAQPage";
+import { GuidePage } from "./components/GuidePage";
 import { Navigation } from "./components/Navigation";
 
 export type FamilyMember = {
@@ -392,8 +392,10 @@ export default function App() {
             onNavigate={setCurrentScreen}
           />
         );
-      case "breathe":
-        return <BreatheTimer />;
+      case "guide":
+        return (
+          <GuidePage onNavigate={setCurrentScreen} />
+        );
       case "memory":
         return (
           <MemoryCapsule 

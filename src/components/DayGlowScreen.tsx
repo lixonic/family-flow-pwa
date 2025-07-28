@@ -6,7 +6,6 @@ import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
-import { QuestionButton } from './ui/QuestionButton';
 import { Plus, Edit2, Trash2, Check, X, User, ChevronRight } from 'lucide-react';
 
 const MOOD_OPTIONS = [
@@ -102,13 +101,35 @@ export function DayGlowScreen({
   };
   const streakData = getStreakData();
 
-  const getStreakMessage = (streak: number) => {
-    if (streak === 0) return "Start your family journey today! 🌱";
-    if (streak === 1) return "Great start! Keep the momentum going! ⭐";
-    if (streak <= 3) return "Building beautiful habits together! 🌿";
-    if (streak <= 7) return "Amazing streak! Your family is glowing! ✨";
-    if (streak <= 14) return "Incredible dedication! Keep shining! 🌟";
-    return "Legendary family flow! You're inspiring! 🏆";
+  const getJourneyStage = (activeDays: number) => {
+    if (activeDays === 0) return {
+      stage: "Getting Started",
+      description: "Begin your family connection journey",
+      emoji: "🌱",
+      phase: "Digital Scaffolding",
+      progress: 0
+    };
+    if (activeDays <= 28) return {
+      stage: "Building Foundation",
+      description: "Establishing daily connection habits",
+      emoji: "🏗️", 
+      phase: "Digital Scaffolding",
+      progress: Math.min(activeDays / 28 * 100, 100)
+    };
+    if (activeDays <= 56) return {
+      stage: "Growing Connection",
+      description: "Natural conversations are emerging",
+      emoji: "🌱",
+      phase: "Hybrid Connection", 
+      progress: Math.min((activeDays - 28) / 28 * 100, 100)
+    };
+    return {
+      stage: "Independent Rituals",
+      description: "Family connects naturally without prompts",
+      emoji: "🎯",
+      phase: "Ready to Graduate",
+      progress: 100
+    };
   };
 
   const getActivityLevelColor = (level: 'none' | 'low' | 'medium' | 'high') => {
@@ -300,21 +321,29 @@ export function DayGlowScreen({
         
         {/* Confetti animation */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(15)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-bounce"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${1 + Math.random()}s`,
-                fontSize: `${16 + Math.random() * 24}px`,
-              }}
-            >
-              {['😊', '❤️', '✨', '🌟', '🎉', '💖', '🌈', '☀️', '🦋', '🌸'][Math.floor(Math.random() * 10)]}
-            </div>
-          ))}
+          {[...Array(15)].map((_, i) => {
+            const isTopHalf = i < 8;
+            const leftPos = Math.random() * 100;
+            const topPos = isTopHalf 
+              ? Math.random() * 30  // Top 30% of screen
+              : 70 + Math.random() * 30; // Bottom 30% of screen
+            
+            return (
+              <div
+                key={i}
+                className="absolute animate-bounce"
+                style={{
+                  left: `${leftPos}%`,
+                  top: `${topPos}%`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  animationDuration: `${1 + Math.random()}s`,
+                  fontSize: `${16 + Math.random() * 24}px`,
+                }}
+              >
+                {['😊', '❤️', '✨', '🌟', '🎉', '💖', '🌈', '☀️', '🦋', '🌸'][Math.floor(Math.random() * 10)]}
+              </div>
+            );
+          })}
         </div>
         
         <div className="text-center z-10">
@@ -329,8 +358,7 @@ export function DayGlowScreen({
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 pb-28 relative">
-      {onNavigate && <QuestionButton onNavigate={onNavigate} />}
+    <div className="min-h-screen safe-area-content relative">
       {showCooldownBanner && <CooldownBanner />}
       
       <div className={`max-w-md mx-auto ${showCooldownBanner ? 'mt-32' : ''}`}>
@@ -734,28 +762,45 @@ export function DayGlowScreen({
           </div>
         )}
 
-        {/* Streak Banner - Moved to bottom */}
-        {streakData.currentStreak > 0 ? (
-          <div className="mt-10 p-6 rounded-3xl bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-200">
-            <div className="text-center">
-              <div className="text-4xl mb-2">🔥</div>
-              <div className="text-2xl font-bold text-orange-700 mb-1">
-                {streakData.currentStreak} Day Streak!
+        {/* Family Journey Progress */}
+        {(() => {
+          const journey = getJourneyStage(streakData.totalActiveDays);
+          return (
+            <div className="mt-10 p-6 rounded-3xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+              <div className="flex items-center mb-4">
+                <div className="text-3xl mr-4">{journey.emoji}</div>
+                <div className="flex-1">
+                  <div className="text-xl font-semibold text-blue-800 mb-1">
+                    {journey.stage}
+                  </div>
+                  <div className="text-blue-600 text-sm">
+                    {journey.description}
+                  </div>
+                </div>
               </div>
-              <div className="text-orange-600">{getStreakMessage(streakData.currentStreak)}</div>
-            </div>
-          </div>
-        ) : streakData.totalActiveDays > 0 && (
-          <div className="mt-10 p-6 rounded-3xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
-            <div className="text-center">
-              <div className="text-4xl mb-2">🌱</div>
-              <div className="text-lg text-blue-700 mb-1">
-                Ready to start a new streak?
+              
+              {/* Progress Bar */}
+              <div className="mb-3">
+                <div className="flex justify-between text-sm text-blue-700 mb-2">
+                  <span>{journey.phase}</span>
+                  <span>{streakData.totalActiveDays} days</span>
+                </div>
+                <div className="w-full bg-blue-200 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${journey.progress}%` }}
+                  ></div>
+                </div>
               </div>
-              <div className="text-blue-600">You've been active {streakData.totalActiveDays} days total!</div>
+              
+              {journey.phase === "Ready to Graduate" && (
+                <div className="mt-4 p-3 bg-green-100 rounded-lg text-center">
+                  <div className="text-green-800 font-medium">🎓 Consider graduating to independent family rituals!</div>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );

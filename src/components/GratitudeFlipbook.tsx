@@ -5,7 +5,7 @@ import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
-import { Plus, Play, Pause, SkipBack, SkipForward, X } from 'lucide-react';
+import { Plus, Play, Pause, SkipBack, SkipForward, X, Wind } from 'lucide-react';
 
 interface GratitudeFlipbookProps {
   familyMembers: FamilyMember[];
@@ -23,6 +23,13 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  // Breathe functionality
+  const [showBreathe, setShowBreathe] = useState(false);
+  const [breatheActive, setBreatheActive] = useState(false);
+  const [breatheTimeLeft, setBreatheTimeLeft] = useState(120); // 2 minutes
+  const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  const [phaseTime, setPhaseTime] = useState(0);
 
   const getMemberTodayGratitudeEntry = (memberId: string) => {
     const today = new Date().toISOString().split('T')[0];
@@ -89,6 +96,46 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
     );
   };
 
+  // Breathe timer functions
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const resetBreathe = () => {
+    setBreatheActive(false);
+    setBreatheTimeLeft(120);
+    setBreathPhase('inhale');
+    setPhaseTime(0);
+  };
+
+  const toggleBreathe = () => {
+    setBreatheActive(!breatheActive);
+  };
+
+  const getCircleScale = () => {
+    const progress = phaseTime / (breathPhase === 'inhale' ? 4 : breathPhase === 'hold' ? 2 : 6);
+    
+    if (breathPhase === 'inhale') {
+      return 0.5 + (progress * 0.5); // Scale from 0.5 to 1.0
+    } else if (breathPhase === 'hold') {
+      return 1.0; // Stay at full scale
+    } else {
+      return 1.0 - (progress * 0.5); // Scale from 1.0 to 0.5
+    }
+  };
+
+  const startMindfulnessSession = () => {
+    setShowBreathe(true);
+    resetBreathe();
+  };
+
+  const completeMindfulnessSession = () => {
+    setShowBreathe(false);
+    setShowAddForm(true);
+  };
+
   // Auto-advance slideshow
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -98,27 +145,133 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
     return () => clearInterval(interval);
   }, [isPlaying, slideshowMode, currentSlideIndex]);
 
+  // Breathe timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (breatheActive && breatheTimeLeft > 0) {
+      interval = setInterval(() => {
+        setBreatheTimeLeft(prev => prev - 1);
+        setPhaseTime(prev => prev + 1);
+        
+        // Breathing pattern: 4 seconds inhale, 2 seconds hold, 6 seconds exhale
+        if (breathPhase === 'inhale' && phaseTime >= 4) {
+          setBreathPhase('hold');
+          setPhaseTime(0);
+        } else if (breathPhase === 'hold' && phaseTime >= 2) {
+          setBreathPhase('exhale');
+          setPhaseTime(0);
+        } else if (breathPhase === 'exhale' && phaseTime >= 6) {
+          setBreathPhase('inhale');
+          setPhaseTime(0);
+        }
+      }, 1000);
+    } else if (breatheTimeLeft === 0) {
+      setBreatheActive(false);
+      // Auto-complete and move to gratitude
+      setTimeout(() => completeMindfulnessSession(), 1000);
+    }
+    
+    return () => clearInterval(interval);
+  }, [breatheActive, breatheTimeLeft, breathPhase, phaseTime]);
+
+  // Mindful breathing screen
+  if (showBreathe) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center justify-center px-6 relative">
+        {/* Exit Button */}
+        <button
+          onClick={() => setShowBreathe(false)}
+          className="absolute top-6 right-6 z-10 bg-white/80 backdrop-blur-sm rounded-full p-3 hover:bg-white/90 transition-colors"
+        >
+          <X className="w-6 h-6 text-gray-600" />
+        </button>
+
+        <div className="text-center mb-8">
+          <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Mindful Breathing
+          </h1>
+          <p className="text-gray-600 text-xl">Breathe before gratitude</p>
+        </div>
+
+        <div className="relative mb-8">
+          <div 
+            className="w-48 h-48 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center transition-transform duration-1000 ease-in-out"
+            style={{ transform: `scale(${getCircleScale()})` }}
+          >
+            <div className="text-center">
+              <div className="text-6xl mb-2">🌸</div>
+              <div className="text-white text-lg font-medium">
+                {breathPhase === 'inhale' ? 'Breathe In' : 
+                 breathPhase === 'hold' ? 'Hold' : 'Breathe Out'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-4xl font-mono mb-8 text-gray-700">
+          {formatTime(breatheTimeLeft)}
+        </div>
+
+        <div className="flex space-x-4">
+          <Button
+            onClick={toggleBreathe}
+            variant="outline"
+            size="lg"
+            className="bg-white/80 backdrop-blur-sm px-8 py-4"
+          >
+            {breatheActive ? <Pause className="w-6 h-6 mr-2" /> : <Play className="w-6 h-6 mr-2" />}
+            {breatheActive ? 'Pause' : 'Start'}
+          </Button>
+          
+          <Button
+            onClick={resetBreathe}
+            variant="outline"
+            size="lg"
+            className="bg-white/80 backdrop-blur-sm px-8 py-4"
+          >
+            Reset
+          </Button>
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-gray-600 text-lg">
+            After breathing, we'll add gratitude together
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Confetti celebration screen
   if (showSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
         {/* Confetti animation */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(17)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-bounce"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${1 + Math.random()}s`,
-                fontSize: `${20 + Math.random() * 20}px`,
-              }}
-            >
-              {['🌟', '✨', '🎉', '💫', '🌸', '🎊', '💝', '🦋'][Math.floor(Math.random() * 8)]}
-            </div>
-          ))}
+          {[...Array(17)].map((_, i) => {
+            const isTopHalf = i < 9;
+            const leftPos = Math.random() * 100;
+            const topPos = isTopHalf 
+              ? Math.random() * 30  // Top 30% of screen
+              : 70 + Math.random() * 30; // Bottom 30% of screen
+            
+            return (
+              <div
+                key={i}
+                className="absolute animate-bounce"
+                style={{
+                  left: `${leftPos}%`,
+                  top: `${topPos}%`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  animationDuration: `${1 + Math.random()}s`,
+                  fontSize: `${20 + Math.random() * 20}px`,
+                }}
+              >
+                {['🌟', '✨', '🎉', '💫', '🌸', '🎊', '💝', '🦋'][Math.floor(Math.random() * 8)]}
+              </div>
+            );
+          })}
         </div>
         
         <div className="text-center z-10">
@@ -215,35 +368,46 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 pb-28 relative">
+    <div className="min-h-screen safe-area-content relative">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-            Gratitude Flipbook
+            Mindful Gratitude
           </h1>
-          <p className="text-gray-600 text-xl">Capture daily moments of gratitude</p>
+          <p className="text-gray-600 text-xl">Breathe, reflect, and be grateful</p>
         </div>
 
         {!showAddForm && (
           <>
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-10">
+            <div className="space-y-4 mb-10">
               <Button
-                onClick={() => setShowAddForm(true)}
-                className="w-full sm:flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-xl py-4 h-auto"
+                onClick={startMindfulnessSession}
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xl py-6 h-auto"
               >
-                <Plus className="w-6 h-6 mr-3" />
-                Add Gratitude
+                <Wind className="w-6 h-6 mr-3" />
+                Start Mindful Session
               </Button>
               
-              <Button
-                onClick={startSlideshow}
-                variant="outline"
-                className="w-full sm:flex-1 text-xl py-4 h-auto"
-                disabled={thisWeekEntries.length === 0}
-              >
-                <Play className="w-6 h-6 mr-3" />
-                Play Week
-              </Button>
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <Button
+                  onClick={() => setShowAddForm(true)}
+                  variant="outline"
+                  className="w-full sm:flex-1 text-xl py-4 h-auto"
+                >
+                  <Plus className="w-6 h-6 mr-3" />
+                  Quick Add
+                </Button>
+                
+                <Button
+                  onClick={startSlideshow}
+                  variant="outline"
+                  className="w-full sm:flex-1 text-xl py-4 h-auto"
+                  disabled={thisWeekEntries.length === 0}
+                >
+                  <Play className="w-6 h-6 mr-3" />
+                  Play Week
+                </Button>
+              </div>
             </div>
 
             <div className="mb-10">

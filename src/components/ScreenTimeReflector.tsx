@@ -5,7 +5,6 @@ import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
-import { QuestionButton } from './ui/QuestionButton';
 
 const BASE_REFLECTION_PROMPTS = [
   "What was your best offline moment today?",
@@ -208,21 +207,29 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
       <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
         {/* Confetti animation */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-bounce"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${1 + Math.random()}s`,
-                fontSize: `${18 + Math.random() * 22}px`,
-              }}
-            >
-              {['🧠', '💭', '✨', '🌟', '💡', '🎯', '📱', '🌿', '🎉', '💫'][Math.floor(Math.random() * 10)]}
-            </div>
-          ))}
+          {[...Array(20)].map((_, i) => {
+            const isTopHalf = i < 10;
+            const leftPos = Math.random() * 100;
+            const topPos = isTopHalf 
+              ? Math.random() * 30  // Top 30% of screen
+              : 70 + Math.random() * 30; // Bottom 30% of screen
+            
+            return (
+              <div
+                key={i}
+                className="absolute animate-bounce"
+                style={{
+                  left: `${leftPos}%`,
+                  top: `${topPos}%`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  animationDuration: `${1 + Math.random()}s`,
+                  fontSize: `${18 + Math.random() * 22}px`,
+                }}
+              >
+                {['🧠', '💭', '✨', '🌟', '💡', '🎯', '📱', '🌿', '🎉', '💫'][Math.floor(Math.random() * 10)]}
+              </div>
+            );
+          })}
         </div>
         
         <div className="text-center z-10">
@@ -237,8 +244,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 pb-28 relative">
-      {onNavigate && <QuestionButton onNavigate={onNavigate} />}
+    <div className="min-h-screen safe-area-content relative">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
