@@ -103,7 +103,7 @@ export function ReadinessAssessment({ onComplete, onCancel }: ReadinessAssessmen
     const recommendations = [];
 
     if (score >= 80) {
-      recommendations.push("🎉 Your family is ready for graduation!");
+      recommendations.push("🎉 The app becomes training wheels you happily leave behind!");
       recommendations.push("🗣️ Try weekly offline check-ins");
       recommendations.push("📝 Keep a family connection journal");
       recommendations.push("🎯 Set monthly family goals together");
@@ -192,6 +192,7 @@ export function ReadinessAssessment({ onComplete, onCancel }: ReadinessAssessmen
               ×
             </button>
           </div>
+          <p className="text-sm text-white/90 mb-2">Success means you won't need us forever</p>
           
           {/* Progress Bar */}
           <div className="w-full bg-white/20 rounded-full h-2">

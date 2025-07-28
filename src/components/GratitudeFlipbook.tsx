@@ -126,6 +126,29 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
     }
   };
 
+  const getCircleGradient = () => {
+    const progress = phaseTime / (breathPhase === 'inhale' ? 4 : breathPhase === 'hold' ? 2 : 6);
+    
+    if (breathPhase === 'inhale') {
+      // Transition from blue/purple to green during inhale
+      const fromHue = 240 - (progress * 120); // Blue (240) to green (120)
+      const toHue = 280 - (progress * 160);   // Purple (280) to green (120)
+      const saturation = 60 + (progress * 20); // Increase saturation
+      const lightness = 55 + (progress * 10);   // Increase brightness
+      return `linear-gradient(135deg, hsl(${fromHue}, ${saturation}%, ${lightness}%), hsl(${toHue}, ${saturation + 10}%, ${lightness - 5}%))`;
+    } else if (breathPhase === 'hold') {
+      // Stable green colors during hold
+      return 'linear-gradient(135deg, hsl(120, 70%, 60%), hsl(140, 65%, 55%))';
+    } else {
+      // Transition from green back to blue/purple during exhale
+      const fromHue = 120 + (progress * 120); // Green (120) back to blue (240)
+      const toHue = 120 + (progress * 160);   // Green (120) back to purple (280)
+      const saturation = 80 - (progress * 20); // Decrease saturation
+      const lightness = 65 - (progress * 10);   // Decrease brightness
+      return `linear-gradient(135deg, hsl(${fromHue}, ${saturation}%, ${lightness}%), hsl(${toHue}, ${saturation - 10}%, ${lightness + 5}%))`;
+    }
+  };
+
   const startMindfulnessSession = () => {
     setShowBreathe(true);
     resetBreathe();
@@ -196,8 +219,11 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
 
         <div className="relative mb-8">
           <div 
-            className="w-48 h-48 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center transition-transform duration-1000 ease-in-out"
-            style={{ transform: `scale(${getCircleScale()})` }}
+            className="w-48 h-48 rounded-full flex items-center justify-center transition-all duration-1000 ease-in-out"
+            style={{ 
+              transform: `scale(${getCircleScale()})`,
+              background: getCircleGradient()
+            }}
           >
             <div className="text-center">
               <div className="text-6xl mb-2">🌸</div>
@@ -385,7 +411,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xl py-6 h-auto"
               >
                 <Wind className="w-6 h-6 mr-3" />
-                Start Mindful Session
+                Start with a Breath exercise
               </Button>
               
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
@@ -395,7 +421,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                   className="w-full sm:flex-1 text-xl py-4 h-auto"
                 >
                   <Plus className="w-6 h-6 mr-3" />
-                  Quick Add
+                  Add Gratitude
                 </Button>
                 
                 <Button
