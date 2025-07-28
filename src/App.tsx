@@ -13,6 +13,7 @@ import { Navigation } from "./components/Navigation";
 import { MilestoneCelebration } from "./components/MilestoneCelebration";
 import { TransitionPrompt } from "./components/TransitionPrompt";
 import { ReadinessAssessment } from "./components/ReadinessAssessment";
+import { GraduationView } from "./components/GraduationView";
 
 export type FamilyMember = {
   id: string;
@@ -775,6 +776,14 @@ export default function App() {
       case "faq":
         return (
           <FAQPage onNavigate={setCurrentScreen} />
+        );
+      case "graduation":
+        return (
+          <GraduationView
+            graduationProgress={getGraduationProgress()}
+            onStartReadinessAssessment={handleStartReadinessAssessment}
+            onNavigate={setCurrentScreen}
+          />
         );
       default:
         return (

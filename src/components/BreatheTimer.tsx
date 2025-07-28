@@ -90,8 +90,8 @@ export function BreatheTimer() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
       <div className="absolute inset-0 flex items-center justify-center pb-28">
         <div className="text-center">
-          <h1 className="font-title text-4xl mb-10 text-white">
-            Breathe Together
+          <h1 className="font-title text-2xl sm:text-4xl mb-10 text-white">
+            Breathe
           </h1>
           
           {/* Breathing Circle - Fixed centering */}

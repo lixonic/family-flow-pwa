@@ -15,20 +15,26 @@ const WELCOME_CARDS: WelcomeCard[] = [
   {
     image: '/images/app-hero.png',
     title: 'Welcome to Family Flow',
-    description: 'A gentle 2-minute ritual for digital wellness',
-    details: 'No accounts, no tracking - just meaningful moments together. Your family data stays private on your device.'
+    description: 'Your family\'s graduation platform for digital wellness',
+    details: 'This app is designed to help your family build lasting connection habits, then graduate to independent offline rituals. Success means you won\'t need us forever!'
   },
   {
-    emoji: '😊',
-    title: 'Daily Check-ins',
-    description: 'Share how your day went with a simple mood',
-    details: 'Tap your family member, pick an emoji, add a note. Build streaks and see your week at a glance.'
+    emoji: '🌱',
+    title: 'Building Habits Together',
+    description: 'Start with guided daily check-ins and reflections',
+    details: 'Share moods, reflect on screen time, practice gratitude. Every interaction builds your family\'s connection muscle and moves you toward independence.'
   },
   {
-    emoji: '💭',
-    title: 'Gentle Reflections',
-    description: 'Quick prompts about screen time and gratitude',
-    details: 'Optional activities help families reflect on digital habits and appreciate daily moments together.'
+    emoji: '🎓',
+    title: 'Graduate to Independence',
+    description: 'Track your progress toward app-free family rituals',
+    details: 'After 45 days of consistent practice, you\'ll have the tools and confidence to maintain family connection without any app at all. That\'s true success!'
+  },
+  {
+    emoji: '🦋',
+    title: 'Your Journey Starts Now',
+    description: 'Every check-in brings you closer to graduation',
+    details: 'Watch your progress, celebrate milestones, and prepare for the day your family spreads its wings. Ready to begin this transformative journey?'
   }
 ];
 
@@ -118,7 +124,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 </div>
                 <div className="p-8">
-                  <h2 className="font-title text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                  <h2 className="font-title text-2xl sm:text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                     {card.title}
                   </h2>
                   <p className="text-xl text-gray-700 mb-6">
@@ -132,7 +138,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
             ) : (
               <div className="p-8">
                 <div className="text-8xl mb-6">{card.emoji}</div>
-                <h2 className="font-title text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                <h2 className="font-title text-2xl sm:text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                   {card.title}
                 </h2>
                 <p className="text-xl text-gray-700 mb-6">

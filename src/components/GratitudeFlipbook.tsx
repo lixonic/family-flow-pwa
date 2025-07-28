@@ -188,8 +188,8 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
         </button>
 
         <div className="text-center mb-8">
-          <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Mindful Breathing
+          <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Breathe
           </h1>
           <p className="text-gray-600 text-xl">Breathe before gratitude</p>
         </div>
@@ -371,8 +371,8 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
     <div className="min-h-screen safe-area-content relative">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
-          <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-            Mindful Gratitude
+          <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+            Gratitude
           </h1>
           <p className="text-gray-600 text-xl">Breathe, reflect, and be grateful</p>
         </div>

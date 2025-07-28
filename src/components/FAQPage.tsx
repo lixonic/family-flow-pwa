@@ -13,16 +13,16 @@ interface FAQItem {
 
 const FAQ_DATA: FAQItem[] = [
   {
-    question: "What is Family Flow?",
-    answer: "Family Flow is a free, privacy-first collection of gentle digital rituals for families—short (≈2 minutes), calming check-ins that help households reconnect, reflect, and build better screen habits together. No account, no cloud, just simple shared moments—built to work even offline and on shared devices."
+    question: "What is Family Flow's graduation philosophy?",
+    answer: "Family Flow is designed as a \"graduation platform\" - our success isn't measured by how long you use the app, but by how confidently your family graduates to independent connection rituals. We're here to build lasting habits, then set you free to flourish on your own."
   },
   {
-    question: "Why is it so simple? Don't habits need more features or gamification?",
-    answer: "Simplicity is the core feature. Research and lived feedback show busy families drop complex apps quickly. A gentle, single-focus ritual—emoji mood, quick prompt, one-tap flow—is easy to start and sustain. This protects against both \"feature bloat\" and shame-driven drop-off."
+    question: "How does the graduation system work?",
+    answer: "After 45 days of consistent family check-ins, you'll have built strong connection habits. The app tracks your progress, celebrates milestones at 15 and 30 days, and prepares you for independence. When you're ready, you'll take a readiness assessment and transition to offline family rituals."
   },
   {
-    question: "Won't people just stop using it after a few days?",
-    answer: "Our approach is to make Family Flow a gentle kickstart for real, lasting habits. If you stop using the app because you've started meaningful nightly check-ins on your own (verbal or on paper), that's success, not failure! We're designed to \"graduate\" families into better routines, not trap you for engagement stats."
+    question: "What happens after I graduate?",
+    answer: "Graduation means your family has developed the confidence and skills to maintain connection rituals without any app. You might do verbal check-ins at dinner, write gratitude notes, or create your own family traditions. That's true success - you won't need us anymore!"
   },
   {
     question: "Where's the incentive—what keeps people coming back?",
@@ -65,8 +65,12 @@ const FAQ_DATA: FAQItem[] = [
     answer: "Yes—there's a one-tap export to CSV/JSON or printable PDF, all processed locally. You decide what to share or keep, as a family."
   },
   {
-    question: "Does it matter if we stop using the app after forming the habit?",
-    answer: "Not at all. If your family moves from digital to verbal or written rituals, that's our proudest outcome! Family Flow isn't meant to keep you locked in—it's here as long as you want the gentle structure, then step back once you find your own rhythm."
+    question: "What if we're ready to graduate before 45 days?",
+    answer: "Perfect! Some families develop strong habits faster than others. If you feel confident in your connection rituals and want to try going app-free, you can access the readiness assessment at any time from your progress page. The 45-day target is a guideline, not a requirement."
+  },
+  {
+    question: "Can we continue using the app after graduation?",
+    answer: "Absolutely! Graduation is about having the option to be independent, not being forced out. Some families prefer to keep using the app as a backup or occasional check-in tool. Use it as long as it serves your family's needs."
   },
   {
     question: "Will Family Flow nag us to return?",
@@ -125,8 +129,8 @@ export function FAQPage({ onNavigate }: FAQPageProps) {
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="font-title text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Frequently Asked Questions
+          <h1 className="font-title text-2xl sm:text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            FAQ
           </h1>
         </div>
 
