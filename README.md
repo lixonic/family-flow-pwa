@@ -6,7 +6,7 @@ A privacy-first, gentle digital reflection tool designed for families. It offers
 
 ### Core Philosophy: Graduation Platform
 
-Family Flow v2 represents a fundamental shift from traditional digital wellness apps. Rather than creating dependency, **our success is measured by families confidently "graduating" to independent offline connection practices**. The app serves as temporary scaffolding that families outgrow as they develop authentic, sustainable connection habits.
+Family Flow  represents a fundamental shift from traditional digital wellness apps. Rather than creating dependency, **our success is measured by families confidently "graduating" to independent offline connection practices**. The app serves as temporary scaffolding that families outgrow as they develop authentic, sustainable connection habits.
 
 **Key Principle**: *Success means you won't need us forever*
 
