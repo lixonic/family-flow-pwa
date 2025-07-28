@@ -10,14 +10,17 @@ interface MemoryCapsuleProps {
   onNavigate: (screen: string) => void;
   deferredPrompt: any;
   setDeferredPrompt: (prompt: any) => void;
+  onEraseAllData: () => void;
 }
 
-export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferredPrompt }: MemoryCapsuleProps) {
+export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferredPrompt, onEraseAllData }: MemoryCapsuleProps) {
   const [exportFormat, setExportFormat] = useState<'csv' | 'json' | 'pdf' | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
   const [showInstallSuccess, setShowInstallSuccess] = useState(false);
   const [showExportHelp, setShowExportHelp] = useState(false);
+  const [showEraseConfirm, setShowEraseConfirm] = useState(false);
+  const [eraseInput, setEraseInput] = useState('');
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
@@ -28,6 +31,14 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
         setTimeout(() => setShowInstallSuccess(false), 3000);
       }
       setDeferredPrompt(null);
+    }
+  };
+
+  const handleEraseConfirm = () => {
+    if (eraseInput === 'delete') {
+      onEraseAllData();
+      setShowEraseConfirm(false);
+      setEraseInput('');
     }
   };
 
@@ -179,6 +190,10 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     const latest = new Date(Math.max(...allDates.map(d => d.getTime())));
     
     return `${formatDate(earliest)} - ${formatDate(latest)}`;
+  };
+
+  const hasData = () => {
+    return getTotalEntries() > 0 || appData.familyMembers.length > 3; // More than default 3 members
   };
 
   if (exportComplete) {
@@ -413,11 +428,129 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           </Button>
         </div>
 
-        <div className="text-center text-lg text-gray-500">
+        <div className="text-center text-lg text-gray-500 mb-8">
           <p>🔒 All exports happen offline</p>
           <p>Your family's data never leaves your device</p>
         </div>
+
+        {/* Erase Data Button - Only show if data exists */}
+        {hasData() && (
+          <div className="text-center mb-8">
+            <button
+              onClick={() => setShowEraseConfirm(true)}
+              className="text-xs text-red-600 hover:text-red-700 transition-colors px-2 py-1"
+            >
+              Erase All Data
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Erase Data Confirmation Modal */}
+      {showEraseConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
+            
+            {/* Header */}
+            <div className="bg-red-500 px-6 py-4 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">⚠️</span>
+                  <h3 className="text-lg font-bold">Erase All Data</h3>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowEraseConfirm(false);
+                    setEraseInput('');
+                  }}
+                  className="text-white/80 hover:text-white text-2xl leading-none"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              <div className="mb-6">
+                <p className="text-gray-800 mb-4 font-medium">
+                  This will permanently delete all your family's data:
+                </p>
+                <ul className="text-gray-700 space-y-2 text-sm">
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-2 mt-1">•</span>
+                    <span>All mood entries ({appData.moodEntries.length} entries)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-2 mt-1">•</span>
+                    <span>All reflections ({appData.reflectionEntries.length} entries)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-2 mt-1">•</span>
+                    <span>All gratitude notes ({appData.gratitudeEntries.length} entries)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-2 mt-1">•</span>
+                    <span>Family member profiles</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-2 mt-1">•</span>
+                    <span>Graduation progress</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-amber-800 text-sm font-medium mb-2">
+                  💡 Consider exporting your data first!
+                </p>
+                <p className="text-amber-700 text-sm">
+                  This action cannot be undone. Your family's memories will be lost forever.
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Type "delete" to confirm:
+                </label>
+                <input
+                  type="text"
+                  value={eraseInput}
+                  onChange={(e) => setEraseInput(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  placeholder="delete"
+                  autoFocus
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleEraseConfirm}
+                  disabled={eraseInput !== 'delete'}
+                  className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
+                    eraseInput === 'delete'
+                      ? 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  Erase All Data
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setShowEraseConfirm(false);
+                    setEraseInput('');
+                  }}
+                  className="px-6 py-3 rounded-lg border-2 border-gray-200 text-gray-600 font-semibold transition-all duration-300 hover:border-gray-300 hover:bg-gray-50 active:scale-95"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
