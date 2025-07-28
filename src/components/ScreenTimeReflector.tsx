@@ -247,8 +247,8 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
     <div className="min-h-screen safe-area-content relative">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
-          <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-            Screen Time Reflector
+          <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+            Screen Reflector
           </h1>
           <p className="text-gray-600 text-xl">Quick reflection on today's digital habits</p>
           {isSeventhDay() && !selectedMember && (

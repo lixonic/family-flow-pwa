@@ -27,10 +27,10 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
           <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
             <BookOpen className="w-8 h-8 text-white" />
           </div>
-          <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Family Connection Guide
+          <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Graduation Guide
           </h1>
-          <p className="text-gray-600 text-xl">Your journey to independent family rituals</p>
+          <p className="text-gray-600 text-xl">Your roadmap to app-independent family connection</p>
         </div>
 
         <div className="space-y-4 mb-8">

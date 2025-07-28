@@ -5,7 +5,6 @@ import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
-import { GraduationProgress } from './GraduationProgress';
 import { formatDate } from './ui/utils';
 import { Plus, Edit2, Trash2, Check, X, User, ChevronRight } from 'lucide-react';
 
@@ -128,7 +127,6 @@ interface DayGlowScreenProps {
     nearGraduation: boolean;
     achievedMilestones: any[];
   };
-  onStartReadinessAssessment?: () => void;
 }
 
 export function DayGlowScreen({ 
@@ -142,8 +140,7 @@ export function DayGlowScreen({
   getDayActivityLevel,
   onDaySelect,
   onNavigate: _onNavigate,
-  graduationProgress,
-  onStartReadinessAssessment
+  graduationProgress
 }: DayGlowScreenProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [selectedMood, setSelectedMood] = useState<{ emoji: string; color: string; name: string } | null>(null);
@@ -249,6 +246,7 @@ export function DayGlowScreen({
       new Date(entry.date).toDateString() === date.toDateString()
     );
   };
+
 
   const handleAddMember = () => {
     if (newMemberName.trim() && familyMembers.length < 6) {
@@ -408,7 +406,7 @@ export function DayGlowScreen({
       <div className={`max-w-md mx-auto ${showCooldownBanner ? 'mt-32' : ''}`}>
         {!showManageMembers && (
           <div className="text-center mb-10">
-            <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
               Day Glow
             </h1>
             <p className="text-gray-600 text-xl">How was your day?</p>
@@ -445,8 +443,10 @@ export function DayGlowScreen({
                       <div className="text-lg">
                         {dayMoods[dayMoods.length - 1].emoji}
                       </div>
+                    ) : activityLevel !== 'none' ? (
+                      <div className="text-lg">📝</div>
                     ) : (
-                      <div className={`w-3 h-3 rounded-full ${isToday ? 'bg-orange-400' : activityLevel === 'none' ? 'bg-gray-300' : 'bg-white/60'}`}></div>
+                      <div className={`w-3 h-3 rounded-full ${isToday ? 'bg-orange-400' : 'bg-gray-300'}`}></div>
                     )}
                     {dayMoods.length > 1 && (
                       <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
@@ -806,18 +806,15 @@ export function DayGlowScreen({
           </div>
         )}
 
-        {/* Graduation Progress */}
+        {/* Track Progress Button */}
         {graduationProgress && !showManageMembers && (
           <div className="mt-10">
-            <GraduationProgress
-              totalCheckIns={graduationProgress.totalCheckIns}
-              targetDays={graduationProgress.targetDays}
-              progressPercentage={graduationProgress.progressPercentage}
-              nextMilestone={graduationProgress.nextMilestone}
-              achievedMilestones={graduationProgress.achievedMilestones}
-              readyForGraduation={graduationProgress.readyForGraduation}
-              onStartAssessment={onStartReadinessAssessment}
-            />
+            <Button
+              onClick={() => _onNavigate?.('graduation')}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-4 h-auto"
+            >
+              📊 Track Your Progress
+            </Button>
           </div>
         )}
       </div>
