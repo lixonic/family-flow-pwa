@@ -92,6 +92,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
   const card = WELCOME_CARDS[currentCard];
 
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-red-50 flex flex-col justify-center px-6 py-8">
       <div className="max-w-md mx-auto w-full">
         {/* Card container */}
@@ -106,6 +107,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
                 src={card.image} 
                 alt={`Family Flow - ${card.title}`}
                 className="w-full h-48 object-cover"
+                style={{ minHeight: '282px' }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
