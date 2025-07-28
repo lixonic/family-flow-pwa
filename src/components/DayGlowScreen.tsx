@@ -231,9 +231,9 @@ export function DayGlowScreen({
     }
   };
 
-  const getWeekDays = () => {
+  const getRecentDays = () => {
     const days = [];
-    for (let i = 6; i >= 0; i--) {
+    for (let i = 4; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       days.push(date);
@@ -418,38 +418,38 @@ export function DayGlowScreen({
         {!showManageMembers && (
           <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg text-gray-500">This week</h3>
+            <h3 className="text-lg text-gray-500">Last 5 days</h3>
             <div className="text-sm text-gray-400">
               {streakData.totalActiveDays} active days total
             </div>
           </div>
-          <div className="grid grid-cols-7 gap-3">
-            {getWeekDays().map((date, index) => {
+          <div className="grid grid-cols-5 gap-4 justify-items-center">
+            {getRecentDays().map((date, index) => {
               const dayMoods = getDayMoods(date);
               const isToday = date.toDateString() === today;
               const activityLevel = getDayActivityLevel(date);
               
               return (
-                <div key={index} className="text-center">
+                <div key={index} className="flex flex-col items-center">
                   <div className={`text-sm mb-2 ${isToday ? 'font-medium text-orange-600' : 'text-gray-500'}`}>
                     {date.toLocaleDateString('en', { weekday: 'short' })}
                   </div>
                   <button
                     onClick={() => onDaySelect(date)}
-                    className={`w-10 h-10 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative ${getActivityLevelColor(activityLevel)} hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
+                    className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative ${getActivityLevelColor(activityLevel)} hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
                     title={`View entries for ${formatDate(date)}`}
                   >
                     {dayMoods.length > 0 ? (
-                      <div className="text-lg">
+                      <div className="text-xl">
                         {dayMoods[dayMoods.length - 1].emoji}
                       </div>
                     ) : activityLevel !== 'none' ? (
-                      <div className="text-lg">📝</div>
+                      <div className="text-xl">📝</div>
                     ) : (
                       <div className={`w-3 h-3 rounded-full ${isToday ? 'bg-orange-400' : 'bg-gray-300'}`}></div>
                     )}
                     {dayMoods.length > 1 && (
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
                         {dayMoods.length}
                       </div>
                     )}
@@ -509,6 +509,25 @@ export function DayGlowScreen({
                 <Edit2 className="w-5 h-5" />
               </button>
             </div>
+            
+            {/* Contextual messaging */}
+            {familyMembers.length <= 2 && (
+              <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl border border-orange-100">
+                <p className="text-sm text-gray-700 text-center">
+                  <span className="font-medium">Does this look familiar?</span> Screen time battles. One-word answers. 
+                  That feeling your family is drifting apart, even when you're in the same room.
+                </p>
+              </div>
+            )}
+            
+            {familyMembers.filter(member => !getMemberTodayMoodEntry(member.id)).length === familyMembers.length && familyMembers.length > 0 && (
+              <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl border border-blue-100">
+                <p className="text-sm text-gray-700 text-center">
+                  <span className="font-medium">What if connection took just 2 minutes?</span> No lectures. No screen time battles. 
+                  Just a gentle daily ritual that brings your family's hearts back together.
+                </p>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               {familyMembers.map(member => {
                 const todayEntry = getMemberTodayMoodEntry(member.id);
@@ -583,6 +602,11 @@ export function DayGlowScreen({
                     placeholder="Enter name"
                     className="text-lg"
                   />
+                  {newMemberName.trim() && (
+                    <div className="text-center py-2">
+                      <p className="text-lg text-gray-600">Hello <span className="font-medium text-orange-600">{newMemberName.trim()}</span>!</p>
+                    </div>
+                  )}
                   <div className="space-y-4">
                     {['Mother', 'Father', 'Child'].map(category => (
                       <div key={category}>
@@ -689,6 +713,17 @@ export function DayGlowScreen({
                   </div>
                 </Card>
               ))}
+              
+              {/* Go back button at bottom of members list */}
+              <div className="pt-6">
+                <Button
+                  onClick={() => setShowManageMembers(false)}
+                  variant="outline"
+                  className="w-full border-2 border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700"
+                >
+                  ← Back to Day Glow
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -807,7 +842,7 @@ export function DayGlowScreen({
         )}
 
         {/* Track Progress Button */}
-        {graduationProgress && !showManageMembers && (
+        {graduationProgress && !showManageMembers && !selectedMember && !editingAvatar && (
           <div className="mt-10">
             <Button
               onClick={() => _onNavigate?.('graduation')}

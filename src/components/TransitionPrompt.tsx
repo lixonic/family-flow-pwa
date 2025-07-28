@@ -83,7 +83,8 @@ export function TransitionPrompt({ prompt, onAction, onDismiss }: TransitionProm
           {/* Offline Suggestions */}
           {prompt.type === 'suggest-offline' && (
             <div className="mb-6 p-4 bg-blue-50 rounded-2xl">
-              <h4 className="font-semibold text-blue-900 mb-3">Try these offline activities:</h4>
+              <h4 className="font-semibold text-blue-900 mb-2">From digital prompts to real conversations</h4>
+              <p className="text-sm text-blue-800 mb-3 italic">Try these offline activities:</p>
               <ul className="space-y-2">
                 {getOfflineSuggestions().slice(0, 3).map((suggestion, index) => (
                   <li key={index} className="flex items-start space-x-2 text-sm text-blue-800">
@@ -98,7 +99,8 @@ export function TransitionPrompt({ prompt, onAction, onDismiss }: TransitionProm
           {/* Graduation Ready Info */}
           {prompt.type === 'graduation-ready' && (
             <div className="mb-6 p-4 bg-purple-50 rounded-2xl">
-              <h4 className="font-semibold text-purple-900 mb-3">What graduation means:</h4>
+              <h4 className="font-semibold text-purple-900 mb-2">Success means you won't need us forever</h4>
+              <p className="text-sm text-purple-800 mb-3 italic">What graduation means:</p>
               <ul className="space-y-2 text-sm text-purple-800">
                 <li className="flex items-start space-x-2">
                   <span className="text-purple-500 mt-1">•</span>
@@ -110,7 +112,7 @@ export function TransitionPrompt({ prompt, onAction, onDismiss }: TransitionProm
                 </li>
                 <li className="flex items-start space-x-2">
                   <span className="text-purple-500 mt-1">•</span>
-                  <span>The app becomes an occasional check-in tool</span>
+                  <span>The app becomes training wheels you happily leave behind</span>
                 </li>
               </ul>
             </div>

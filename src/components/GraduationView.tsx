@@ -47,6 +47,14 @@ export function GraduationView({
           </button>
         </div>
 
+        {/* Vision Context */}
+        <div className="text-center mb-8 px-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">From digital prompts to real conversations</h1>
+          <p className="text-gray-600 leading-relaxed">
+            Watch your family rediscover each other. First through gentle app prompts, then naturally around the dinner table.
+          </p>
+        </div>
+
 
         {/* Main Progress Section */}
         <div className="mb-6">

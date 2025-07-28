@@ -86,11 +86,26 @@ export function MilestoneCelebration({ milestone, onCelebrationComplete }: Miles
 
           {/* Motivational Message */}
           <div className="mb-6 p-4 bg-gray-50 rounded-2xl">
-            <p className="text-sm text-gray-700 italic">
-              {milestone.threshold === 15 && "Your family is building something beautiful together. Every check-in strengthens your connection."}
-              {milestone.threshold === 30 && "Amazing consistency! Your family has proven that connection can become a natural part of daily life."}
-              {milestone.threshold === 45 && "Incredible journey! Your family has developed the skills to maintain deep connections independently."}
-            </p>
+            <div className="text-sm text-gray-700">
+              {milestone.threshold === 15 && (
+                <>
+                  <p className="font-medium text-gray-800 mb-2">What if connection took just 2 minutes?</p>
+                  <p className="italic">No lectures. No screen time battles. Just a gentle daily ritual that brings your family's hearts back together, one check-in at a time.</p>
+                </>
+              )}
+              {milestone.threshold === 30 && (
+                <>
+                  <p className="font-medium text-gray-800 mb-2">From digital prompts to real conversations</p>
+                  <p className="italic">Watch your family rediscover each other. First through gentle app prompts, then naturally around the dinner table. Real connection, lasting change.</p>
+                </>
+              )}
+              {milestone.threshold === 45 && (
+                <>
+                  <p className="font-medium text-gray-800 mb-2">Success means you won't need us forever</p>
+                  <p className="italic">In 30-45 days, you'll have built the habit of truly seeing each other. The app becomes training wheels you happily leave behind.</p>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Continue Button */}

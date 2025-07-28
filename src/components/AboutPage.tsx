@@ -41,8 +41,11 @@ export function AboutPage({ onNavigate }: AboutPageProps) {
         <Card className="p-6 mb-8 bg-gradient-to-br from-blue-50 to-purple-50">
           <div className="text-center">
             <h2 className="text-2xl mb-4">Our Mission</h2>
-            <p className="text-lg text-gray-700 leading-relaxed">
-              Creating meaningful technology that honors privacy while rebuilding the authentic conversations that screens often fragment.
+            <p className="text-xl text-gray-800 leading-relaxed mb-4">
+              Success means you won't need us forever
+            </p>
+            <p className="text-xl text-gray-700 leading-relaxed">
+              In 30-45 days, you'll have built the habit of truly seeing each other. The app becomes training wheels you happily leave behind.
             </p>
           </div>
         </Card>
@@ -54,55 +57,36 @@ export function AboutPage({ onNavigate }: AboutPageProps) {
             <Card className="p-6 text-center">
               <Shield className="w-8 h-8 text-blue-600 mx-auto mb-4" />
               <h4 className="text-lg font-medium mb-2">Privacy First</h4>
-              <p className="text-gray-600">No accounts, no cloud storage, no tracking. Your family's data stays with your family.</p>
+              <p className="text-lg text-gray-600">No accounts, no cloud storage, no tracking. Your family's data stays with your family.</p>
             </Card>
             
             <Card className="p-6 text-center">
               <Heart className="w-8 h-8 text-pink-600 mx-auto mb-4" />
               <h4 className="text-lg font-medium mb-2">Connection</h4>
-              <p className="text-gray-600">A gentle two-minute ritual that brings families closer together.</p>
+              <p className="text-lg text-gray-600">A gentle two-minute ritual that brings families closer together.</p>
             </Card>
             
             <Card className="p-6 text-center">
               <Users className="w-8 h-8 text-green-600 mx-auto mb-4" />
               <h4 className="text-lg font-medium mb-2">Simplicity</h4>
-              <p className="text-gray-600">Stripped of every unnecessary feature, distilled down to what matters most.</p>
+              <p className="text-lg text-gray-600">Stripped of every unnecessary feature, distilled down to what matters most.</p>
             </Card>
           </div>
         </div>
 
         {/* Creator Story */}
         <Card className="p-6 mb-8">
-          <h3 className="text-2xl mb-6 text-center">Meet the Creator</h3>
-          <div className="text-center text-gray-700 leading-relaxed">
+          <h3 className="text-2xl mb-6 text-center">Meet the Creators</h3>
+          <div className="text-center text-gray-700 leading-relaxed text-lg">
+            <p className="mb-4">
+              <strong className="text-gray-900">Helen Francis</strong> created Family Flow during her final-year BBA project, combining business insight with her nursing background. She built this privacy-first app in one focused weekend with simple HTML and JavaScript, proving that meaningful technology can honor family trust while rebuilding authentic conversations that screens often fragment.
+            </p>
             <p>
-              <strong className="text-gray-900">Helen Francis</strong> created Family Flow during her final-year BBA project, combining business insight with her nursing background. She built this privacy-first app in one focused weekend, proving that meaningful technology can honor family trust while rebuilding authentic conversations that screens often fragment.
+              Later, her partner <strong className="text-gray-900">Lixon Louis</strong> was enrolled into transforming it into a full-featured PWA with all the bells and whistles you see today—because apparently one weekend wasn't quite enough to build <em>everything</em>! 
             </p>
           </div>
         </Card>
 
-        {/* Technical Details */}
-        <Card className="p-6 mb-8 bg-gradient-to-br from-gray-50 to-blue-50">
-          <h3 className="text-2xl mb-4 text-center">How It Works</h3>
-          <div className="space-y-3 text-gray-700">
-            <div className="flex items-center space-x-3">
-              <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm">✓</span>
-              <span>100% offline after first load</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm">✓</span>
-              <span>All data stored locally on your device</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm">✓</span>
-              <span>Installs like a native app</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm">✓</span>
-              <span>No servers, no accounts, no tracking</span>
-            </div>
-          </div>
-        </Card>
 
         {/* Version Info */}
         <div className="text-center text-gray-500 mb-8">

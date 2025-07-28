@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { ChevronRight, X } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 interface WelcomeCard {
-  image?: string;
-  emoji?: string;
+  image: string;
   title: string;
   description: string;
   details: string;
@@ -13,28 +12,28 @@ interface WelcomeCard {
 
 const WELCOME_CARDS: WelcomeCard[] = [
   {
-    image: '/images/app-hero.png',
-    title: 'Welcome to Family Flow',
-    description: 'Your family\'s graduation platform for digital wellness',
-    details: 'This app is designed to help your family build lasting connection habits, then graduate to independent offline rituals. Success means you won\'t need us forever!'
+    image: '/images/welcome-1.png',
+    title: 'Does this look familiar?',
+    description: 'Screen time battles. One-word answers. That feeling your family is drifting apart, even when you\'re in the same room.',
+    details: ''
   },
   {
-    emoji: '🌱',
-    title: 'Building Habits Together',
-    description: 'Start with guided daily check-ins and reflections',
-    details: 'Share moods, reflect on screen time, practice gratitude. Every interaction builds your family\'s connection muscle and moves you toward independence.'
+    image: '/images/welcome-2.png',
+    title: 'What if connection took just 2 minutes?',
+    description: 'No lectures. No screen time battles. Just a gentle daily ritual that brings your family\'s hearts back together, one check-in at a time.',
+    details: ''
   },
   {
-    emoji: '🎓',
-    title: 'Graduate to Independence',
-    description: 'Track your progress toward app-free family rituals',
-    details: 'After 45 days of consistent practice, you\'ll have the tools and confidence to maintain family connection without any app at all. That\'s true success!'
+    image: '/images/welcome-3.png',
+    title: 'From digital prompts to real conversations',
+    description: 'Watch your family rediscover each other. First through gentle app prompts, then naturally around the dinner table. Real connection, lasting change.',
+    details: ''
   },
   {
-    emoji: '🦋',
-    title: 'Your Journey Starts Now',
-    description: 'Every check-in brings you closer to graduation',
-    details: 'Watch your progress, celebrate milestones, and prepare for the day your family spreads its wings. Ready to begin this transformative journey?'
+    image: '/images/welcome-4.png',
+    title: 'Success means you won\'t need us forever',
+    description: 'In 30-45 days, you\'ll have built the habit of truly seeing each other. The app becomes training wheels you happily leave behind.',
+    details: ''
   }
 ];
 
@@ -94,17 +93,6 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-red-50 flex flex-col justify-center px-6 py-8">
-      {/* Skip button */}
-      <div className="absolute top-6 right-6">
-        <button
-          onClick={handleComplete}
-          className="text-gray-500 hover:text-gray-700 p-2"
-          title="Skip introduction"
-        >
-          <X className="w-6 h-6" />
-        </button>
-      </div>
-
       <div className="max-w-md mx-auto w-full">
         {/* Card container */}
         <div 
@@ -113,42 +101,27 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
           onTouchEnd={handleTouchEnd}
         >
           <Card className="overflow-hidden text-center bg-white/80 backdrop-blur-sm shadow-xl">
-            {card.image ? (
-              <>
-                <div className="relative">
-                  <img 
-                    src={card.image} 
-                    alt="Family using technology together"
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                </div>
-                <div className="p-8">
-                  <h2 className="font-title text-2xl sm:text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
-                    {card.title}
-                  </h2>
-                  <p className="text-xl text-gray-700 mb-6">
-                    {card.description}
-                  </p>
-                  <p className="text-lg text-gray-600 leading-relaxed">
-                    {card.details}
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="p-8">
-                <div className="text-8xl mb-6">{card.emoji}</div>
-                <h2 className="font-title text-2xl sm:text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
-                  {card.title}
-                </h2>
-                <p className="text-xl text-gray-700 mb-6">
-                  {card.description}
-                </p>
+            <div className="relative">
+              <img 
+                src={card.image} 
+                alt={`Family Flow - ${card.title}`}
+                className="w-full h-48 object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+            <div className="p-8">
+              <h2 className="text-2xl sm:text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                {card.title}
+              </h2>
+              <p className="text-xl text-gray-700 mb-6">
+                {card.description}
+              </p>
+              {card.details && (
                 <p className="text-lg text-gray-600 leading-relaxed">
                   {card.details}
                 </p>
-              </div>
-            )}
+              )}
+            </div>
           </Card>
         </div>
 

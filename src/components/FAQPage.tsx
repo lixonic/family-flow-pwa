@@ -14,7 +14,7 @@ interface FAQItem {
 const FAQ_DATA: FAQItem[] = [
   {
     question: "What is Family Flow's graduation philosophy?",
-    answer: "Family Flow is designed as a \"graduation platform\" - our success isn't measured by how long you use the app, but by how confidently your family graduates to independent connection rituals. We're here to build lasting habits, then set you free to flourish on your own."
+    answer: "Success means you won't need us forever. Family Flow is designed as a \"graduation platform\" - our success isn't measured by how long you use the app, but by how confidently your family graduates to independent connection rituals. We're here to build lasting habits, then set you free to flourish on your own."
   },
   {
     question: "How does the graduation system work?",
@@ -22,11 +22,11 @@ const FAQ_DATA: FAQItem[] = [
   },
   {
     question: "What happens after I graduate?",
-    answer: "Graduation means your family has developed the confidence and skills to maintain connection rituals without any app. You might do verbal check-ins at dinner, write gratitude notes, or create your own family traditions. That's true success - you won't need us anymore!"
+    answer: "From digital prompts to real conversations. Graduation means your family has developed the confidence and skills to maintain connection rituals without any app. You might do verbal check-ins at dinner, write gratitude notes, or create your own family traditions. That's true success - you won't need us anymore!"
   },
   {
     question: "Where's the incentive—what keeps people coming back?",
-    answer: "Instead of prizes or comparison, Family Flow uses calming visual cues (confetti, streak dots), subtle new prompts, and shared progress. The real incentive is the emotional presence and gentle togetherness families experience—proven far stickier than individual competition or external rewards."
+    answer: "What if connection took just 2 minutes? Instead of prizes or comparison, Family Flow uses calming visual cues (confetti, streak dots), subtle new prompts, and shared progress. The real incentive is the emotional presence and gentle togetherness families experience—proven far stickier than individual competition or external rewards."
   },
   {
     question: "Does this app create social or status divides?",

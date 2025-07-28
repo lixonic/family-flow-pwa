@@ -227,7 +227,8 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Memory
           </h1>
-          <p className="text-gray-600 text-xl">Export your family's digital memories</p>
+          <p className="text-gray-600 text-xl mb-3">Export your family's digital memories</p>
+          <p className="text-sm text-gray-500 italic">Success means you won't need us forever - take your memories with you</p>
         </div>
 
         {/* Install App Section - Only show if prompt is available */}

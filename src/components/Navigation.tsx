@@ -8,11 +8,11 @@ interface NavigationProps {
 
 export function Navigation({ currentScreen, onNavigate }: NavigationProps) {
   const navItems = [
-    { id: 'day-glow', icon: Heart, label: 'Mood', color: 'text-orange-600' },
-    { id: 'screen-time', icon: MessageSquare, label: 'Reflect', color: 'text-red-600' },
-    { id: 'guide', icon: BookOpen, label: 'How To', color: 'text-blue-600', highlight: true },
-    { id: 'gratitude', icon: Wind, label: 'Mindful', color: 'text-purple-600' },
-    { id: 'memory', icon: Archive, label: 'Export', color: 'text-gray-600' },
+    { id: 'day-glow', icon: Heart, label: 'Mood', color: 'text-orange-600', tooltip: 'What if connection took just 2 minutes?' },
+    { id: 'screen-time', icon: MessageSquare, label: 'Reflect', color: 'text-red-600', tooltip: 'Building habits together' },
+    { id: 'guide', icon: BookOpen, label: 'How To', color: 'text-blue-600', highlight: true, tooltip: 'Your journey starts here' },
+    { id: 'gratitude', icon: Wind, label: 'Mindful', color: 'text-purple-600', tooltip: 'From digital prompts to real conversations' },
+    { id: 'memory', icon: Archive, label: 'Export', color: 'text-gray-600', tooltip: 'Success means you won\'t need us forever' },
   ];
 
   return (
@@ -27,6 +27,7 @@ export function Navigation({ currentScreen, onNavigate }: NavigationProps) {
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
+                title={item.tooltip}
                 className={`flex flex-col items-center py-2 px-2 sm:py-3 sm:px-4 rounded-lg transition-colors min-h-[50px] sm:min-h-[60px] flex-shrink-0 relative ${
                   isActive 
                     ? item.highlight 
