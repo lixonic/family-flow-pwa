@@ -10,6 +10,9 @@ import { AboutPage } from "./components/AboutPage";
 import { FAQPage } from "./components/FAQPage";
 import { GuidePage } from "./components/GuidePage";
 import { Navigation } from "./components/Navigation";
+import { MilestoneCelebration } from "./components/MilestoneCelebration";
+import { TransitionPrompt } from "./components/TransitionPrompt";
+import { ReadinessAssessment } from "./components/ReadinessAssessment";
 
 export type FamilyMember = {
   id: string;
@@ -42,11 +45,32 @@ export type GratitudeEntry = {
   date: string;
 };
 
+export type GraduationMilestone = {
+  id: string;
+  type: 'check-ins' | 'streak' | 'completion';
+  threshold: number;
+  achieved: boolean;
+  achievedDate?: string;
+  title: string;
+  description: string;
+  celebrationShown: boolean;
+};
+
+export type GraduationSettings = {
+  targetGraduationDays: number; // Default: 45 days
+  showTransitionPrompts: boolean;
+  preferredOfflineActivities: string[];
+  readinessAssessmentCompleted: boolean;
+  lastReadinessCheck?: string;
+};
+
 export type AppData = {
   familyMembers: FamilyMember[];
   moodEntries: MoodEntry[];
   reflectionEntries: ReflectionEntry[];
   gratitudeEntries: GratitudeEntry[];
+  graduationMilestones: GraduationMilestone[];
+  graduationSettings: GraduationSettings;
 };
 
 export default function App() {
@@ -58,9 +82,19 @@ export default function App() {
     moodEntries: [],
     reflectionEntries: [],
     gratitudeEntries: [],
+    graduationMilestones: [],
+    graduationSettings: {
+      targetGraduationDays: 45,
+      showTransitionPrompts: true,
+      preferredOfflineActivities: [],
+      readinessAssessmentCompleted: false,
+    },
   });
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [activeMilestones, setActiveMilestones] = useState<GraduationMilestone[]>([]);
+  const [currentTransitionPrompt, setCurrentTransitionPrompt] = useState<any>(null);
+  const [showReadinessAssessment, setShowReadinessAssessment] = useState(false);
 
   useEffect(() => {
     // Disable scroll restoration
@@ -71,7 +105,51 @@ export default function App() {
     // Load data from localStorage
     const savedData = localStorage.getItem("familyFlowData");
     if (savedData) {
-      setAppData(JSON.parse(savedData));
+      const parsedData = JSON.parse(savedData);
+      
+      // Migrate existing data to include graduation system
+      const migratedData: AppData = {
+        ...parsedData,
+        graduationMilestones: parsedData.graduationMilestones || [
+          {
+            id: "milestone-15-days",
+            type: "check-ins" as const,
+            threshold: 15,
+            achieved: false,
+            title: "15 Check-ins Completed - Building the Habit!",
+            description: "Your family is establishing a regular connection rhythm.",
+            celebrationShown: false,
+          },
+          {
+            id: "milestone-30-days",
+            type: "check-ins" as const,
+            threshold: 30,
+            achieved: false,
+            title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
+            description: "Amazing consistency! Your family is ready to explore more independent practices.",
+            celebrationShown: false,
+          },
+          {
+            id: "milestone-45-days",
+            type: "check-ins" as const,
+            threshold: 45,
+            achieved: false,
+            title: "45 Check-ins Completed - Graduation Time!",
+            description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
+            celebrationShown: false,
+          },
+        ],
+        graduationSettings: parsedData.graduationSettings || {
+          targetGraduationDays: 45,
+          showTransitionPrompts: true,
+          preferredOfflineActivities: [],
+          readinessAssessmentCompleted: false,
+        },
+      };
+      
+      setAppData(migratedData);
+      // Save migrated data back to localStorage
+      localStorage.setItem("familyFlowData", JSON.stringify(migratedData));
     } else {
       // Initialize with sample family members - up to 6 with graphic icons
       const initialData: AppData = {
@@ -90,7 +168,7 @@ export default function App() {
           },
           {
             id: "3",
-            name: "Elisa",
+            name: "Child",
             avatar: "child", 
             color: "#E5FFE5",
           },
@@ -98,6 +176,41 @@ export default function App() {
         moodEntries: [],
         reflectionEntries: [],
         gratitudeEntries: [],
+        graduationMilestones: [
+          {
+            id: "milestone-15-days",
+            type: "check-ins",
+            threshold: 15,
+            achieved: false,
+            title: "15 Check-ins Completed - Building the Habit!",
+            description: "Your family is establishing a regular connection rhythm.",
+            celebrationShown: false,
+          },
+          {
+            id: "milestone-30-days",
+            type: "check-ins",
+            threshold: 30,
+            achieved: false,
+            title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
+            description: "Amazing consistency! Your family is ready to explore more independent practices.",
+            celebrationShown: false,
+          },
+          {
+            id: "milestone-45-days",
+            type: "check-ins",
+            threshold: 45,
+            achieved: false,
+            title: "45 Check-ins Completed - Graduation Time!",
+            description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
+            celebrationShown: false,
+          },
+        ],
+        graduationSettings: {
+          targetGraduationDays: 45,
+          showTransitionPrompts: true,
+          preferredOfflineActivities: [],
+          readinessAssessmentCompleted: false,
+        },
       };
       setAppData(initialData);
       localStorage.setItem(
@@ -301,6 +414,114 @@ export default function App() {
     return 'low';
   };
 
+  // Graduation Mechanics Functions
+  const checkMilestoneProgress = () => {
+    if (!appData.graduationMilestones) return [];
+    
+    const streakData = getStreakData();
+    const totalCheckIns = streakData.totalActiveDays;
+
+    const updatedMilestones = appData.graduationMilestones.map(milestone => {
+      if (!milestone.achieved && totalCheckIns >= milestone.threshold) {
+        return {
+          ...milestone,
+          achieved: true,
+          achievedDate: new Date().toISOString(),
+        };
+      }
+      return milestone;
+    });
+
+    if (JSON.stringify(updatedMilestones) !== JSON.stringify(appData.graduationMilestones)) {
+      updateAppData({ graduationMilestones: updatedMilestones });
+      return updatedMilestones.filter(m => m.achieved && !m.celebrationShown);
+    }
+
+    return [];
+  };
+
+  const markMilestoneCelebrationShown = (milestoneId: string) => {
+    if (!appData.graduationMilestones) return;
+    
+    const updatedMilestones = appData.graduationMilestones.map(milestone =>
+      milestone.id === milestoneId
+        ? { ...milestone, celebrationShown: true }
+        : milestone
+    );
+    updateAppData({ graduationMilestones: updatedMilestones });
+  };
+
+  const getGraduationProgress = () => {
+    const streakData = getStreakData();
+    const totalCheckIns = streakData.totalActiveDays;
+    const targetDays = appData.graduationSettings?.targetGraduationDays || 45;
+    const progressPercentage = Math.min((totalCheckIns / targetDays) * 100, 100);
+
+    const nextMilestone = appData.graduationMilestones
+      ?.filter(m => !m.achieved)
+      .sort((a, b) => a.threshold - b.threshold)[0];
+
+    const readyForGraduation = totalCheckIns >= targetDays;
+    const nearGraduation = progressPercentage >= 75;
+
+    return {
+      totalCheckIns,
+      targetDays,
+      progressPercentage,
+      nextMilestone,
+      readyForGraduation,
+      nearGraduation,
+      achievedMilestones: appData.graduationMilestones?.filter(m => m.achieved) || [],
+    };
+  };
+
+  const getTransitionPrompts = () => {
+    const progress = getGraduationProgress();
+    const prompts = [];
+
+    if (progress.totalCheckIns >= 15 && progress.totalCheckIns < 30) {
+      prompts.push({
+        type: 'encourage-consistency',
+        title: 'Building Strong Habits',
+        message: 'Your family is developing a beautiful connection rhythm. Keep going!',
+        actionText: 'Continue Building',
+      });
+    }
+
+    if (progress.totalCheckIns >= 30 && progress.totalCheckIns < 45) {
+      prompts.push({
+        type: 'suggest-offline',
+        title: 'Ready to Try Offline?',
+        message: 'Your family is ready to try verbal check-ins without the app. Want to give it a shot?',
+        actionText: 'Try Offline Mode',
+      });
+    }
+
+    if (progress.readyForGraduation && !appData.graduationSettings?.readinessAssessmentCompleted) {
+      prompts.push({
+        type: 'graduation-ready',
+        title: 'Graduation Time!',
+        message: 'Congratulations! Your family has built lasting connection habits and is ready to graduate to independent practices.',
+        actionText: 'Start Graduation',
+      });
+    }
+
+    return prompts.filter(() => appData.graduationSettings?.showTransitionPrompts ?? true);
+  };
+
+  const updateGraduationSettings = (updates: Partial<GraduationSettings>) => {
+    const currentSettings = appData.graduationSettings || {
+      targetGraduationDays: 45,
+      showTransitionPrompts: true,
+      preferredOfflineActivities: [],
+      readinessAssessmentCompleted: false,
+    };
+    
+    updateAppData({
+      graduationSettings: { ...currentSettings, ...updates }
+    });
+  };
+
   const handleDaySelect = (date: Date) => {
     setSelectedDate(date);
     setCurrentScreen("day-entries");
@@ -316,10 +537,147 @@ export default function App() {
     setCurrentScreen("day-glow");
   };
 
+  // Graduation UI Handlers
+  const handleMilestoneCelebrationComplete = (milestoneId: string) => {
+    markMilestoneCelebrationShown(milestoneId);
+    setActiveMilestones(current => current.filter(m => m.id !== milestoneId));
+  };
+
+  const handleTransitionPromptAction = (action: string) => {
+    switch (action) {
+      case 'suggest-offline':
+        // Could open a guide or tips screen
+        setCurrentScreen("guide");
+        break;
+      case 'graduation-ready':
+        setShowReadinessAssessment(true);
+        break;
+      case 'disable-prompts':
+        updateGraduationSettings({ showTransitionPrompts: false });
+        break;
+    }
+    setCurrentTransitionPrompt(null);
+  };
+
+  const handleTransitionPromptDismiss = () => {
+    setCurrentTransitionPrompt(null);
+  };
+
+  const handleReadinessAssessmentComplete = (_score: number, recommendations: string[]) => {
+    updateGraduationSettings({ 
+      readinessAssessmentCompleted: true,
+      lastReadinessCheck: new Date().toISOString(),
+      preferredOfflineActivities: recommendations
+    });
+    setShowReadinessAssessment(false);
+    // Could show results or navigate to a completion screen
+  };
+
+  const handleReadinessAssessmentCancel = () => {
+    setShowReadinessAssessment(false);
+  };
+
+  const handleStartReadinessAssessment = () => {
+    setShowReadinessAssessment(true);
+  };
+
+  const handleEraseAllData = () => {
+    // Clear localStorage
+    localStorage.removeItem("familyFlowData");
+    localStorage.removeItem("familyFlowWelcomeShown");
+    
+    // Reset app data to initial state
+    const initialData: AppData = {
+      familyMembers: [
+        {
+          id: "1",
+          name: "Mom",
+          avatar: "mother",
+          color: "#FFE5E5",
+        },
+        {
+          id: "2",
+          name: "Dad", 
+          avatar: "father",
+          color: "#E5F3FF",
+        },
+        {
+          id: "3",
+          name: "Child",
+          avatar: "child", 
+          color: "#E5FFE5",
+        },
+      ],
+      moodEntries: [],
+      reflectionEntries: [],
+      gratitudeEntries: [],
+      graduationMilestones: [
+        {
+          id: "milestone-15-days",
+          type: "check-ins" as const,
+          threshold: 15,
+          achieved: false,
+          title: "15 Check-ins Completed - Building the Habit!",
+          description: "Your family is establishing a regular connection rhythm.",
+          celebrationShown: false,
+        },
+        {
+          id: "milestone-30-days",
+          type: "check-ins" as const,
+          threshold: 30,
+          achieved: false,
+          title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
+          description: "Amazing consistency! Your family is ready to explore more independent practices.",
+          celebrationShown: false,
+        },
+        {
+          id: "milestone-45-days",
+          type: "check-ins" as const,
+          threshold: 45,
+          achieved: false,
+          title: "45 Check-ins Completed - Graduation Time!",
+          description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
+          celebrationShown: false,
+        },
+      ],
+      graduationSettings: {
+        targetGraduationDays: 45,
+        showTransitionPrompts: true,
+        preferredOfflineActivities: [],
+        readinessAssessmentCompleted: false,
+      },
+    };
+    
+    setAppData(initialData);
+    localStorage.setItem("familyFlowData", JSON.stringify(initialData));
+    
+    // Reset all graduation UI state
+    setActiveMilestones([]);
+    setCurrentTransitionPrompt(null);
+    setShowReadinessAssessment(false);
+    
+    // Navigate back to day-glow screen
+    setCurrentScreen("day-glow");
+  };
+
   // Scroll to top whenever screen changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentScreen]);
+
+  // Check for milestone achievements and transition prompts
+  useEffect(() => {
+    const newMilestones = checkMilestoneProgress();
+    if (newMilestones.length > 0) {
+      setActiveMilestones(newMilestones);
+    }
+
+    // Check for transition prompts
+    const prompts = getTransitionPrompts();
+    if (prompts.length > 0 && !currentTransitionPrompt) {
+      setCurrentTransitionPrompt(prompts[0]);
+    }
+  }, [appData.moodEntries, appData.reflectionEntries, appData.gratitudeEntries]);
 
 
   const renderCurrentScreen = () => {
@@ -343,6 +701,8 @@ export default function App() {
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
             onNavigate={setCurrentScreen}
+            graduationProgress={getGraduationProgress()}
+            onStartReadinessAssessment={handleStartReadinessAssessment}
           />
         );
       case "day-entries":
@@ -370,6 +730,8 @@ export default function App() {
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
             onNavigate={setCurrentScreen}
+            graduationProgress={getGraduationProgress()}
+            onStartReadinessAssessment={handleStartReadinessAssessment}
           />
         );
       case "screen-time":
@@ -403,6 +765,7 @@ export default function App() {
             onNavigate={setCurrentScreen}
             deferredPrompt={deferredPrompt}
             setDeferredPrompt={setDeferredPrompt}
+            onEraseAllData={handleEraseAllData}
           />
         );
       case "about":
@@ -426,6 +789,8 @@ export default function App() {
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
             onNavigate={setCurrentScreen}
+            graduationProgress={getGraduationProgress()}
+            onStartReadinessAssessment={handleStartReadinessAssessment}
           />
         );
     }
@@ -445,6 +810,30 @@ export default function App() {
         <Navigation
           currentScreen={currentScreen}
           onNavigate={setCurrentScreen}
+        />
+      )}
+
+      {/* Graduation UI Components */}
+      {activeMilestones.map(milestone => (
+        <MilestoneCelebration
+          key={milestone.id}
+          milestone={milestone}
+          onCelebrationComplete={handleMilestoneCelebrationComplete}
+        />
+      ))}
+
+      {currentTransitionPrompt && (
+        <TransitionPrompt
+          prompt={currentTransitionPrompt}
+          onAction={handleTransitionPromptAction}
+          onDismiss={handleTransitionPromptDismiss}
+        />
+      )}
+
+      {showReadinessAssessment && (
+        <ReadinessAssessment
+          onComplete={handleReadinessAssessmentComplete}
+          onCancel={handleReadinessAssessmentCancel}
         />
       )}
     </div>

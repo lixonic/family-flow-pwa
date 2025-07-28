@@ -10,7 +10,7 @@ export function Navigation({ currentScreen, onNavigate }: NavigationProps) {
   const navItems = [
     { id: 'day-glow', icon: Heart, label: 'Mood', color: 'text-orange-600' },
     { id: 'screen-time', icon: MessageSquare, label: 'Reflect', color: 'text-red-600' },
-    { id: 'guide', icon: BookOpen, label: 'Guide', color: 'text-blue-600', highlight: true },
+    { id: 'guide', icon: BookOpen, label: 'How To', color: 'text-blue-600', highlight: true },
     { id: 'gratitude', icon: Wind, label: 'Mindful', color: 'text-purple-600' },
     { id: 'memory', icon: Archive, label: 'Export', color: 'text-gray-600' },
   ];
@@ -30,10 +30,10 @@ export function Navigation({ currentScreen, onNavigate }: NavigationProps) {
                 className={`flex flex-col items-center py-2 px-2 sm:py-3 sm:px-4 rounded-lg transition-colors min-h-[50px] sm:min-h-[60px] flex-shrink-0 relative ${
                   isActive 
                     ? item.highlight 
-                      ? 'text-blue-700 bg-white border-2 border-blue-200 shadow-inner' 
+                      ? 'text-blue-700 bg-blue-50 border-2 border-blue-200' 
                       : `${item.color} bg-orange-100`
                     : item.highlight
-                      ? 'text-white bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500 shadow-lg'
+                      ? 'text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-100'
                       : 'text-gray-400 hover:text-gray-600'
                 }`}
               >

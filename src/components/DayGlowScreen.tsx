@@ -5,6 +5,7 @@ import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
+import { GraduationProgress } from './GraduationProgress';
 import { formatDate } from './ui/utils';
 import { Plus, Edit2, Trash2, Check, X, User, ChevronRight } from 'lucide-react';
 
@@ -19,6 +20,62 @@ const MOOD_OPTIONS = [
   { emoji: '🎉', color: '#E5FFF0', name: 'Excited' },
   { emoji: '😌', color: '#F5F8FF', name: 'Peaceful' }
 ];
+
+const getMoodResponse = (emoji: string) => {
+  const responses: Record<string, { title: string; message: string; icon: string }> = {
+    '😊': {
+      title: 'Wonderful!',
+      message: 'Your happiness brightens the whole family',
+      icon: '✨'
+    },
+    '😢': {
+      title: 'It\'s okay to feel sad',
+      message: 'Your feelings are valid and you\'re not alone',
+      icon: '🤗'
+    },
+    '😴': {
+      title: 'Rest is important',
+      message: 'Take care of yourself and get the rest you need',
+      icon: '💤'
+    },
+    '😡': {
+      title: 'Strong feelings',
+      message: 'It takes courage to share when you\'re angry',
+      icon: '💪'
+    },
+    '😤': {
+      title: 'Frustration is natural',
+      message: 'Thanks for letting your family know how you feel',
+      icon: '🌬️'
+    },
+    '🤗': {
+      title: 'Love surrounds you',
+      message: 'Your family loves you too',
+      icon: '❤️'
+    },
+    '😰': {
+      title: 'You\'re brave for sharing',
+      message: 'Anxiety is tough, but you\'re tougher',
+      icon: '🦋'
+    },
+    '🎉': {
+      title: 'Celebrate with you!',
+      message: 'Your excitement is contagious',
+      icon: '🎊'
+    },
+    '😌': {
+      title: 'Peace is beautiful',
+      message: 'Your calm energy helps the whole family',
+      icon: '🕊️'
+    }
+  };
+
+  return responses[emoji] || {
+    title: 'Thank you!',
+    message: 'Your mood has been saved',
+    icon: '✨'
+  };
+};
 
 const AVATAR_OPTIONS = [
   // Mother options - Blonde, Black, Grey hair
@@ -62,6 +119,16 @@ interface DayGlowScreenProps {
   getDayActivityLevel: (date: Date) => 'none' | 'low' | 'medium' | 'high';
   onDaySelect: (date: Date) => void;
   onNavigate?: (screen: string) => void;
+  graduationProgress?: {
+    totalCheckIns: number;
+    targetDays: number;
+    progressPercentage: number;
+    nextMilestone?: any;
+    readyForGraduation: boolean;
+    nearGraduation: boolean;
+    achievedMilestones: any[];
+  };
+  onStartReadinessAssessment?: () => void;
 }
 
 export function DayGlowScreen({ 
@@ -74,12 +141,15 @@ export function DayGlowScreen({
   getStreakData,
   getDayActivityLevel,
   onDaySelect,
-  onNavigate
+  onNavigate: _onNavigate,
+  graduationProgress,
+  onStartReadinessAssessment
 }: DayGlowScreenProps) {
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [selectedMood, setSelectedMood] = useState<{ emoji: string; color: string; name: string } | null>(null);
   const [note, setNote] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [currentMoodResponse, setCurrentMoodResponse] = useState<{ title: string; message: string; icon: string } | null>(null);
   const [showManageMembers, setShowManageMembers] = useState(false);
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
   const [editingAvatar, setEditingAvatar] = useState<FamilyMember | null>(null);
@@ -101,36 +171,6 @@ export function DayGlowScreen({
   };
   const streakData = getStreakData();
 
-  const getJourneyStage = (activeDays: number) => {
-    if (activeDays === 0) return {
-      stage: "Getting Started",
-      description: "Begin your family connection journey",
-      emoji: "🌱",
-      phase: "Digital Scaffolding",
-      progress: 0
-    };
-    if (activeDays <= 28) return {
-      stage: "Building Foundation",
-      description: "Establishing daily connection habits",
-      emoji: "🏗️", 
-      phase: "Digital Scaffolding",
-      progress: Math.min(activeDays / 28 * 100, 100)
-    };
-    if (activeDays <= 56) return {
-      stage: "Growing Connection",
-      description: "Natural conversations are emerging",
-      emoji: "🌱",
-      phase: "Hybrid Connection", 
-      progress: Math.min((activeDays - 28) / 28 * 100, 100)
-    };
-    return {
-      stage: "Independent Rituals",
-      description: "Family connects naturally without prompts",
-      emoji: "🎯",
-      phase: "Ready to Graduate",
-      progress: 100
-    };
-  };
 
   const getActivityLevelColor = (level: 'none' | 'low' | 'medium' | 'high') => {
     switch (level) {
@@ -165,6 +205,10 @@ export function DayGlowScreen({
     if (selectedMember && selectedMood) {
       // Check for cooldown trigger before saving
       checkForCooldownTrigger(selectedMember, selectedMood, note);
+      
+      // Get mood-specific response
+      const moodResponse = getMoodResponse(selectedMood.emoji);
+      setCurrentMoodResponse(moodResponse);
       
       onAddMoodEntry({
         memberId: selectedMember.id,
@@ -267,7 +311,7 @@ export function DayGlowScreen({
   };
 
   // Get descriptive label for avatar styles
-  const getStyleLabel = (id: string, category: string) => {
+  const getStyleLabel = (_id: string, _category: string) => {
     return '';
   };
 
@@ -347,11 +391,11 @@ export function DayGlowScreen({
         </div>
         
         <div className="text-center z-10">
-          <div className="text-8xl mb-6">✨</div>
+          <div className="text-8xl mb-6">{currentMoodResponse?.icon || '✨'}</div>
           <h2 className="text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
-            Thank you!
+            {currentMoodResponse?.title || 'Thank you!'}
           </h2>
-          <p className="text-gray-600 text-xl">Your mood has been saved</p>
+          <p className="text-gray-600 text-xl">{currentMoodResponse?.message || 'Your mood has been saved'}</p>
         </div>
       </div>
     );
@@ -762,45 +806,20 @@ export function DayGlowScreen({
           </div>
         )}
 
-        {/* Family Journey Progress */}
-        {(() => {
-          const journey = getJourneyStage(streakData.totalActiveDays);
-          return (
-            <div className="mt-10 p-6 rounded-3xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
-              <div className="flex items-center mb-4">
-                <div className="text-3xl mr-4">{journey.emoji}</div>
-                <div className="flex-1">
-                  <div className="text-xl font-semibold text-blue-800 mb-1">
-                    {journey.stage}
-                  </div>
-                  <div className="text-blue-600 text-sm">
-                    {journey.description}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Progress Bar */}
-              <div className="mb-3">
-                <div className="flex justify-between text-sm text-blue-700 mb-2">
-                  <span>{journey.phase}</span>
-                  <span>{streakData.totalActiveDays} days</span>
-                </div>
-                <div className="w-full bg-blue-200 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${journey.progress}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              {journey.phase === "Ready to Graduate" && (
-                <div className="mt-4 p-3 bg-green-100 rounded-lg text-center">
-                  <div className="text-green-800 font-medium">🎓 Consider graduating to independent family rituals!</div>
-                </div>
-              )}
-            </div>
-          );
-        })()}
+        {/* Graduation Progress */}
+        {graduationProgress && !showManageMembers && (
+          <div className="mt-10">
+            <GraduationProgress
+              totalCheckIns={graduationProgress.totalCheckIns}
+              targetDays={graduationProgress.targetDays}
+              progressPercentage={graduationProgress.progressPercentage}
+              nextMilestone={graduationProgress.nextMilestone}
+              achievedMilestones={graduationProgress.achievedMilestones}
+              readyForGraduation={graduationProgress.readyForGraduation}
+              onStartAssessment={onStartReadinessAssessment}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
