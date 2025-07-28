@@ -206,7 +206,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 pb-28 relative">
+    <div className="min-h-screen safe-area-content relative">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="font-title text-4xl mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">

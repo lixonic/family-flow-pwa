@@ -78,7 +78,7 @@ export function DayEntriesView({
   };
 
   return (
-    <div className="min-h-screen px-6 py-8 pb-28">
+    <div className="min-h-screen safe-area-content">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center mb-8">
