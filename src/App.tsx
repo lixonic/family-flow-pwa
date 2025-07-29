@@ -152,28 +152,9 @@ export default function App() {
       // Save migrated data back to localStorage
       localStorage.setItem("familyFlowData", JSON.stringify(migratedData));
     } else {
-      // Initialize with sample family members - up to 6 with graphic icons
+      // Initialize with empty family - users will add their own members
       const initialData: AppData = {
-        familyMembers: [
-          {
-            id: "1",
-            name: "Mom",
-            avatar: "mother",
-            color: "#FFE5E5",
-          },
-          {
-            id: "2",
-            name: "Dad", 
-            avatar: "father",
-            color: "#E5F3FF",
-          },
-          {
-            id: "3",
-            name: "Child",
-            avatar: "child", 
-            color: "#E5FFE5",
-          },
-        ],
+        familyMembers: [],
         moodEntries: [],
         reflectionEntries: [],
         gratitudeEntries: [],
@@ -301,9 +282,6 @@ export default function App() {
   };
 
   const deleteFamilyMember = (id: string) => {
-    // Don't allow deletion if only one member remains
-    if (appData.familyMembers.length <= 1) return false;
-    
     const updatedMembers = appData.familyMembers.filter(member => member.id !== id);
     
     // Also remove all entries for this member
@@ -587,28 +565,9 @@ export default function App() {
     localStorage.removeItem("familyFlowData");
     localStorage.removeItem("familyFlowWelcomeShown");
     
-    // Reset app data to initial state
+    // Reset app data to initial state (empty family)
     const initialData: AppData = {
-      familyMembers: [
-        {
-          id: "1",
-          name: "Mom",
-          avatar: "mother",
-          color: "#FFE5E5",
-        },
-        {
-          id: "2",
-          name: "Dad", 
-          avatar: "father",
-          color: "#E5F3FF",
-        },
-        {
-          id: "3",
-          name: "Child",
-          avatar: "child", 
-          color: "#E5FFE5",
-        },
-      ],
+      familyMembers: [],
       moodEntries: [],
       reflectionEntries: [],
       gratitudeEntries: [],
@@ -703,7 +662,6 @@ export default function App() {
             onDaySelect={handleDaySelect}
             onNavigate={setCurrentScreen}
             graduationProgress={getGraduationProgress()}
-            onStartReadinessAssessment={handleStartReadinessAssessment}
           />
         );
       case "day-entries":
@@ -732,7 +690,6 @@ export default function App() {
             onDaySelect={handleDaySelect}
             onNavigate={setCurrentScreen}
             graduationProgress={getGraduationProgress()}
-            onStartReadinessAssessment={handleStartReadinessAssessment}
           />
         );
       case "screen-time":
@@ -799,7 +756,6 @@ export default function App() {
             onDaySelect={handleDaySelect}
             onNavigate={setCurrentScreen}
             graduationProgress={getGraduationProgress()}
-            onStartReadinessAssessment={handleStartReadinessAssessment}
           />
         );
     }

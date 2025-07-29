@@ -149,7 +149,6 @@ export function DayGlowScreen({
   const [currentMoodResponse, setCurrentMoodResponse] = useState<{ title: string; message: string; icon: string } | null>(null);
   const [showManageMembers, setShowManageMembers] = useState(false);
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
-  const [editingAvatar, setEditingAvatar] = useState<FamilyMember | null>(null);
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberAvatar, setNewMemberAvatar] = useState('mother');
   const [editingName, setEditingName] = useState('');
@@ -288,20 +287,6 @@ export function DayGlowScreen({
     }
   };
 
-  const handleEditAvatar = (member: FamilyMember) => {
-    setEditingAvatar(member);
-  };
-
-  const handleSaveAvatar = (newAvatar: string) => {
-    if (editingAvatar) {
-      onUpdateFamilyMember(editingAvatar.id, { avatar: newAvatar });
-      setEditingAvatar(null);
-    }
-  };
-
-  const handleCancelAvatarEdit = () => {
-    setEditingAvatar(null);
-  };
 
   // Group avatar options by category
   const getAvatarsByCategory = (category: string) => {
@@ -487,35 +472,43 @@ export function DayGlowScreen({
         </div>
         )}
 
-        {/* Family member management */}
-        {!selectedMember && !showManageMembers && (
+        {/* First-time user guidance - only show when no family members */}
+        {!selectedMember && !showManageMembers && familyMembers.length === 0 && (
           <div className="mb-10">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl">Who's checking in?</h3>
+            <div className="text-center mb-8">
+              <div className="mb-6 p-6 bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl border border-orange-100">
+                <div className="text-6xl mb-4">👋</div>
+                <h3 className="text-xl font-medium mb-3 text-gray-800">Welcome to your 2-minute family ritual!</h3>
+                <p className="text-gray-600 mb-4">
+                  Let's set up your family members so everyone can share their daily check-ins.
+                </p>
+                <p className="text-sm text-gray-500">
+                  Don't worry - you can always add or change these later.
+                </p>
+              </div>
               <button
-                onClick={() => {
-                  setShowManageMembers(true);
-                  // Scroll to members list after a brief delay to ensure DOM is updated
-                  setTimeout(() => {
-                    const membersList = document.getElementById('members-list-section');
-                    if (membersList) {
-                      membersList.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }, 100);
-                }}
-                className="text-orange-600 hover:text-orange-700 p-2"
-                title="Manage family members"
+                onClick={() => setShowManageMembers(true)}
+                className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white px-8 py-4 rounded-2xl font-medium text-lg flex items-center mx-auto"
               >
-                <Edit2 className="w-5 h-5" />
+                <User className="w-5 h-5 mr-2" />
+                Add Your First Family Member
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Family member management - only show when family members exist */}
+        {!selectedMember && !showManageMembers && familyMembers.length > 0 && (
+          <div className="mb-10">
+            <div className="mb-6">
+              <h3 className="text-2xl">Who's checking in?</h3>
+            </div>
             
-            {/* Contextual messaging */}
-            {familyMembers.length <= 2 && (
+            {/* Progressive contextual messaging */}
+            {familyMembers.length > 0 && familyMembers.length <= 2 && (
               <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl border border-orange-100">
                 <p className="text-sm text-gray-700 text-center">
-                  <span className="font-medium">Does this look familiar?</span> Screen time battles. One-word answers. 
-                  That feeling your family is drifting apart, even when you're in the same room.
+                  <span className="font-medium">Your 2-minute family ritual:</span> Daily mood check-ins → Screen time reflection → Gratitude practice. Simple steps that build lasting connection.
                 </p>
               </div>
             )}
@@ -523,8 +516,7 @@ export function DayGlowScreen({
             {familyMembers.filter(member => !getMemberTodayMoodEntry(member.id)).length === familyMembers.length && familyMembers.length > 0 && (
               <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl border border-blue-100">
                 <p className="text-sm text-gray-700 text-center">
-                  <span className="font-medium">What if connection took just 2 minutes?</span> No lectures. No screen time battles. 
-                  Just a gentle daily ritual that brings your family's hearts back together.
+                  <span className="font-medium">Ready to check in?</span> Share how you're feeling today - your family will see your mood and you'll continue to screen time reflection and gratitude.
                 </p>
               </div>
             )}
@@ -556,7 +548,7 @@ export function DayGlowScreen({
                   </button>
                 );
               })}
-              {familyMembers.length < 6 && (
+              {familyMembers.length === 1 && (
                 <button
                   onClick={() => {
                     setShowManageMembers(true);
@@ -571,7 +563,7 @@ export function DayGlowScreen({
                   className="p-6 rounded-3xl border-3 border-dashed border-orange-300 hover:border-orange-400 transition-colors min-h-[120px] flex flex-col items-center justify-center text-orange-600"
                 >
                   <Plus className="w-12 h-12 mb-3" />
-                  <div className="text-lg font-medium">Add Member</div>
+                  <div className="text-lg font-medium">Add/Edit Member</div>
                 </button>
               )}
             </div>
@@ -693,20 +685,12 @@ export function DayGlowScreen({
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleEditAvatar(member)}
-                            className="text-purple-600 hover:text-purple-700 p-2"
-                            title="Change avatar"
+                            onClick={() => handleDeleteMember(member)}
+                            className="text-red-600 hover:text-red-700 p-2"
+                            title="Delete member"
                           >
-                            <User className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
-                          {familyMembers.length > 1 && (
-                            <button
-                              onClick={() => handleDeleteMember(member)}
-                              className="text-red-600 hover:text-red-700 p-2"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
                         </>
                       )}
                     </div>
@@ -728,52 +712,6 @@ export function DayGlowScreen({
           </div>
         )}
 
-        {/* Avatar editing modal */}
-        {editingAvatar && (
-          <div className="mb-10">
-            <div className="flex items-center mb-8">
-              <button
-                onClick={handleCancelAvatarEdit}
-                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
-              >
-                ← Back
-              </button>
-              <h3 className="text-2xl">Change Avatar for {editingAvatar.name}</h3>
-            </div>
-
-            <Card className="p-6 bg-purple-50">
-              <h4 className="text-lg mb-4">Choose New Avatar</h4>
-              <div className="space-y-4">
-                {['Mother', 'Father', 'Child'].map(category => (
-                  <div key={category}>
-                    <h5 className="text-sm font-medium text-gray-600 mb-2">{category}</h5>
-                    <div className="grid grid-cols-3 gap-3">
-                      {getAvatarsByCategory(category).map(option => {
-                        return (
-                          <button
-                            key={option.id}
-                            onClick={() => handleSaveAvatar(option.id)}
-                            className={`p-4 rounded-xl border-2 transition-colors flex flex-col items-center hover:border-purple-400 hover:bg-purple-100 ${
-                              editingAvatar.avatar === option.id 
-                                ? 'border-purple-500 bg-purple-200' 
-                                : 'border-gray-200'
-                            }`}
-                          >
-                            <span className="text-3xl mb-2">{option.emoji}</span>
-                            <span className="text-sm">{getStyleLabel(option.id, option.category)}</span>
-                            {editingAvatar.avatar === option.id && (
-                              <span className="text-xs text-purple-600 mt-1">Current</span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        )}
 
         {/* Mood selection */}
         {selectedMember && !selectedMood && (
@@ -787,6 +725,16 @@ export function DayGlowScreen({
               </button>
               <h3 className="text-2xl">How are you feeling, {selectedMember.name}?</h3>
             </div>
+            
+            {/* First mood entry guidance */}
+            {moodEntries.filter(entry => entry.memberId === selectedMember.id).length === 0 && (
+              <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border border-purple-100">
+                <p className="text-sm text-gray-700 text-center">
+                  <span className="font-medium">Step 1 of 3:</span> Choose how you're feeling right now. After this, you'll reflect on screen time and practice gratitude.
+                </p>
+              </div>
+            )}
+            
             <div className="grid grid-cols-2 gap-4">
               {MOOD_OPTIONS.map((mood, index) => (
                 <button
@@ -819,6 +767,15 @@ export function DayGlowScreen({
               </div>
             </div>
             
+            {/* First mood entry additional guidance */}
+            {moodEntries.filter(entry => entry.memberId === selectedMember.id).length === 0 && (
+              <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-teal-50 rounded-2xl border border-green-100">
+                <p className="text-sm text-gray-700 text-center">
+                  <span className="font-medium">Next up:</span> After saving your mood, you'll continue to screen time reflection and gratitude practice. Your full 2-minute ritual! 🌟
+                </p>
+              </div>
+            )}
+            
             <div className="mb-8">
               <label className="block text-lg text-gray-600 mb-3">
                 Want to add a note? (optional)
@@ -836,13 +793,16 @@ export function DayGlowScreen({
               onClick={handleSubmit}
               className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-xl py-4 h-auto"
             >
-              Save my mood
+              {moodEntries.filter(entry => entry.memberId === selectedMember.id).length === 0 
+                ? 'Continue to Screen Time →' 
+                : 'Save my mood'
+              }
             </Button>
           </div>
         )}
 
-        {/* Track Progress Button */}
-        {graduationProgress && !showManageMembers && !selectedMember && !editingAvatar && (
+        {/* Track Progress Button - only show with minimum 1 day of data */}
+        {graduationProgress && !showManageMembers && !selectedMember && moodEntries.length > 0 && (
           <div className="mt-10">
             <Button
               onClick={() => _onNavigate?.('graduation')}

@@ -55,9 +55,31 @@ export function GraduationView({
           </p>
         </div>
 
+        {/* No progress guidance */}
+        {totalCheckIns === 0 && (
+          <div className="text-center mb-8">
+            <div className="mb-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-100">
+              <div className="text-6xl mb-4">🌱</div>
+              <h3 className="text-xl font-medium mb-3 text-gray-800">Your family journey starts now!</h3>
+              <p className="text-gray-600 mb-4">
+                Begin your 2-minute daily family connection ritual to track progress toward independence from digital tools.
+              </p>
+              <p className="text-sm text-gray-500">
+                Complete daily check-ins to see your family's graduation progress and celebrate milestones together.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate('day-glow')}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-2xl font-medium text-lg"
+            >
+              Start Your Family Journey
+            </button>
+          </div>
+        )}
 
-        {/* Main Progress Section */}
-        <div className="mb-6">
+        {/* Main Progress Section - only show when there's progress */}
+        {totalCheckIns > 0 && (
+          <div className="mb-6">
           <div className="text-center mb-6">
             {(readyForGraduation || nearGraduation) && (
               <>
@@ -95,25 +117,24 @@ export function GraduationView({
             readyForGraduation={readyForGraduation}
             onStartAssessment={onStartReadinessAssessment}
           />
-        </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <Card className="p-4 text-center">
-            <div className="text-3xl mb-2">📅</div>
-            <div className="text-2xl font-bold text-purple-600">{totalCheckIns}</div>
-            <div className="text-sm text-gray-600">Check-ins Complete</div>
-          </Card>
-          
-          <Card className="p-4 text-center">
-            <div className="text-3xl mb-2">🎯</div>
-            <div className="text-2xl font-bold text-orange-600">{daysRemaining}</div>
-            <div className="text-sm text-gray-600">Days to Graduation</div>
-          </Card>
-        </div>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <Card className="p-4 text-center">
+              <div className="text-3xl mb-2">📅</div>
+              <div className="text-2xl font-bold text-purple-600">{totalCheckIns}</div>
+              <div className="text-sm text-gray-600">Check-ins Complete</div>
+            </Card>
+            
+            <Card className="p-4 text-center">
+              <div className="text-3xl mb-2">🎯</div>
+              <div className="text-2xl font-bold text-orange-600">{daysRemaining}</div>
+              <div className="text-sm text-gray-600">Days to Graduation</div>
+            </Card>
+          </div>
 
-        {/* Milestones Section */}
-        <Card className="p-6 mb-6">
+          {/* Milestones Section */}
+          <Card className="p-6 mb-6">
           <div className="flex items-center mb-4">
             <Award className="w-5 h-5 text-yellow-500 mr-2" />
             <h3 className="text-lg font-semibold">Milestones Achieved</h3>
@@ -246,6 +267,8 @@ export function GraduationView({
               <BookOpen className="w-5 h-5 mr-2" />
               Start Readiness Assessment
             </Button>
+          </div>
+        )}
           </div>
         )}
       </div>

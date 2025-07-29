@@ -258,7 +258,30 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
           )}
         </div>
 
-        {!selectedMember && (
+        {/* No family members guidance */}
+        {!selectedMember && familyMembers.length === 0 && (
+          <div className="text-center mb-8">
+            <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl border border-blue-100">
+              <div className="text-6xl mb-4">💭</div>
+              <h3 className="text-xl font-medium mb-3 text-gray-800">Time to reflect on screen time!</h3>
+              <p className="text-gray-600 mb-4">
+                First, you'll need to add family members so everyone can share their daily screen time reflections.
+              </p>
+              <p className="text-sm text-gray-500">
+                Once you have family members set up, you can return here for gentle daily reflection on digital habits.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate?.('day-glow')}
+              className="bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white px-8 py-4 rounded-2xl font-medium text-lg"
+            >
+              Go to Day Glow → Add Family Members
+            </button>
+          </div>
+        )}
+
+        {/* Family member selection - only show when family members exist */}
+        {!selectedMember && familyMembers.length > 0 && (
           <div className="mb-10">
             <h3 className="text-2xl mb-6">Who's reflecting?</h3>
             <div className="grid grid-cols-2 gap-4">
