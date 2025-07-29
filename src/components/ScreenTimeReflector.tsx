@@ -414,7 +414,7 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
           </div>
         )}
 
-        {!selectedMember && (
+        {!selectedMember && reflectionEntries.length > 0 && (
           <div className="mt-10">
             <h3 className="text-2xl mb-6">Recent Reflections</h3>
             <div className="space-y-4">

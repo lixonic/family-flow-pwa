@@ -155,6 +155,8 @@ export function DayGlowScreen({
   const [showCooldownBanner, setShowCooldownBanner] = useState(false);
   const [showCooldownSuggestions, setShowCooldownSuggestions] = useState(false);
   const [cooldownSuggestions, setCooldownSuggestions] = useState<string[]>([]);
+  const [showProfileAdded, setShowProfileAdded] = useState(false);
+  const [addedMemberName, setAddedMemberName] = useState('');
 
   const today = new Date().toDateString();
   
@@ -250,15 +252,40 @@ export function DayGlowScreen({
   const handleAddMember = () => {
     if (newMemberName.trim() && familyMembers.length < 6) {
       const colorIndex = familyMembers.length % MEMBER_COLORS.length;
-      const success = onAddFamilyMember({
-        name: newMemberName.trim(),
+      const memberName = newMemberName.trim();
+      const memberData = {
+        name: memberName,
         avatar: newMemberAvatar,
         color: MEMBER_COLORS[colorIndex]
-      });
+      };
+      
+      const success = onAddFamilyMember(memberData);
       
       if (success) {
+        // Store the added member data for later selection
+        setAddedMemberName(memberName);
+        
+        // Clear form
         setNewMemberName('');
         setNewMemberAvatar('mother');
+        
+        // Show success message
+        setShowProfileAdded(true);
+        
+        // Hide manage members screen and redirect after 2 seconds
+        setTimeout(() => {
+          setShowManageMembers(false);
+          setShowProfileAdded(false);
+          
+          // Find and auto-select the newly added member for mood entry
+          // Use setTimeout to ensure the member has been added to the state
+          setTimeout(() => {
+            const newMember = familyMembers.find(m => m.name === memberName);
+            if (newMember) {
+              setSelectedMember(newMember);
+            }
+          }, 100);
+        }, 2000);
       }
     }
   };
@@ -379,6 +406,50 @@ export function DayGlowScreen({
             {currentMoodResponse?.title || 'Thank you!'}
           </h2>
           <p className="text-gray-600 text-xl">{currentMoodResponse?.message || 'Your mood has been saved'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Profile added success screen
+  if (showProfileAdded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+        {/* Success confetti animation */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(12)].map((_, i) => {
+            const leftPos = Math.random() * 100;
+            const topPos = Math.random() * 100;
+            
+            return (
+              <div
+                key={i}
+                className="absolute animate-bounce"
+                style={{
+                  left: `${leftPos}%`,
+                  top: `${topPos}%`,
+                  animationDelay: `${Math.random() * 1.5}s`,
+                  animationDuration: `${1 + Math.random() * 0.5}s`,
+                  fontSize: `${18 + Math.random() * 16}px`,
+                }}
+              >
+                {['👤', '✨', '🎉', '💫', '🌟', '🎊', '👥', '💖'][Math.floor(Math.random() * 8)]}
+              </div>
+            );
+          })}
+        </div>
+        
+        <div className="text-center z-10">
+          <div className="text-8xl mb-6">👤</div>
+          <h2 className="text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+            Profile Added!
+          </h2>
+          <p className="text-gray-600 text-xl mb-2">
+            Welcome <span className="font-semibold text-orange-600">{addedMemberName}</span>!
+          </p>
+          <p className="text-gray-500">
+            Redirecting to mood selection...
+          </p>
         </div>
       </div>
     );
@@ -516,8 +587,13 @@ export function DayGlowScreen({
             {familyMembers.filter(member => !getMemberTodayMoodEntry(member.id)).length === familyMembers.length && familyMembers.length > 0 && (
               <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl border border-blue-100">
                 <p className="text-sm text-gray-700 text-center">
-                  <span className="font-medium">Ready to check in?</span> Share how you're feeling today - your family will see your mood and you'll continue to screen time reflection and gratitude.
+                  <span className="font-medium">Ready to check in?</span> Tap your profile below to start sharing how you're feeling today.
                 </p>
+                <div className="flex items-center justify-center mt-2 text-blue-600">
+                  <ChevronRight className="w-4 h-4 animate-bounce" />
+                  <span className="text-xs ml-1">Choose your profile</span>
+                  <ChevronRight className="w-4 h-4 animate-bounce" />
+                </div>
               </div>
             )}
             <div className="grid grid-cols-2 gap-4">
@@ -527,16 +603,23 @@ export function DayGlowScreen({
                   <button
                     key={member.id}
                     onClick={() => todayEntry ? null : setSelectedMember(member)}
-                    className={`p-6 rounded-3xl border-3 transition-colors min-h-[120px] flex flex-col items-center justify-center relative ${
+                    className={`p-6 rounded-3xl border-3 transition-all duration-200 min-h-[120px] flex flex-col items-center justify-center relative ${
                       todayEntry 
                         ? 'border-green-200 bg-green-50 cursor-not-allowed opacity-75'
-                        : 'border-orange-200 hover:border-orange-400 cursor-pointer'
+                        : 'border-orange-200 hover:border-orange-400 hover:shadow-lg hover:scale-105 cursor-pointer active:scale-100 profile-card-clickable focus:ring-4 focus:ring-orange-200 focus:outline-none'
                     }`}
                     style={{ backgroundColor: todayEntry ? '#F0FDF4' : member.color }}
                     disabled={!!todayEntry}
+                    aria-label={todayEntry ? `${member.name} has already checked in today` : `Check in as ${member.name}`}
+                    title={todayEntry ? `${member.name} already checked in` : `Tap to check in as ${member.name}`}
                   >
                     <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
                     <div className="text-lg font-medium">{member.name}</div>
+                    {!todayEntry && (
+                      <div className="text-xs text-gray-600 mt-1 opacity-70">
+                        👆 Tap to check in
+                      </div>
+                    )}
                     {todayEntry && (
                       <>
                         <div className="absolute top-2 right-2 text-green-600">
@@ -548,7 +631,7 @@ export function DayGlowScreen({
                   </button>
                 );
               })}
-              {familyMembers.length === 1 && (
+              {familyMembers.length < 6 && (
                 <button
                   onClick={() => {
                     setShowManageMembers(true);
@@ -793,10 +876,7 @@ export function DayGlowScreen({
               onClick={handleSubmit}
               className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-xl py-4 h-auto"
             >
-              {moodEntries.filter(entry => entry.memberId === selectedMember.id).length === 0 
-                ? 'Continue to Screen Time →' 
-                : 'Save my mood'
-              }
+              Save my mood
             </Button>
           </div>
         )}
