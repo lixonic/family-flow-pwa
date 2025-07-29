@@ -177,6 +177,45 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     return appData.moodEntries.length + appData.reflectionEntries.length + appData.gratitudeEntries.length;
   };
 
+  const getStorageMetrics = () => {
+    // Calculate Family Flow specific storage usage
+    const familyFlowData = localStorage.getItem('familyFlowData');
+    const familyFlowSize = familyFlowData ? new Blob([familyFlowData]).size : 0;
+    
+    // Estimate total localStorage usage across all apps
+    let totalSize = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        const value = localStorage.getItem(key);
+        if (value) {
+          totalSize += new Blob([key + value]).size;
+        }
+      }
+    }
+    
+    // Browser storage limits (modern mobile browsers 2024-2025)
+    // Chrome Mobile (Android): ~10MB, Safari Mobile (iOS): ~5MB
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const estimatedLimit = isIOS ? 5 * 1024 * 1024 : 10 * 1024 * 1024; // 5MB for iOS, 10MB for others
+    
+    return {
+      familyFlowSize,
+      totalSize,
+      estimatedLimit,
+      familyFlowPercentage: (familyFlowSize / estimatedLimit) * 100,
+      totalPercentage: (totalSize / estimatedLimit) * 100,
+      browserType: isIOS ? 'Safari (iOS)' : 'Chrome/Android'
+    };
+  };
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
   const getDateRange = () => {
     const allDates = [
       ...appData.moodEntries.map(e => new Date(e.date)),
@@ -276,6 +315,52 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
               </div>
               <div className="text-lg text-gray-500 mt-2">
                 {getDateRange()}
+              </div>
+            </div>
+            
+            {/* Storage Metrics */}
+            <div className="border-t pt-4 mt-4">
+              <div className="mb-3">
+                <div className="flex justify-between text-base">
+                  <span className="text-gray-600">Family Flow Storage</span>
+                  <span className="font-medium">{formatBytes(getStorageMetrics().familyFlowSize)}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                  <div 
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(getStorageMetrics().familyFlowPercentage, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div className="mb-3">
+                <div className="flex justify-between text-base">
+                  <span className="text-gray-600">Total Browser Storage</span>
+                  <span className="font-medium">{formatBytes(getStorageMetrics().totalSize)}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                  <div 
+                    className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(getStorageMetrics().totalPercentage, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div className="text-sm text-gray-500 mt-2">
+                <div className="flex justify-between">
+                  <span>Family Flow: {getStorageMetrics().familyFlowPercentage.toFixed(1)}% of ~{formatBytes(getStorageMetrics().estimatedLimit)} limit</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>All apps: {getStorageMetrics().totalPercentage.toFixed(1)}% of ~{formatBytes(getStorageMetrics().estimatedLimit)} limit</span>
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  *{getStorageMetrics().browserType} • Storage shared with other websites and apps
+                  {getStorageMetrics().browserType.includes('Safari') && (
+                    <>
+                      <br />⚠️ Safari deletes data after 7 days without visits - install as PWA to avoid this
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
