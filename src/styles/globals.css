@@ -86,6 +86,42 @@
   button {
     @apply font-medium;
   }
+
+  /* Responsive typography for screens below 1000px */
+  @media (max-width: 999px) {
+    h1 {
+      font-size: 1.75rem; /* was text-2xl (1.5rem), now +0.25rem */
+      line-height: 2rem;
+    }
+
+    h2 {
+      font-size: 1.375rem; /* was text-xl (1.25rem), now +0.125rem */
+      line-height: 1.875rem;
+    }
+
+    h3 {
+      font-size: 1.25rem; /* was text-lg (1.125rem), now +0.125rem */
+      line-height: 1.75rem;
+    }
+
+    h4 {
+      font-size: 1.125rem; /* was text-base (1rem), now +0.125rem */
+      line-height: 1.5rem;
+    }
+
+    p {
+      font-size: 0.9375rem; /* 15px - was 14px (text-sm), now +1px */
+      line-height: 1.5rem;
+    }
+
+    body {
+      font-size: 0.9375rem; /* 15px - was 14px (text-sm), now +1px */
+    }
+
+    button {
+      font-size: 0.8125rem; /* 13px - was 12px (text-xs), now +1px */
+    }
+  }
 }
 
 /* Hide scrollbar for mobile navigation */
@@ -155,4 +191,90 @@ button:focus, input:focus, textarea:focus {
   padding-bottom: calc(7rem + var(--safe-area-inset-bottom));
   padding-left: calc(1.5rem + var(--safe-area-inset-left));
   padding-right: calc(1.5rem + var(--safe-area-inset-right));
+}
+
+/* Subtle pulse animation for clickable profile cards */
+@keyframes subtle-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(249, 115, 22, 0.05);
+  }
+}
+
+.profile-card-clickable {
+  animation: subtle-pulse 3s infinite;
+}
+
+/* Responsive text utilities for screens below 1000px */
+@media (max-width: 999px) {
+  .text-6xl {
+    font-size: 2.5rem; /* +0.25rem increase */
+    line-height: 2.75rem;
+  }
+  
+  .text-5xl {
+    font-size: 2.125rem; /* +0.25rem increase */
+    line-height: 2.5rem;
+  }
+  
+  .text-4xl {
+    font-size: 1.75rem; /* +0.25rem increase */
+    line-height: 2.25rem;
+  }
+  
+  .text-3xl {
+    font-size: 1.5rem; /* +0.25rem increase */
+    line-height: 2rem;
+  }
+  
+  .text-2xl {
+    font-size: 1.375rem; /* +0.25rem increase */
+    line-height: 2rem;
+  }
+  
+  .text-xl {
+    font-size: 1.25rem; /* +0.25rem increase */
+    line-height: 1.75rem;
+  }
+  
+  .text-lg {
+    font-size: 1.125rem; /* +0.25rem increase */
+    line-height: 1.5rem;
+  }
+  
+  /* Additional mobile-specific adjustments */
+  .px-8 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .py-4 {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+  }
+  
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .py-3 {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+  }
+  
+  /* Reduce gap sizes */
+  .gap-4 {
+    gap: 0.5rem;
+  }
+  
+  .gap-6 {
+    gap: 0.75rem;
+  }
+  
+  .gap-8 {
+    gap: 1rem;
+  }
 }

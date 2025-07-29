@@ -33,7 +33,7 @@ const WELCOME_CARDS: WelcomeCard[] = [
     image: '/images/welcome-4.png',
     title: 'Success means you won\'t need us forever',
     description: 'In 30-45 days, you\'ll have built the habit of truly seeing each other. The app becomes training wheels you happily leave behind.',
-    details: 'Your daily 2-minute ritual: Daily mood check-ins → Screen time reflection → Gratitude practice. Simple steps that build lasting family connection.'
+    details: ''
   }
 ];
 
@@ -160,7 +160,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
             className={`${currentCard === 0 ? 'w-full' : 'flex-1'} bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-lg py-4 h-auto`}
           >
             {currentCard === WELCOME_CARDS.length - 1 ? (
-              'Set Up Your Family'
+              'Set Up Family Flow'
             ) : (
               <>
                 Next

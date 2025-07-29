@@ -28,9 +28,58 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
             <BookOpen className="w-8 h-8 text-white" />
           </div>
           <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Graduation Guide
+            Family Flow Guide
           </h1>
-          <p className="text-gray-600 text-xl">Your roadmap to app-independent family connection</p>
+          <p className="text-gray-600 text-xl">Understanding and using this app effectively</p>
+        </div>
+
+        {/* Who is this app intended for section */}
+        <Card className="p-6 mb-8 bg-gradient-to-br from-orange-50 to-pink-50 border-orange-200">
+          <div className="text-center mb-6">
+             
+            <h2 className="text-2xl font-bold mb-3 text-gray-800">Who is Family Flow for?</h2>
+            <p className="text-gray-600 text-lg">This app works best for specific family situations</p>
+          </div>
+          
+          <div className="space-y-4 mb-6">
+            <div className="flex items-start space-x-3">
+            
+              <div>
+                <h4 className="font-semibold mb-1 text-green-700">Perfect for families with:</h4>
+                <ul className="text-gray-700 space-y-1 text-sm">
+                  <li>• Parents concerned about screen time balance</li>
+                  <li>• Families wanting deeper daily connections</li>
+                  <li>• Households struggling with digital wellness</li>
+                  <li>• Parents seeking structured family rituals</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-3">
+             
+              <div>
+                <h4 className="font-semibold mb-1 text-red-700">Not ideal for:</h4>
+                <ul className="text-gray-700 space-y-1 text-sm">
+                  <li>• Parents looking for screen time controls/blocking</li>
+                  <li>• Families preferring spontaneous interactions only</li>
+                  <li>• Those uncomfortable with structured activities</li>
+                  <li>• Families with severe communication issues</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-green-100 p-4 rounded-lg">
+            <p className="text-sm">
+              <strong>Key insight:</strong> Family Flow is designed as temporary scaffolding. The goal is to help your family build independent connection habits, then "graduate" from needing the app.
+            </p>
+          </div>
+        </Card>
+
+        {/* Graduation Guide Section */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-3 text-gray-800">Your Graduation Roadmap</h2>
+          <p className="text-gray-600">How to move from digital prompts to natural family connection</p>
         </div>
 
         <div className="space-y-4 mb-8">
