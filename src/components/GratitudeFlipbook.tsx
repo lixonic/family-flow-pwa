@@ -403,7 +403,30 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
           <p className="text-gray-600 text-xl">Breathe, reflect, and be grateful</p>
         </div>
 
-        {!showAddForm && (
+        {/* No family members guidance */}
+        {!showAddForm && familyMembers.length === 0 && (
+          <div className="text-center mb-8">
+            <div className="mb-6 p-6 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-100">
+              <div className="text-6xl mb-4">🙏</div>
+              <h3 className="text-xl font-medium mb-3 text-gray-800">Ready to practice gratitude!</h3>
+              <p className="text-gray-600 mb-4">
+                First, you'll need to add family members so everyone can share what they're grateful for.
+              </p>
+              <p className="text-sm text-gray-500">
+                Once you have family members set up, you can return here for daily gratitude practice.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate?.('day-glow')}
+              className="bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white px-8 py-4 rounded-2xl font-medium text-lg"
+            >
+              Go to Day Glow → Add Family Members
+            </button>
+          </div>
+        )}
+
+        {/* Main buttons - only show when family members exist */}
+        {!showAddForm && familyMembers.length > 0 && (
           <>
             <div className="space-y-4 mb-10">
               <Button
@@ -482,7 +505,46 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
           </>
         )}
 
-        {showAddForm && (
+        {/* First-time user guidance - only show when no family members */}
+        {showAddForm && familyMembers.length === 0 && (
+          <div className="mb-10">
+            <div className="flex items-center mb-8">
+              <button
+                onClick={() => {
+                  setShowAddForm(false);
+                  setSelectedMember(null);
+                  setGratitudeText('');
+                }}
+                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
+              >
+                ← Back
+              </button>
+              <h3 className="text-2xl">Add Gratitude</h3>
+            </div>
+            
+            <div className="text-center mb-8">
+              <div className="mb-6 p-6 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-100">
+                <div className="text-6xl mb-4">🙏</div>
+                <h3 className="text-xl font-medium mb-3 text-gray-800">Ready to practice gratitude!</h3>
+                <p className="text-gray-600 mb-4">
+                  First, you'll need to add family members in the Day Glow section so everyone can share what they're grateful for.
+                </p>
+                <p className="text-sm text-gray-500">
+                  Once you have family members set up, you can return here for daily gratitude practice.
+                </p>
+              </div>
+              <button
+                onClick={() => onNavigate?.('day-glow')}
+                className="bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white px-8 py-4 rounded-2xl font-medium text-lg"
+              >
+                Go to Day Glow → Add Family Members
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Family member selection - only show when family members exist */}
+        {showAddForm && familyMembers.length > 0 && (
           <div className="mb-10">
             <div className="flex items-center mb-8">
               <button
