@@ -561,9 +561,10 @@ export default function App() {
   };
 
   const handleEraseAllData = () => {
-    // Clear localStorage
+    // Clear all Family Flow localStorage data
     localStorage.removeItem("familyFlowData");
     localStorage.removeItem("familyFlowWelcomeShown");
+    localStorage.removeItem("familyFlowStartDate");
     
     // Reset app data to initial state (empty family)
     const initialData: AppData = {
@@ -611,10 +612,12 @@ export default function App() {
     setAppData(initialData);
     localStorage.setItem("familyFlowData", JSON.stringify(initialData));
     
-    // Reset all graduation UI state
+    // Reset all UI state
     setActiveMilestones([]);
     setCurrentTransitionPrompt(null);
     setShowReadinessAssessment(false);
+    setShowWelcome(false);
+    setSelectedDate(null);
     
     // Navigate back to day-glow screen
     setCurrentScreen("day-glow");
