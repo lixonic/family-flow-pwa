@@ -49,9 +49,9 @@ export function GraduationView({
 
         {/* Vision Context */}
         <div className="text-center mb-8 px-4">
-          <h1 className="text-2xl font-bold text-gray-800 mb-3">From digital prompts to real conversations</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">From guided prompts to family wisdom</h1>
           <p className="text-gray-600 leading-relaxed">
-            Watch your family rediscover each other. First through gentle app prompts, then naturally around the dinner table.
+            Watch your family discover your unique connection style. Every family's path to healthy technology use looks different, and that's exactly how it should be.
           </p>
         </div>
 
@@ -62,7 +62,7 @@ export function GraduationView({
               <div className="text-6xl mb-4">🌱</div>
               <h3 className="text-xl font-medium mb-3 text-gray-800">Your family journey starts now!</h3>
               <p className="text-gray-600 mb-4">
-                Begin your 2-minute daily family connection ritual to track progress toward independence from digital tools.
+                Begin your 2-minute daily family connection ritual to track progress toward confidence in your family's unique connection style.
               </p>
               <p className="text-sm text-gray-500">
                 Complete daily check-ins to see your family's graduation progress and celebrate milestones together.
@@ -178,9 +178,9 @@ export function GraduationView({
             <div className="text-4xl mb-3">🦋</div>
             <h3 className="text-lg font-semibold mb-3 text-blue-800">The Family Flow Philosophy</h3>
             <p className="text-blue-700 text-sm leading-relaxed">
-              Success isn't measured by how long you use this app, but by how confidently your family 
-              graduates to independent connection rituals. We're here to help you build lasting habits, 
-              then set you free to flourish on your own.
+              We believe in digital wisdom, not digital rules. Success isn't measured by how long you use this app, 
+              but by how confidently your family discovers what works for YOUR unique situation. Some families 
+              thrive with more technology integration, others with less - and that's exactly how it should be.
             </p>
           </div>
         </Card>

@@ -95,14 +95,14 @@ export function MilestoneCelebration({ milestone, onCelebrationComplete }: Miles
               )}
               {milestone.threshold === 30 && (
                 <>
-                  <p className="font-medium text-gray-800 mb-2">From digital prompts to real conversations</p>
-                  <p className="italic">Watch your family rediscover each other. First through gentle app prompts, then naturally around the dinner table. Real connection, lasting change.</p>
+                  <p className="font-medium text-gray-800 mb-2">From guided prompts to family wisdom</p>
+                  <p className="italic">Watch your family discover your unique connection style. Every family's digital wellness journey looks different, and that's exactly how it should be.</p>
                 </>
               )}
               {milestone.threshold === 45 && (
                 <>
-                  <p className="font-medium text-gray-800 mb-2">Success means you won't need us forever</p>
-                  <p className="italic">In 30-45 days, you'll have built the habit of truly seeing each other. The app becomes training wheels you happily leave behind.</p>
+                  <p className="font-medium text-gray-800 mb-2">Digital wisdom, not digital rules</p>
+                  <p className="italic">You've built the confidence to make intentional choices about technology that work for your unique family. Success means knowing what serves your family best.</p>
                 </>
               )}
             </div>
