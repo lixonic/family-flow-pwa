@@ -874,7 +874,7 @@ export function DayGlowScreen({
 
             <Button
               onClick={handleSubmit}
-              className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-xl py-4 h-auto"
+              className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 max-[999px]:text-lg max-[999px]:py-3 text-xl py-4 h-auto"
             >
               Save my mood
             </Button>
@@ -886,7 +886,7 @@ export function DayGlowScreen({
           <div className="mt-10">
             <Button
               onClick={() => _onNavigate?.('graduation')}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-4 h-auto"
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"
             >
               📊 Track Your Progress
             </Button>

@@ -149,7 +149,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
             <Button
               onClick={handlePrevious}
               variant="outline"
-              className="flex-1 text-lg py-4 h-auto"
+              className="flex-1 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"
             >
               Previous
             </Button>
@@ -157,7 +157,7 @@ export function WelcomeCards({ onComplete }: WelcomeCardsProps) {
           
           <Button
             onClick={handleNext}
-            className={`${currentCard === 0 ? 'w-full' : 'flex-1'} bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-lg py-4 h-auto`}
+            className={`${currentCard === 0 ? 'w-full' : 'flex-1'} bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto`}
           >
             {currentCard === WELCOME_CARDS.length - 1 ? (
               'Set Up Family Flow'

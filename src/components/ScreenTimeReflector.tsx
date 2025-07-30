@@ -377,13 +377,13 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
               <Button
                 onClick={handleSkip}
                 variant="outline"
-                className="flex-1 text-lg py-4 h-auto"
+                className="flex-1 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"
               >
                 Skip
               </Button>
               <Button
                 onClick={handleNextPrompt}
-                className={`flex-1 text-lg py-4 h-auto ${
+                className={`flex-1 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto ${
                   isWeeklyPrompt
                     ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
                     : isSocialMediaAction

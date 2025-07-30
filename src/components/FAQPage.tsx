@@ -191,7 +191,7 @@ export function FAQPage({ onNavigate }: FAQPageProps) {
         {/* Back Button */}
         <Button
           onClick={() => onNavigate('day-glow')}
-          className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xl py-4 h-auto"
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 max-[999px]:text-lg max-[999px]:py-3 text-xl py-4 h-auto"
         >
           Back to Family Flow
         </Button>
