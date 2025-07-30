@@ -97,7 +97,7 @@ export function AboutPage({ onNavigate }: AboutPageProps) {
         {/* Back Button */}
         <Button
           onClick={() => onNavigate('memory')}
-          className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-xl py-4 h-auto"
+          className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 max-[999px]:text-lg max-[999px]:py-3 text-xl py-4 h-auto"
         >
           Back to Export
         </Button>

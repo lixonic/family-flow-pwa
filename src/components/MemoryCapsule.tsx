@@ -279,7 +279,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
               </p>
               <Button
                 onClick={handleInstallClick}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-lg py-3 h-auto"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 max-[999px]:text-base max-[999px]:py-2 text-lg py-3 h-auto"
               >
                 <Smartphone className="w-5 h-5 mr-2" />
                 Add to Home Screen
@@ -484,7 +484,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
 
             <Button
               onClick={handleExport}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-xl py-4 h-auto"
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 max-[999px]:text-lg max-[999px]:py-3 text-xl py-4 h-auto"
               disabled={isExporting}
             >
               {isExporting ? (
@@ -507,7 +507,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           <Button
             onClick={() => onNavigate('about')}
             variant="outline"
-            className="w-full text-lg py-4 h-auto"
+            className="w-full max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"
           >
             <Info className="w-5 h-5 mr-3" />
             About Family Flow

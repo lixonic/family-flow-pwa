@@ -123,7 +123,7 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
         <div className="space-y-4 mb-8">
           <Button
             onClick={() => onNavigate?.('day-glow')}
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xl py-4 h-auto"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 max-[999px]:text-lg max-[999px]:py-3 text-xl py-4 h-auto"
           >
             Start Your Journey
             <ArrowRight className="w-6 h-6 ml-3" />
@@ -437,7 +437,7 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
         <div className="text-center">
           <Button
             onClick={() => onNavigate?.('faq')}
-            className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white text-lg py-3 h-auto"
+            className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white max-[999px]:text-base max-[999px]:py-2 text-lg py-3 h-auto"
           >
             <HelpCircle className="w-5 h-5 mr-2" />
             Frequently Asked Questions

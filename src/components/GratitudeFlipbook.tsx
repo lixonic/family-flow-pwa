@@ -431,7 +431,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
             <div className="space-y-4 mb-10">
               <Button
                 onClick={startMindfulnessSession}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xl py-6 h-auto"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 max-[999px]:text-lg max-[999px]:py-4 text-xl py-6 h-auto"
               >
                 <Wind className="w-6 h-6 mr-3" />
                 Start with a Breath exercise
@@ -441,7 +441,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                 <Button
                   onClick={() => setShowAddForm(true)}
                   variant="outline"
-                  className="w-full sm:flex-1 text-xl py-4 h-auto"
+                  className="w-full sm:flex-1 max-[999px]:text-lg max-[999px]:py-3 text-xl py-4 h-auto"
                 >
                   <Plus className="w-6 h-6 mr-3" />
                   Add Gratitude
@@ -450,7 +450,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                 <Button
                   onClick={startSlideshow}
                   variant="outline"
-                  className="w-full sm:flex-1 text-xl py-4 h-auto"
+                  className="w-full sm:flex-1 max-[999px]:text-lg max-[999px]:py-3 text-xl py-4 h-auto"
                   disabled={thisWeekEntries.length === 0}
                 >
                   <Play className="w-6 h-6 mr-3" />
@@ -626,7 +626,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
 
                 <Button
                   onClick={handleAddGratitude}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-xl py-4 h-auto"
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 max-[999px]:text-lg max-[999px]:py-3 text-xl py-4 h-auto"
                   disabled={!gratitudeText.trim()}
                 >
                   Save Gratitude
