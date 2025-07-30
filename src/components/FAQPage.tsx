@@ -13,6 +13,38 @@ interface FAQItem {
 
 const FAQ_DATA: FAQItem[] = [
   {
+    question: "Does Family Flow restrict screen time or block apps?",
+    answer: "No. We don't set limits or block content. Instead, we help families reflect on their digital choices and develop awareness together. You decide what works for your family."
+  },
+  {
+    question: "What about kids who need screens for regulation or learning differences?",
+    answer: "Family Flow respects that every family's digital needs are different. Some kids thrive with more screen time, others with less. We help you understand what works for YOUR family without judgment."
+  },
+  {
+    question: "What about kids with autism or ADHD who use screens for self-regulation?",
+    answer: "Family Flow supports all families, including those where screens serve important regulatory functions. Our reflection prompts help you understand what digital experiences truly support each family member's wellbeing."
+  },
+  {
+    question: "How is this different from parental control apps?",
+    answer: "Parental controls impose external limits. Family Flow builds internal awareness. Instead of 'You can't,' we ask 'How did that feel?' and 'What do you want to try next?'"
+  },
+  {
+    question: "Are you trying to eliminate technology from family life?",
+    answer: "Not at all. We believe in conscious technology use, not elimination. The goal is helping families make intentional choices about when and how they use devices together."
+  },
+  {
+    question: "What if our family's \"healthy\" digital habits look different from other families?",
+    answer: "Perfect. Family Flow helps you discover and strengthen what works for YOUR unique situation. There's no one-size-fits-all approach to family digital wellness."
+  },
+  {
+    question: "Do you believe screens are harmful to kids?",
+    answer: "We don't take a position on whether screens are inherently good or bad. We believe families should have tools to understand their own patterns and make informed decisions based on their actual experience."
+  },
+  {
+    question: "Will using Family Flow make us more restrictive with technology?",
+    answer: "Not necessarily. Some families discover they want more boundaries, others realize they're already in a good place. The app helps you figure out what's right for you, not what's 'right' in general."
+  },
+  {
     question: "What is Family Flow's graduation philosophy?",
     answer: "Success means you won't need us forever. Family Flow is designed as a \"graduation platform\" - our success isn't measured by how long you use the app, but by how confidently your family graduates to independent connection rituals. We're here to build lasting habits, then set you free to flourish on your own."
   },
@@ -50,7 +82,7 @@ const FAQ_DATA: FAQItem[] = [
   },
   {
     question: "Is this just \"screen time policing\" by another name?",
-    answer: "Not at all. The main ritual is about feeling and presence (\"How was your day?\")—not usage monitoring or punishment. Screen-reflection and digital wellness prompts are optional, gentle, and never punitive or tracked."
+    answer: "Not at all. The main ritual is about feeling and presence (\"How was your day?\")—not usage monitoring or punishment. Screen-reflection and digital wellness prompts are optional, gentle, and never punitive or tracked. Family Flow helps families develop digital wisdom, not digital rules."
   },
   {
     question: "Do you address social media toxicity or digital wellness more broadly?",
@@ -148,8 +180,11 @@ export function FAQPage({ onNavigate }: FAQPageProps) {
               helenfrancisthonakkara@gmail.com
             </a>
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 mb-2">
             Your feedback helps shape Family Flow's future improvements
+          </p>
+          <p className="text-xs text-gray-400 italic">
+            Family Flow helps families develop digital wisdom, not digital rules. Every family's path to healthy technology use looks different, and that's exactly how it should be.
           </p>
         </div>
 

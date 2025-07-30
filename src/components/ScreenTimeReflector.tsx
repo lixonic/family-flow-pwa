@@ -9,9 +9,9 @@ import { formatDate } from './ui/utils';
 const BASE_REFLECTION_PROMPTS = [
   "What was your best offline moment today?",
   "Something online you loved today?",
-  "One thing you'll skip tomorrow?",
+  "What digital experience didn't serve you well today?",
   "How did screen time make you feel?",
-  "What would you rather do instead?",
+  "What other activities brought you joy today?",
   "Did you feel connected or disconnected?",
   "What made you smile away from screens?",
   "How long do you think you spent online?",
@@ -26,7 +26,11 @@ const BASE_REFLECTION_PROMPTS = [
   "What made you laugh without a screen?",
   "How did you connect with someone today?",
   "What's a skill you practiced offline?",
-  "What did you notice about your surroundings?"
+  "What did you notice about your surroundings?",
+  "What role did screens play in helping you today?",
+  "Which digital tools supported your wellbeing?",
+  "How did technology help you connect with others?",
+  "What screen time felt most purposeful today?"
 ];
 
 const SOCIAL_MEDIA_MICRO_ACTIONS = [
