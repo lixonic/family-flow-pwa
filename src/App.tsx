@@ -14,6 +14,9 @@ import { MilestoneCelebration } from "./components/MilestoneCelebration";
 import { TransitionPrompt } from "./components/TransitionPrompt";
 import { ReadinessAssessment } from "./components/ReadinessAssessment";
 import { GraduationView } from "./components/GraduationView";
+import { UpdateNotification } from "./components/UpdateNotification";
+import { useServiceWorkerUpdate } from "./hooks/useServiceWorkerUpdate";
+import { useAppStorage } from "./hooks/useAppStorage";
 
 export type FamilyMember = {
   id: string;
@@ -96,109 +99,123 @@ export default function App() {
   const [activeMilestones, setActiveMilestones] = useState<GraduationMilestone[]>([]);
   const [currentTransitionPrompt, setCurrentTransitionPrompt] = useState<any>(null);
   const [showReadinessAssessment, setShowReadinessAssessment] = useState(false);
+  
+  // PWA Update handling
+  const { updateAvailable, isUpdating, updateApp, dismissUpdate } = useServiceWorkerUpdate();
+  
+  // Storage handling (IndexedDB with localStorage fallback)
+  const { isStorageReady, loadData, saveData, clearData, storageError } = useAppStorage();
+
+  // Load data from IndexedDB when storage is ready
+  useEffect(() => {
+    if (!isStorageReady) return;
+
+    const loadFamilyData = async () => {
+      try {
+        const savedData = await loadData();
+        
+        if (savedData) {
+          // Migrate existing data to include graduation system
+          const migratedData: AppData = {
+            ...savedData,
+            graduationMilestones: savedData.graduationMilestones || [
+              {
+                id: "milestone-15-days",
+                type: "check-ins" as const,
+                threshold: 15,
+                achieved: false,
+                title: "15 Check-ins Completed - Building the Habit!",
+                description: "Your family is establishing a regular connection rhythm.",
+                celebrationShown: false,
+              },
+              {
+                id: "milestone-30-days",
+                type: "check-ins" as const,
+                threshold: 30,
+                achieved: false,
+                title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
+                description: "Amazing consistency! Your family is ready to explore more independent practices.",
+                celebrationShown: false,
+              },
+              {
+                id: "milestone-45-days",
+                type: "check-ins" as const,
+                threshold: 45,
+                achieved: false,
+                title: "45 Check-ins Completed - Graduation Time!",
+                description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
+                celebrationShown: false,
+              },
+            ],
+            graduationSettings: savedData.graduationSettings || {
+              targetGraduationDays: 45,
+              showTransitionPrompts: true,
+              preferredOfflineActivities: [],
+              readinessAssessmentCompleted: false,
+            },
+          };
+          
+          setAppData(migratedData);
+          // Save migrated data back to storage (async, non-blocking)
+          await saveData(migratedData);
+        } else {
+          // Initialize with empty family - users will add their own members
+          const initialData: AppData = {
+            familyMembers: [],
+            moodEntries: [],
+            reflectionEntries: [],
+            gratitudeEntries: [],
+            graduationMilestones: [
+              {
+                id: "milestone-15-days",
+                type: "check-ins",
+                threshold: 15,
+                achieved: false,
+                title: "15 Check-ins Completed - Building the Habit!",
+                description: "Your family is establishing a regular connection rhythm.",
+                celebrationShown: false,
+              },
+              {
+                id: "milestone-30-days",
+                type: "check-ins",
+                threshold: 30,
+                achieved: false,
+                title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
+                description: "Amazing consistency! Your family is ready to explore more independent practices.",
+                celebrationShown: false,
+              },
+              {
+                id: "milestone-45-days",
+                type: "check-ins",
+                threshold: 45,
+                achieved: false,
+                title: "45 Check-ins Completed - Graduation Time!",
+                description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
+                celebrationShown: false,
+              },
+            ],
+            graduationSettings: {
+              targetGraduationDays: 45,
+              showTransitionPrompts: true,
+              preferredOfflineActivities: [],
+              readinessAssessmentCompleted: false,
+            },
+          };
+          setAppData(initialData);
+          await saveData(initialData);
+        }
+      } catch (error) {
+        console.error('Failed to load family data:', error);
+      }
+    };
+
+    loadFamilyData();
+  }, [isStorageReady, loadData, saveData]);
 
   useEffect(() => {
     // Disable scroll restoration
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
-    }
-
-    // Load data from localStorage
-    const savedData = localStorage.getItem("familyFlowData");
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      
-      // Migrate existing data to include graduation system
-      const migratedData: AppData = {
-        ...parsedData,
-        graduationMilestones: parsedData.graduationMilestones || [
-          {
-            id: "milestone-15-days",
-            type: "check-ins" as const,
-            threshold: 15,
-            achieved: false,
-            title: "15 Check-ins Completed - Building the Habit!",
-            description: "Your family is establishing a regular connection rhythm.",
-            celebrationShown: false,
-          },
-          {
-            id: "milestone-30-days",
-            type: "check-ins" as const,
-            threshold: 30,
-            achieved: false,
-            title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
-            description: "Amazing consistency! Your family is ready to explore more independent practices.",
-            celebrationShown: false,
-          },
-          {
-            id: "milestone-45-days",
-            type: "check-ins" as const,
-            threshold: 45,
-            achieved: false,
-            title: "45 Check-ins Completed - Graduation Time!",
-            description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
-            celebrationShown: false,
-          },
-        ],
-        graduationSettings: parsedData.graduationSettings || {
-          targetGraduationDays: 45,
-          showTransitionPrompts: true,
-          preferredOfflineActivities: [],
-          readinessAssessmentCompleted: false,
-        },
-      };
-      
-      setAppData(migratedData);
-      // Save migrated data back to localStorage
-      localStorage.setItem("familyFlowData", JSON.stringify(migratedData));
-    } else {
-      // Initialize with empty family - users will add their own members
-      const initialData: AppData = {
-        familyMembers: [],
-        moodEntries: [],
-        reflectionEntries: [],
-        gratitudeEntries: [],
-        graduationMilestones: [
-          {
-            id: "milestone-15-days",
-            type: "check-ins",
-            threshold: 15,
-            achieved: false,
-            title: "15 Check-ins Completed - Building the Habit!",
-            description: "Your family is establishing a regular connection rhythm.",
-            celebrationShown: false,
-          },
-          {
-            id: "milestone-30-days",
-            type: "check-ins",
-            threshold: 30,
-            achieved: false,
-            title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
-            description: "Amazing consistency! Your family is ready to explore more independent practices.",
-            celebrationShown: false,
-          },
-          {
-            id: "milestone-45-days",
-            type: "check-ins",
-            threshold: 45,
-            achieved: false,
-            title: "45 Check-ins Completed - Graduation Time!",
-            description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
-            celebrationShown: false,
-          },
-        ],
-        graduationSettings: {
-          targetGraduationDays: 45,
-          showTransitionPrompts: true,
-          preferredOfflineActivities: [],
-          readinessAssessmentCompleted: false,
-        },
-      };
-      setAppData(initialData);
-      localStorage.setItem(
-        "familyFlowData",
-        JSON.stringify(initialData),
-      );
     }
 
     // Check if welcome should be shown
@@ -250,13 +267,17 @@ export default function App() {
     };
   }, []);
 
-  const updateAppData = (newData: Partial<AppData>) => {
+  const updateAppData = async (newData: Partial<AppData>) => {
     const updatedData = { ...appData, ...newData };
     setAppData(updatedData);
-    localStorage.setItem(
-      "familyFlowData",
-      JSON.stringify(updatedData),
-    );
+    
+    // Save to IndexedDB asynchronously (non-blocking)
+    try {
+      await saveData(updatedData);
+    } catch (error) {
+      console.error('Failed to save app data:', error);
+      // Data is still updated in state, so app continues working
+    }
   };
 
   const addFamilyMember = (member: Omit<FamilyMember, "id">) => {
@@ -560,57 +581,59 @@ export default function App() {
     setShowReadinessAssessment(true);
   };
 
-  const handleEraseAllData = () => {
-    // Clear all Family Flow localStorage data
-    localStorage.removeItem("familyFlowData");
-    localStorage.removeItem("familyFlowWelcomeShown");
-    localStorage.removeItem("familyFlowStartDate");
-    
-    // Reset app data to initial state (empty family)
-    const initialData: AppData = {
-      familyMembers: [],
-      moodEntries: [],
-      reflectionEntries: [],
-      gratitudeEntries: [],
-      graduationMilestones: [
-        {
-          id: "milestone-15-days",
-          type: "check-ins" as const,
-          threshold: 15,
-          achieved: false,
-          title: "15 Check-ins Completed - Building the Habit!",
-          description: "Your family is establishing a regular connection rhythm.",
-          celebrationShown: false,
+  const handleEraseAllData = async () => {
+    try {
+      // Clear all Family Flow data (IndexedDB and localStorage)
+      await clearData();
+      
+      // Reset app data to initial state (empty family)
+      const initialData: AppData = {
+        familyMembers: [],
+        moodEntries: [],
+        reflectionEntries: [],
+        gratitudeEntries: [],
+        graduationMilestones: [
+          {
+            id: "milestone-15-days",
+            type: "check-ins" as const,
+            threshold: 15,
+            achieved: false,
+            title: "15 Check-ins Completed - Building the Habit!",
+            description: "Your family is establishing a regular connection rhythm.",
+            celebrationShown: false,
+          },
+          {
+            id: "milestone-30-days",
+            type: "check-ins" as const,
+            threshold: 30,
+            achieved: false,
+            title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
+            description: "Amazing consistency! Your family is ready to explore more independent practices.",
+            celebrationShown: false,
+          },
+          {
+            id: "milestone-45-days",
+            type: "check-ins" as const,
+            threshold: 45,
+            achieved: false,
+            title: "45 Check-ins Completed - Graduation Time!",
+            description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
+            celebrationShown: false,
+          },
+        ],
+        graduationSettings: {
+          targetGraduationDays: 45,
+          showTransitionPrompts: true,
+          preferredOfflineActivities: [],
+          readinessAssessmentCompleted: false,
         },
-        {
-          id: "milestone-30-days",
-          type: "check-ins" as const,
-          threshold: 30,
-          achieved: false,
-          title: "30 Check-ins Completed - Training Wheels Ready to Come Off!",
-          description: "Amazing consistency! Your family is ready to explore more independent practices.",
-          celebrationShown: false,
-        },
-        {
-          id: "milestone-45-days",
-          type: "check-ins" as const,
-          threshold: 45,
-          achieved: false,
-          title: "45 Check-ins Completed - Graduation Time!",
-          description: "Congratulations! Your family has built lasting connection habits and is ready to graduate to offline practices.",
-          celebrationShown: false,
-        },
-      ],
-      graduationSettings: {
-        targetGraduationDays: 45,
-        showTransitionPrompts: true,
-        preferredOfflineActivities: [],
-        readinessAssessmentCompleted: false,
-      },
-    };
-    
-    setAppData(initialData);
-    localStorage.setItem("familyFlowData", JSON.stringify(initialData));
+      };
+      
+      setAppData(initialData);
+      await saveData(initialData);
+    } catch (error) {
+      console.error('Failed to erase data:', error);
+    }
     
     // Reset all UI state
     setActiveMilestones([]);
@@ -772,6 +795,27 @@ export default function App() {
           📶 You're offline - Your data is saved locally
         </div>
       )}
+      
+      {/* Storage Error Indicator */}
+      {storageError && (
+        <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-white text-center py-2 text-sm z-40">
+          ⚠️ {storageError} - Your entries are still being saved
+        </div>
+      )}
+
+      {/* PWA Update Notification - Only show during safe moments */}
+      <UpdateNotification
+        isVisible={
+          updateAvailable && 
+          !showWelcome && 
+          currentScreen !== "loader" &&
+          // Only show on navigation-safe screens (not during active reflection)
+          !["day-glow", "screen-time", "gratitude"].includes(currentScreen)
+        }
+        onUpdate={updateApp}
+        onDismiss={dismissUpdate}
+        isUpdating={isUpdating}
+      />
 
       {renderCurrentScreen()}
       {!showWelcome && currentScreen !== "loader" && currentScreen !== "about" && (
