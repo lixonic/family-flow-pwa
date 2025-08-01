@@ -646,6 +646,54 @@ export default function App() {
     setCurrentScreen("day-glow");
   };
 
+  const handleImportData = (importedData: Partial<AppData>) => {
+    try {
+      const newAppData = { ...appData };
+      
+      // Merge family members (avoid duplicates by name)
+      if (importedData.familyMembers) {
+        const existingNames = new Set(newAppData.familyMembers.map(m => m.name.toLowerCase()));
+        const newMembers = importedData.familyMembers.filter(
+          member => !existingNames.has(member.name.toLowerCase())
+        );
+        newAppData.familyMembers = [...newAppData.familyMembers, ...newMembers];
+      }
+      
+      // Merge entries (avoid duplicates by ID)
+      if (importedData.moodEntries) {
+        const existingIds = new Set(newAppData.moodEntries.map(e => e.id));
+        const newEntries = importedData.moodEntries.filter(entry => !existingIds.has(entry.id));
+        newAppData.moodEntries = [...newAppData.moodEntries, ...newEntries];
+      }
+      
+      if (importedData.reflectionEntries) {
+        const existingIds = new Set(newAppData.reflectionEntries.map(e => e.id));
+        const newEntries = importedData.reflectionEntries.filter(entry => !existingIds.has(entry.id));
+        newAppData.reflectionEntries = [...newAppData.reflectionEntries, ...newEntries];
+      }
+      
+      if (importedData.gratitudeEntries) {
+        const existingIds = new Set(newAppData.gratitudeEntries.map(e => e.id));
+        const newEntries = importedData.gratitudeEntries.filter(entry => !existingIds.has(entry.id));
+        newAppData.gratitudeEntries = [...newAppData.gratitudeEntries, ...newEntries];
+      }
+      
+      // Update graduation milestones if imported
+      if (importedData.graduationMilestones) {
+        const existingMilestoneIds = new Set(newAppData.graduationMilestones.map(m => m.id));
+        const newMilestones = importedData.graduationMilestones.filter(
+          milestone => !existingMilestoneIds.has(milestone.id)
+        );
+        newAppData.graduationMilestones = [...newAppData.graduationMilestones, ...newMilestones];
+      }
+      
+      setAppData(newAppData);
+      saveData(newAppData);
+    } catch (error) {
+      console.error('Failed to import data:', error);
+    }
+  };
+
   // Scroll to top whenever screen changes
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -750,6 +798,7 @@ export default function App() {
             deferredPrompt={deferredPrompt}
             setDeferredPrompt={setDeferredPrompt}
             onEraseAllData={handleEraseAllData}
+            onImportData={handleImportData}
           />
         );
       case "about":
