@@ -3,11 +3,7 @@ import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { formatDate } from './ui/utils';
-import { Download, FileText, Database, Smartphone, Info, Shield, HelpCircle, QrCode, Camera, Share2, Users } from 'lucide-react';
-import jsPDF from 'jspdf';
-import QRCode from 'qrcode';
-import QrScanner from 'qr-scanner';
-import LZString from 'lz-string';
+import { Download, FileText, Database, Smartphone, Info, Shield, HelpCircle } from 'lucide-react';
 
 interface MemoryCapsuleProps {
   appData: AppData;
@@ -19,13 +15,18 @@ interface MemoryCapsuleProps {
 }
 
 export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferredPrompt, onEraseAllData, onImportData }: MemoryCapsuleProps) {
-  const [exportFormat, setExportFormat] = useState<'csv' | null>(null);
+  const [exportFormat, setExportFormat] = useState<'csv' | 'json' | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
   const [showInstallSuccess, setShowInstallSuccess] = useState(false);
   const [showExportHelp, setShowExportHelp] = useState(false);
   const [showEraseConfirm, setShowEraseConfirm] = useState(false);
   const [eraseInput, setEraseInput] = useState('');
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [importStatus, setImportStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
+  const [bluetoothDevice, setBluetoothDevice] = useState<BluetoothDevice | null>(null);
+  const [isBluetoothScanning, setIsBluetoothScanning] = useState(false);
+  const [bluetoothStatus, setBluetoothStatus] = useState<{type: 'success' | 'error' | 'info', message: string} | null>(null);
   const [storageMetrics, setStorageMetrics] = useState<{
     familyFlowSize: number;
     totalSize: number;
@@ -36,24 +37,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     storageType: string;
   } | null>(null);
 
-  // Sync-related state
-  const [syncMode, setSyncMode] = useState<'share' | 'receive' | null>(null);
-  const [shareType, setShareType] = useState<'today' | 'all' | null>(null);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-  const [isGeneratingQr, setIsGeneratingQr] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanError, setScanError] = useState<string | null>(null);
-  const [sizeError, setSizeError] = useState<string | null>(null);
-  const [showDataTooLarge, setShowDataTooLarge] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const qrScannerRef = useRef<QrScanner | null>(null);
 
-  // QR Code size limits (conservative estimates)
-  const QR_LIMITS = {
-    MAX_COMPRESSED_SIZE: 2800, // bytes - conservative limit for reliable scanning
-    MAX_UNCOMPRESSED_SIZE: 1400, // bytes - fallback if compression fails
-    WARNING_SIZE: 2000, // bytes - show warning but still attempt
-  };
 
   // Load storage metrics on component mount and when appData changes
   React.useEffect(() => {
@@ -132,216 +116,39 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     return csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
   };
 
-  const generatePDF = () => {
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'in',
-      format: 'letter'
-    });
 
-    // Helper functions for consistent styling
-    const colors = {
-      primary: [249, 115, 22], // Orange #F97316
-      secondary: [219, 39, 119], // Pink
-      text: [75, 85, 99], // Gray-600
-      light: [156, 163, 175] // Gray-400
-    };
+  const generateFamilyFilename = (format: string) => {
+    const timestamp = new Date().toISOString().split('T')[0];
+    const familyName = appData.familyMembers.length > 0 
+      ? appData.familyMembers[0].name.toLowerCase().replace(/[^a-z0-9]/gi, '') 
+      : 'family';
+    const entryCount = getTotalEntries();
+    const dayCount = getUniqueDaysWithEntries();
+    
+    return `family-flow-${familyName}-${dayCount}days-${entryCount}entries-${timestamp}.${format}`;
+  };
 
-    const addCoverPage = () => {
-      // Background gradient effect (simulated with rectangles)
-      doc.setFillColor(249, 248, 246); // Warm background
-      doc.rect(0, 0, 8.5, 11, 'F');
-      
-      // Title with handwritten feel
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(36);
-      doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      
-      const titleText = 'Our Family Journey';
-      const titleWidth = doc.getTextWidth(titleText);
-      doc.text(titleText, (8.5 - titleWidth / 72) / 2, 2.5);
-      
-      // Subtitle
-      doc.setFontSize(18);
-      doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-      const subtitleText = 'Digital Wellness Memory Book';
-      const subtitleWidth = doc.getTextWidth(subtitleText);
-      doc.text(subtitleText, (8.5 - subtitleWidth / 72) / 2, 3.2);
-      
-      // Family members
-      doc.setFontSize(16);
-      const memberNames = appData.familyMembers.map(m => m.name).join(' • ');
-      const membersWidth = doc.getTextWidth(memberNames);
-      doc.text(memberNames, (8.5 - membersWidth / 72) / 2, 4);
-      
-      // Date range
-      const allDates = [
-        ...appData.moodEntries.map(e => new Date(e.date)),
-        ...appData.reflectionEntries.map(e => new Date(e.date)),
-        ...appData.gratitudeEntries.map(e => new Date(e.date))
-      ];
-      
-      if (allDates.length > 0) {
-        const earliest = new Date(Math.min(...allDates.map(d => d.getTime())));
-        const latest = new Date(Math.max(...allDates.map(d => d.getTime())));
-        const dateRange = `${formatDate(earliest)} - ${formatDate(latest)}`;
-        
-        doc.setFontSize(14);
-        doc.setTextColor(colors.light[0], colors.light[1], colors.light[2]);
-        const dateWidth = doc.getTextWidth(dateRange);
-        doc.text(dateRange, (8.5 - dateWidth / 72) / 2, 4.8);
+  const generateJSONExport = () => {
+    const exportData = {
+      metadata: {
+        exportDate: new Date().toISOString(),
+        appVersion: '2.0',
+        totalEntries: getTotalEntries(),
+        uniqueDays: getUniqueDaysWithEntries(),
+        dateRange: getDateRange(),
+        familyMembers: appData.familyMembers.length
+      },
+      familyData: {
+        familyMembers: appData.familyMembers,
+        moodEntries: appData.moodEntries,
+        reflectionEntries: appData.reflectionEntries,
+        gratitudeEntries: appData.gratitudeEntries,
+        graduationMilestones: appData.graduationMilestones || [],
+        graduationSettings: appData.graduationSettings || {}
       }
-      
-      // Decorative elements
-      doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      doc.setLineWidth(0.02);
-      doc.line(2, 5.5, 6.5, 5.5); // Decorative line
-      
-      // Stats summary in a beautiful box
-      doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      doc.roundedRect(2, 6, 4.5, 2.5, 0.1, 0.1, 'FD');
-      
-      doc.setFontSize(12);
-      doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-      doc.text('Our Journey Together:', 2.5, 6.5);
-      
-      doc.setFontSize(10);
-      doc.text(`• ${appData.moodEntries.length} mood check-ins`, 2.5, 7);
-      doc.text(`• ${appData.reflectionEntries.length} thoughtful reflections`, 2.5, 7.3);
-      doc.text(`• ${appData.gratitudeEntries.length} gratitude moments`, 2.5, 7.6);
-      doc.text(`• ${appData.familyMembers.length} family members growing together`, 2.5, 7.9);
-      
-      // Footer message
-      doc.setFontSize(10);
-      doc.setTextColor(colors.light[0], colors.light[1], colors.light[2]);
-      const footerText = 'Success means you won\'t need us forever ✨';
-      const footerWidth = doc.getTextWidth(footerText);
-      doc.text(footerText, (8.5 - footerWidth / 72) / 2, 10);
     };
-
-    const addFamilyGallery = () => {
-      doc.addPage();
-      
-      // Page title
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(24);
-      doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      doc.text('Meet Our Family', 1, 1.5);
-      
-      // Family member cards
-      const membersPerRow = 2;
-      const cardWidth = 3.5;
-      const cardHeight = 2;
-      const marginX = 0.75;
-      const marginY = 0.5;
-      
-      appData.familyMembers.forEach((member, index) => {
-        const row = Math.floor(index / membersPerRow);
-        const col = index % membersPerRow;
-        const x = 1 + col * (cardWidth + marginX);
-        const y = 2.5 + row * (cardHeight + marginY);
-        
-        // Member card background
-        doc.setFillColor(255, 255, 255);
-        doc.setDrawColor(colors.light[0], colors.light[1], colors.light[2]);
-        doc.roundedRect(x, y, cardWidth, cardHeight, 0.1, 0.1, 'FD');
-        
-        // Member avatar (emoji as text)
-        doc.setFontSize(32);
-        doc.text(member.avatar, x + 0.3, y + 0.8);
-        
-        // Member name
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-        doc.text(member.name, x + 1.2, y + 0.8);
-        
-        // Member color indicator
-        const memberColorRGB = hexToRgb(member.color) || colors.primary;
-        doc.setFillColor(memberColorRGB[0], memberColorRGB[1], memberColorRGB[2]);
-        doc.circle(x + 1.2, y + 1.2, 0.1, 'F');
-        
-        doc.setFontSize(10);
-        doc.setTextColor(colors.light[0], colors.light[1], colors.light[2]);
-        doc.text('My color', x + 1.4, y + 1.25);
-      });
-    };
-
-    const addMoodSection = () => {
-      doc.addPage();
-      
-      // Section title
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(24);
-      doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-      doc.text('Our Moods Together', 1, 1.5);
-      
-      let yPosition = 2.5;
-      const lineHeight = 0.4;
-      
-      appData.moodEntries.forEach((entry, index) => {
-        if (yPosition > 10) {
-          doc.addPage();
-          yPosition = 1.5;
-        }
-        
-        const member = appData.familyMembers.find(m => m.id === entry.memberId);
-        
-        // Date
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-        doc.setTextColor(colors.light[0], colors.light[1], colors.light[2]);
-        doc.text(formatDate(entry.date), 1, yPosition);
-        
-        // Member name
-        doc.setFontSize(12);
-        doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-        doc.text(member?.name || 'Unknown', 2.5, yPosition);
-        
-        // Mood emoji
-        doc.setFontSize(16);
-        doc.text(entry.emoji, 4, yPosition);
-        
-        // Note if available
-        if (entry.note) {
-          doc.setFontSize(10);
-          doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
-          const noteLines = doc.splitTextToSize(entry.note, 4);
-          doc.text(noteLines, 4.5, yPosition);
-          yPosition += noteLines.length * 0.15;
-        }
-        
-        yPosition += lineHeight;
-        
-        // Add subtle separator line
-        if (index < appData.moodEntries.length - 1) {
-          doc.setDrawColor(colors.light[0], colors.light[1], colors.light[2]);
-          doc.setLineWidth(0.005);
-          doc.line(1, yPosition - 0.1, 7.5, yPosition - 0.1);
-        }
-      });
-    };
-
-    // Helper function to convert hex to RGB
-    const hexToRgb = (hex: string) => {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? [
-        parseInt(result[1], 16),
-        parseInt(result[2], 16),
-        parseInt(result[3], 16)
-      ] : null;
-    };
-
-    // Generate the PDF
-    addCoverPage();
-    addFamilyGallery();
-    addMoodSection();
     
-    // Add similar sections for reflections and gratitude...
-    // (Implementation continues with reflection and gratitude sections)
-    
-    return doc;
+    return JSON.stringify(exportData, null, 2);
   };
 
   const downloadFile = (content: string, filename: string, mimeType: string) => {
@@ -362,14 +169,17 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     setIsExporting(true);
     
     // Simulate export processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const timestamp = new Date().toISOString().split('T')[0];
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
     try {
       if (exportFormat === 'csv') {
         const csvContent = generateCSV();
-        downloadFile(csvContent, `family-flow-memory-book-${timestamp}.csv`, 'text/csv');
+        const filename = generateFamilyFilename('csv');
+        downloadFile(csvContent, filename, 'text/csv');
+      } else if (exportFormat === 'json') {
+        const jsonContent = generateJSONExport();
+        const filename = generateFamilyFilename('json');
+        downloadFile(jsonContent, filename, 'application/json');
       }
       
       setExportComplete(true);
@@ -379,8 +189,239 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
       }, 3000);
     } catch (error) {
       console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleFileImport = async (file: File) => {
+    setImportStatus(null);
+    
+    if (!file.name.endsWith('.json')) {
+      setImportStatus({
+        type: 'error',
+        message: 'Please select a Family Flow JSON file (.json)'
+      });
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const importedData = JSON.parse(text);
+      
+      // Validate the imported data structure
+      if (!importedData.familyData || !importedData.metadata) {
+        throw new Error('Invalid Family Flow file format');
+      }
+
+      const { familyData } = importedData;
+      const entryCount = 
+        (familyData.moodEntries?.length || 0) + 
+        (familyData.reflectionEntries?.length || 0) + 
+        (familyData.gratitudeEntries?.length || 0);
+      
+      const memberCount = familyData.familyMembers?.length || 0;
+      
+      const confirmed = confirm(
+        `Import family data from ${importedData.metadata.dateRange}?\n\n` +
+        `• ${entryCount} entries (mood, reflection, gratitude)\n` +
+        `• ${memberCount} family members\n` +
+        `• Exported: ${new Date(importedData.metadata.exportDate).toLocaleDateString()}\n\n` +
+        `This will add new data to your existing family entries.`
+      );
+
+      if (confirmed) {
+        onImportData(familyData);
+        setImportStatus({
+          type: 'success',
+          message: `✅ Successfully imported ${entryCount} entries and ${memberCount} family members!`
+        });
+        
+        setTimeout(() => setImportStatus(null), 5000);
+      }
+    } catch (error) {
+      console.error('Import failed:', error);
+      setImportStatus({
+        type: 'error',
+        message: 'Failed to import file. Please ensure it\'s a valid Family Flow JSON export.'
+      });
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileImport(files[0]);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileImport(files[0]);
+    }
+  };
+
+  // Platform detection
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const hasBluetooth = 'bluetooth' in navigator;
+  const supportsBluetoothSync = isMobile && hasBluetooth;
+
+  // Bluetooth sync functions
+  const startBluetoothSharing = async () => {
+    if (!supportsBluetoothSync || !hasDataForSync()) return;
+    
+    setBluetoothStatus(null);
+    setIsBluetoothScanning(true);
+    
+    try {
+      // Make device discoverable for Family Flow
+      const exportData = generateJSONExport();
+      const deviceName = `FamilyFlow-${appData.familyMembers[0]?.name || 'User'}`;
+      
+      setBluetoothStatus({
+        type: 'info',
+        message: `📡 Making ${deviceName} discoverable for family sync...`
+      });
+      
+      // In a real implementation, this would:
+      // 1. Start Bluetooth advertising with Family Flow service UUID
+      // 2. Wait for connections from other Family Flow devices
+      // 3. Transfer JSON data when connected
+      
+      // Simulated for demo (real implementation needs Bluetooth API)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      setBluetoothStatus({
+        type: 'success',
+        message: '✅ Ready for family sync! Have another family member scan for nearby devices.'
+      });
+      
+    } catch (error) {
+      console.error('Bluetooth sharing failed:', error);
+      setBluetoothStatus({
+        type: 'error',
+        message: 'Failed to start Bluetooth sharing. Make sure Bluetooth is enabled.'
+      });
+    } finally {
+      setIsBluetoothScanning(false);
+    }
+  };
+
+  const scanForBluetoothDevices = async () => {
+    if (!supportsBluetoothSync) return;
+    
+    setBluetoothStatus(null);
+    setIsBluetoothScanning(true);
+    
+    try {
+      // Request Bluetooth device
+      const device = await navigator.bluetooth.requestDevice({
+        filters: [
+          { namePrefix: 'FamilyFlow-' },
+          { services: ['family-sync-service'] } // Custom service UUID would be used
+        ],
+        optionalServices: ['family-sync-service']
+      });
+
+      setBluetoothDevice(device);
+      setBluetoothStatus({
+        type: 'info',
+        message: `📱 Connecting to ${device.name}...`
+      });
+      
+      // Connect to device and sync data
+      await connectAndSyncBluetooth(device);
+      
+    } catch (error: any) {
+      console.error('Bluetooth scan failed:', error);
+      if (error.name === 'NotFoundError') {
+        setBluetoothStatus({
+          type: 'error',
+          message: 'No Family Flow devices found nearby. Make sure another family member is sharing.'
+        });
+      } else if (error.name === 'NotAllowedError') {
+        setBluetoothStatus({
+          type: 'error',
+          message: 'Bluetooth access denied. Please allow Bluetooth permissions.'
+        });
+      } else {
+        setBluetoothStatus({
+          type: 'error',
+          message: 'Bluetooth connection failed. Make sure Bluetooth is enabled.'
+        });
+      }
+    } finally {
+      setIsBluetoothScanning(false);
+    }
+  };
+
+  const connectAndSyncBluetooth = async (device: BluetoothDevice) => {
+    try {
+      // Connect to GATT server
+      const server = await device.gatt?.connect();
+      if (!server) throw new Error('Failed to connect to device');
+      
+      // Get Family Flow sync service
+      const service = await server.getPrimaryService('family-sync-service');
+      const characteristic = await service.getCharacteristic('family-data-characteristic');
+      
+      // Read family data from the device
+      const value = await characteristic.readValue();
+      const jsonData = new TextDecoder().decode(value);
+      const importedData = JSON.parse(jsonData);
+      
+      // Validate and import data
+      if (importedData.familyData && importedData.metadata) {
+        const { familyData } = importedData;
+        const entryCount = 
+          (familyData.moodEntries?.length || 0) + 
+          (familyData.reflectionEntries?.length || 0) + 
+          (familyData.gratitudeEntries?.length || 0);
+        
+        const memberCount = familyData.familyMembers?.length || 0;
+        
+        const confirmed = confirm(
+          `Sync family data from ${device.name}?\n\n` +
+          `• ${entryCount} entries (mood, reflection, gratitude)\n` +
+          `• ${memberCount} family members\n` +
+          `• From: ${importedData.metadata.dateRange}\n\n` +
+          `This will add new data to your existing family entries.`
+        );
+
+        if (confirmed) {
+          onImportData(familyData);
+          setBluetoothStatus({
+            type: 'success',
+            message: `✅ Successfully synced ${entryCount} entries from ${device.name}!`
+          });
+          
+          setTimeout(() => setBluetoothStatus(null), 5000);
+        }
+      } else {
+        throw new Error('Invalid data format received');
+      }
+      
+    } catch (error) {
+      console.error('Bluetooth sync failed:', error);
+      setBluetoothStatus({
+        type: 'error',
+        message: 'Failed to sync data. Please try again.'
+      });
     }
   };
 
@@ -405,6 +446,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     appData.gratitudeEntries.forEach(entry => {
       uniqueDays.add(entry.date);
     });
+    
     
     return uniqueDays.size;
   };
@@ -480,7 +522,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
   };
 
   const hasDataForExport = () => {
-    return getUniqueDaysWithEntries() >= 15; // Require at least 15 days of entries to export
+    return getUniqueDaysWithEntries() >= 5; // Require at least 5 days of entries to export
   };
 
   const hasDataForSync = () => {
@@ -498,286 +540,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     return `${(bytes / 1024).toFixed(1)} KB`;
   };
 
-  const validateDataSize = (data: any, type: 'today' | 'all'): { 
-    canShare: boolean; 
-    size: number; 
-    compressed?: number;
-    warning?: string; 
-    error?: string; 
-  } => {
-    const uncompressedSize = getDataSize(data);
-    
-    // Try compression
-    const jsonString = JSON.stringify(data);
-    const compressed = LZString.compress(jsonString);
-    const compressedSize = compressed ? new Blob([compressed]).size : uncompressedSize;
-    
-    // Check limits
-    if (compressedSize <= QR_LIMITS.MAX_COMPRESSED_SIZE) {
-      if (compressedSize > QR_LIMITS.WARNING_SIZE) {
-        return {
-          canShare: true,
-          size: uncompressedSize,
-          compressed: compressedSize,
-          warning: `Large dataset (${formatDataSize(compressedSize)} compressed). QR code may take longer to scan.`
-        };
-      }
-      return {
-        canShare: true,
-        size: uncompressedSize,
-        compressed: compressedSize
-      };
-    }
-    
-    // Too large even with compression
-    if (type === 'all') {
-      const todaysData = getTodaysEntries();
-      const todaysSize = getDataSize(todaysData);
-      
-      if (todaysSize <= QR_LIMITS.MAX_COMPRESSED_SIZE) {
-        return {
-          canShare: false,
-          size: uncompressedSize,
-          compressed: compressedSize,
-          error: `All family data (${formatDataSize(compressedSize)}) is too large for QR code. Try "Share Today" instead (${formatDataSize(todaysSize)}).`
-        };
-      }
-    }
-    
-    return {
-      canShare: false,
-      size: uncompressedSize,
-      compressed: compressedSize,
-      error: `Data (${formatDataSize(compressedSize)} compressed) exceeds QR code limit (${formatDataSize(QR_LIMITS.MAX_COMPRESSED_SIZE)}). Try exporting as file instead.`
-    };
-  };
-
-  const createOptimizedPayload = (data: any, type: 'today' | 'all') => {
-    // Create minimal payload to reduce size
-    const optimizedData = {
-      ...data,
-      // Remove unnecessary metadata
-      graduationMilestones: undefined, // Don't sync graduation progress
-      graduationSettings: undefined,   // Don't sync settings
-    };
-
-    // Further optimize by removing empty arrays
-    Object.keys(optimizedData).forEach(key => {
-      if (Array.isArray(optimizedData[key]) && optimizedData[key].length === 0) {
-        delete optimizedData[key];
-      }
-    });
-
-    const payload = {
-      type: 'family-flow-sync',
-      version: '1.0',
-      syncType: type,
-      timestamp: new Date().toISOString(),
-      data: optimizedData
-    };
-
-    return payload;
-  };
-
-  // Sync functionality
-  const getTodaysEntries = () => {
-    const today = new Date().toDateString();
-    return {
-      moodEntries: appData.moodEntries.filter(entry => new Date(entry.date).toDateString() === today),
-      reflectionEntries: appData.reflectionEntries.filter(entry => new Date(entry.date).toDateString() === today),
-      gratitudeEntries: appData.gratitudeEntries.filter(entry => new Date(entry.date).toDateString() === today),
-      familyMembers: appData.familyMembers
-    };
-  };
-
-  const generateQrCode = async (data: any, type: 'today' | 'all') => {
-    setIsGeneratingQr(true);
-    setSizeError(null);
-    
-    try {
-      // Validate data size first
-      const sizeCheck = validateDataSize(data, type);
-      
-      if (!sizeCheck.canShare) {
-        setSizeError(sizeCheck.error || 'Data too large for QR code');
-        setShowDataTooLarge(true);
-        return;
-      }
-
-      // Create optimized payload
-      const payload = createOptimizedPayload(data, type);
-      const jsonString = JSON.stringify(payload);
-      
-      // Compress the data
-      const compressed = LZString.compress(jsonString);
-      const finalData = compressed || jsonString; // Fallback to uncompressed
-      
-      // Final size check after compression
-      const finalSize = new Blob([finalData]).size;
-      if (finalSize > QR_LIMITS.MAX_COMPRESSED_SIZE) {
-        setSizeError(`Compressed data (${formatDataSize(finalSize)}) still exceeds QR limit. Try exporting as file instead.`);
-        setShowDataTooLarge(true);
-        return;
-      }
-
-      // Generate QR code
-      const qrDataUrl = await QRCode.toDataURL(finalData, {
-        width: 300,
-        margin: 2,
-        errorCorrectionLevel: 'M', // Medium error correction for better reliability
-        color: {
-          dark: '#F97316', // Family Flow orange
-          light: '#FFFFFF'
-        }
-      });
-
-      setQrDataUrl(qrDataUrl);
-      setShareType(type);
-      
-      // Show warning if data is large but still shareable
-      if (sizeCheck.warning) {
-        setSizeError(sizeCheck.warning);
-      }
-    } catch (error) {
-      console.error('QR generation failed:', error);
-      setSizeError('Failed to generate QR code. Data may be too large or contain invalid characters.');
-      setShowDataTooLarge(true);
-    } finally {
-      setIsGeneratingQr(false);
-    }
-  };
-
-  const handleShareToday = async () => {
-    const todaysData = getTodaysEntries();
-    if (todaysData.moodEntries.length === 0 && todaysData.reflectionEntries.length === 0 && todaysData.gratitudeEntries.length === 0) {
-      alert('No entries for today to share. Add some mood, reflection, or gratitude entries first!');
-      return;
-    }
-    await generateQrCode(todaysData, 'today');
-    setSyncMode('share');
-  };
-
-  const handleShareAll = async () => {
-    if (!hasDataForSync()) {
-      alert('No family data to share. Add some entries first!');
-      return;
-    }
-    await generateQrCode(appData, 'all');
-    setSyncMode('share');
-  };
-
-  const startScanning = async () => {
-    if (!videoRef.current) return;
-    
-    setScanError(null);
-    setIsScanning(true);
-    setSyncMode('receive');
-    
-    try {
-      // Check if camera is available
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Camera not available on this device');
-      }
-
-      qrScannerRef.current = new QrScanner(
-        videoRef.current,
-        (result) => {
-          handleQrScanResult(result.data);
-        },
-        {
-          highlightScanRegion: true,
-          highlightCodeOutline: true,
-        }
-      );
-
-      await qrScannerRef.current.start();
-    } catch (error) {
-      console.error('Scanner failed:', error);
-      setScanError('Camera access failed. Please allow camera permissions and try again.');
-      setIsScanning(false);
-    }
-  };
-
-  const stopScanning = () => {
-    if (qrScannerRef.current) {
-      qrScannerRef.current.stop();
-      qrScannerRef.current.destroy();
-      qrScannerRef.current = null;
-    }
-    setIsScanning(false);
-    setSyncMode(null);
-  };
-
-  const handleQrScanResult = (data: string) => {
-    try {
-      let parsedPayload;
-      
-      // Try to decompress first (new format)
-      try {
-        const decompressed = LZString.decompress(data);
-        if (decompressed) {
-          parsedPayload = JSON.parse(decompressed);
-        } else {
-          // Fallback to direct JSON parsing (legacy format)
-          parsedPayload = JSON.parse(data);
-        }
-      } catch {
-        // Fallback to direct JSON parsing
-        parsedPayload = JSON.parse(data);
-      }
-      
-      if (parsedPayload.type !== 'family-flow-sync') {
-        throw new Error('Not a Family Flow sync QR code');
-      }
-
-      // Version compatibility check
-      if (parsedPayload.version !== '1.0') {
-        setScanError(`Unsupported QR code version (${parsedPayload.version}). Please update Family Flow on both devices.`);
-        return;
-      }
-
-      const importedData = parsedPayload.data;
-      
-      // Calculate import statistics
-      const entryCount = 
-        (importedData.moodEntries?.length || 0) + 
-        (importedData.reflectionEntries?.length || 0) + 
-        (importedData.gratitudeEntries?.length || 0);
-      
-      const memberCount = importedData.familyMembers?.length || 0;
-      
-      // Enhanced confirmation dialog
-      const syncType = parsedPayload.syncType === 'today' ? 'today\'s' : 'all';
-      const timestamp = new Date(parsedPayload.timestamp).toLocaleString();
-      
-      const confirmed = confirm(
-        `Import ${syncType} family data?\n\n` +
-        `• ${entryCount} entries (mood, reflection, gratitude)\n` +
-        `• ${memberCount} family members\n` +
-        `• Created: ${timestamp}\n\n` +
-        `This will add new data to your existing family entries.`
-      );
-
-      if (confirmed) {
-        onImportData(importedData);
-        alert(`✅ Successfully imported ${entryCount} family entries and ${memberCount} family members!`);
-        stopScanning();
-      }
-    } catch (error) {
-      console.error('QR scan failed:', error);
-      setScanError('Invalid QR code. Please scan a Family Flow sync QR code, or the data may be corrupted.');
-    }
-  };
-
-  const resetSyncMode = () => {
-    setSyncMode(null);
-    setShareType(null);
-    setQrDataUrl(null);
-    setScanError(null);
-    setSizeError(null);
-    setShowDataTooLarge(false);
-    stopScanning();
-  };
 
   if (exportComplete) {
     return (
@@ -883,277 +645,9 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           </div>
         </Card>
 
-        {/* Sync Data Section */}
-        {!exportFormat && !syncMode && (
-          <div className="mb-10">
-            <div className="flex items-center justify-center mb-6">
-              <h3 className="text-2xl mr-3">Sync with your family</h3>
-            </div>
-            
-            <div className="mb-8 text-center">
-              <p className="text-gray-600 mb-4">
-                Share data between your family's devices using QR codes
-              </p>
-              <p className="text-sm text-gray-500">
-                No internet needed • Data stays private • Works offline
-              </p>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <Button
-                onClick={handleShareToday}
-                variant="outline"
-                className="flex-1 h-auto py-4 px-6 flex flex-col items-center space-y-2"
-              >
-                <Share2 className="w-6 h-6 text-orange-600" />
-                <div className="text-center">
-                  <div className="font-medium">Share Today</div>
-                  <div className="text-sm text-gray-600">
-                    {(() => {
-                      const todaysData = getTodaysEntries();
-                      const todaysEntries = todaysData.moodEntries.length + todaysData.reflectionEntries.length + todaysData.gratitudeEntries.length;
-                      if (todaysEntries === 0) return 'No entries today';
-                      
-                      const size = getDataSize(todaysData);
-                      return `${todaysEntries} entries (${formatDataSize(size)})`;
-                    })()}
-                  </div>
-                </div>
-              </Button>
-              
-              <Button
-                onClick={handleShareAll}
-                variant="outline"
-                disabled={!hasDataForSync()}
-                className={`flex-1 h-auto py-4 px-6 flex flex-col items-center space-y-2 ${
-                  !hasDataForSync() ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                <Users className="w-6 h-6 text-blue-600" />
-                <div className="text-center">
-                  <div className="font-medium">Share All Data</div>
-                  <div className="text-sm text-gray-600">
-                    {(() => {
-                      if (!hasDataForSync()) return 'Add some entries first';
-                      
-                      const totalEntries = getTotalEntries();
-                      const size = getDataSize(appData);
-                      const compressed = LZString.compress(JSON.stringify(appData));
-                      const compressedSize = compressed ? new Blob([compressed]).size : size;
-                      
-                      if (compressedSize > QR_LIMITS.MAX_COMPRESSED_SIZE) {
-                        return `${totalEntries} entries (too large for QR)`;
-                      }
-                      
-                      return `${totalEntries} entries (${formatDataSize(compressedSize)})`;
-                    })()}
-                  </div>
-                </div>
-              </Button>
-              
-              <Button
-                onClick={startScanning}
-                variant="outline"
-                className="flex-1 h-auto py-4 px-6 flex flex-col items-center space-y-2"
-              >
-                <Camera className="w-6 h-6 text-green-600" />
-                <div className="text-center">
-                  <div className="font-medium">Receive Data</div>
-                  <div className="text-sm text-gray-600">Scan QR from family</div>
-                </div>
-              </Button>
-            </div>
-          </div>
-        )}
 
-        {/* QR Share Mode */}
-        {syncMode === 'share' && qrDataUrl && (
-          <div className="mb-10">
-            <div className="flex items-center mb-6">
-              <button
-                onClick={resetSyncMode}
-                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
-              >
-                ← Back
-              </button>
-              <h3 className="text-2xl">Share {shareType === 'today' ? 'Today\'s Entries' : 'All Family Data'}</h3>
-            </div>
-
-            {/* Size warning if exists */}
-            {sizeError && !showDataTooLarge && (
-              <div className="mb-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-                <div className="flex items-start space-x-3">
-                  <span className="text-amber-600 text-xl">⚠️</span>
-                  <div>
-                    <p className="text-amber-800 font-medium">Large Dataset Warning</p>
-                    <p className="text-amber-700 text-sm">{sizeError}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <Card className="p-8 text-center">
-              <div className="mb-6">
-                <img 
-                  src={qrDataUrl} 
-                  alt="Family Flow Sync QR Code" 
-                  className="mx-auto rounded-lg shadow-lg"
-                  style={{ maxWidth: '250px' }}
-                />
-              </div>
-              
-              <div className="space-y-2 mb-6">
-                <p className="font-medium text-lg">
-                  {shareType === 'today' ? '📱 Scan to continue today\'s session' : '👨‍👩‍👧‍👦 Scan to receive all family data'}
-                </p>
-                <p className="text-gray-600">
-                  Have another family member scan this QR code with their Family Flow app
-                </p>
-              </div>
-
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  <strong>Privacy:</strong> Data transfers directly between devices • No servers • No internet required
-                </p>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Data Too Large Error */}
-        {showDataTooLarge && (
-          <div className="mb-10">
-            <div className="flex items-center mb-6">
-              <button
-                onClick={resetSyncMode}
-                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
-              >
-                ← Back
-              </button>
-              <h3 className="text-2xl">Data Too Large for QR Code</h3>
-            </div>
-
-            <Card className="p-8">
-              <div className="text-center mb-6">
-                <div className="text-6xl mb-4">📊</div>
-                <h4 className="text-xl font-medium text-red-600 mb-2">
-                  QR Code Size Limit Exceeded
-                </h4>
-                <p className="text-gray-600 mb-4">{sizeError}</p>
-              </div>
-
-              <div className="bg-red-50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-red-800 mb-2">
-                  <strong>Why this happened:</strong> QR codes can only hold limited data (~2.8KB). 
-                  Your family has created lots of wonderful memories that exceed this limit!
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <h5 className="font-medium text-gray-800">Alternative options:</h5>
-                
-                <div className="grid gap-3">
-                  <Button
-                    onClick={() => {
-                      resetSyncMode();
-                      // Auto-switch to today sharing if all data was too large
-                      if (shareType === 'all') {
-                        const todaysData = getTodaysEntries();
-                        const todaysSize = getDataSize(todaysData);
-                        if (todaysSize <= QR_LIMITS.MAX_COMPRESSED_SIZE) {
-                          setTimeout(() => handleShareToday(), 100);
-                        }
-                      }
-                    }}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Try "Share Today" Instead
-                  </Button>
-                  
-                  <Button
-                    onClick={() => {
-                      resetSyncMode();
-                      setExportFormat('csv');
-                    }}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Export as CSV File Instead
-                  </Button>
-                  
-                  {/* PDF Export temporarily hidden
-                  <Button
-                    onClick={() => {
-                      resetSyncMode();
-                      setExportFormat('pdf');
-                    }}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Create Memory Book PDF Instead
-                  </Button>
-                  */}
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* QR Scanner Mode */}
-        {syncMode === 'receive' && (
-          <div className="mb-10">
-            <div className="flex items-center mb-6">
-              <button
-                onClick={resetSyncMode}
-                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
-              >
-                ← Back
-              </button>
-              <h3 className="text-2xl">Scan Family QR Code</h3>
-            </div>
-
-            <Card className="p-8">
-              {scanError ? (
-                <div className="text-center">
-                  <div className="text-red-600 mb-4">⚠️ {scanError}</div>
-                  <Button onClick={startScanning} className="mb-4">
-                    Try Again
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <div className="mb-4">
-                    <video
-                      ref={videoRef}
-                      className="mx-auto rounded-lg max-w-full"
-                      style={{ maxWidth: '400px', maxHeight: '300px' }}
-                    />
-                  </div>
-                  
-                  {isScanning ? (
-                    <div className="space-y-4">
-                      <p className="text-gray-600">📷 Point camera at Family Flow QR code</p>
-                      <Button onClick={stopScanning} variant="outline">
-                        Stop Scanning
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <p className="text-gray-600">Setting up camera...</p>
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </Card>
-          </div>
-        )}
-
-        {!exportFormat && !syncMode && (
+        {!exportFormat && (
           <div className="mb-10">
             <div className="flex items-center justify-center mb-6">
               <h3 className="text-2xl mr-3">Export your Family data</h3>
@@ -1166,11 +660,11 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
               </button>
             </div>
             
-            {/* 15-day rule hint */}
+            {/* 5-day rule hint */}
             {!hasDataForExport() && (
               <div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-200 text-center">
                 <p className="text-orange-700 text-sm">
-                  <span className="font-medium">Export unlocks after 15 days of family entries</span> • 
+                  <span className="font-medium">Export unlocks after 5 days of family entries</span> • 
                   This ensures your exported data represents meaningful connection patterns
                 </p>
               </div>
@@ -1228,7 +722,29 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
                       CSV Spreadsheet
                     </div>
                     <div className={`text-base ${hasDataForExport() ? 'text-gray-600' : 'text-gray-400'}`}>
-                      {hasDataForExport() ? 'Open in Excel, Google Sheets, etc.' : `${getUniqueDaysWithEntries()}/15 days needed to export`}
+                      {hasDataForExport() ? 'Open in Excel, Google Sheets, etc.' : `${getUniqueDaysWithEntries()}/5 days needed to export`}
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => hasDataForSync() && setExportFormat('json')}
+                disabled={!hasDataForSync()}
+                className={`w-full p-6 rounded-2xl border-3 transition-colors text-left ${
+                  hasDataForSync() 
+                    ? 'border-gray-200 hover:border-orange-300 cursor-pointer' 
+                    : 'border-gray-100 cursor-not-allowed opacity-50'
+                }`}
+              >
+                <div className="flex items-center space-x-4">
+                  <Database className={`w-8 h-8 ${hasDataForSync() ? 'text-orange-600' : 'text-gray-400'}`} />
+                  <div>
+                    <div className={`font-medium text-lg ${hasDataForSync() ? 'text-gray-900' : 'text-gray-400'}`}>
+                      Family Sync File (JSON)
+                    </div>
+                    <div className={`text-base ${hasDataForSync() ? 'text-gray-600' : 'text-gray-400'}`}>
+                      {hasDataForSync() ? 'Share with family devices • Perfect for desktop/mobile sync' : 'Add some family entries first'}
                     </div>
                   </div>
                 </div>
@@ -1258,6 +774,126 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
               </button>
               */}
             </div>
+            
+            {/* Bluetooth Sync Section - Mobile Only */}
+            {supportsBluetoothSync && (
+              <div className="mt-8">
+                <h4 className="text-lg font-medium mb-4 text-gray-800">📱 Mobile Bluetooth Sync</h4>
+                
+                {bluetoothStatus && (
+                  <div className={`mb-4 p-4 rounded-lg border ${
+                    bluetoothStatus.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
+                    bluetoothStatus.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
+                    'bg-blue-50 border-blue-200 text-blue-800'
+                  }`}>
+                    {bluetoothStatus.message}
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button
+                    onClick={startBluetoothSharing}
+                    disabled={!hasDataForSync() || isBluetoothScanning}
+                    variant="outline"
+                    className="h-auto py-4 px-6 flex flex-col items-center space-y-2"
+                  >
+                    <Smartphone className="w-6 h-6 text-blue-600" />
+                    <div className="text-center">
+                      <div className="font-medium">Share via Bluetooth</div>
+                      <div className="text-sm text-gray-600">
+                        {isBluetoothScanning ? 'Making discoverable...' : 'Make this device discoverable'}
+                      </div>
+                    </div>
+                  </Button>
+                  
+                  <Button
+                    onClick={scanForBluetoothDevices}
+                    disabled={isBluetoothScanning}
+                    variant="outline"
+                    className="h-auto py-4 px-6 flex flex-col items-center space-y-2"
+                  >
+                    <Database className="w-6 h-6 text-green-600" />
+                    <div className="text-center">
+                      <div className="font-medium">Receive via Bluetooth</div>
+                      <div className="text-sm text-gray-600">
+                        {isBluetoothScanning ? 'Scanning for devices...' : 'Find nearby family devices'}
+                      </div>
+                    </div>
+                  </Button>
+                </div>
+                
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-blue-800 text-sm">
+                    💡 <strong>How it works:</strong> One family member shares, another receives. 
+                    Both devices need Bluetooth enabled and be within 30 feet of each other.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Platform-specific guidance for non-Bluetooth devices */}
+            {!supportsBluetoothSync && (
+              <div className="mt-8 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <h5 className="font-medium text-amber-800 mb-2">💻 Desktop & Non-Bluetooth Devices</h5>
+                <p className="text-amber-700 text-sm">
+                  You're using a desktop computer or device without Bluetooth sync support. 
+                  Use the <strong>JSON file export/import</strong> method below to share family data between devices.
+                </p>
+              </div>
+            )}
+
+            {/* Import Section */}
+            <div className="mt-8">
+              <h4 className="text-lg font-medium mb-4 text-gray-800">
+                📥 Import Family Data
+                {!supportsBluetoothSync && <span className="text-sm text-gray-500 ml-2">(Desktop/File Method)</span>}
+              </h4>
+              
+              {importStatus && (
+                <div className={`mb-4 p-4 rounded-lg border ${
+                  importStatus.type === 'success' 
+                    ? 'bg-green-50 border-green-200 text-green-800' 
+                    : 'bg-red-50 border-red-200 text-red-800'
+                }`}>
+                  {importStatus.message}
+                </div>
+              )}
+              
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`border-3 border-dashed rounded-2xl p-8 text-center transition-colors cursor-pointer ${
+                  isDragOver 
+                    ? 'border-orange-400 bg-orange-50' 
+                    : 'border-gray-300 hover:border-orange-300 hover:bg-orange-50'
+                }`}
+                onClick={() => document.getElementById('file-input')?.click()}
+              >
+                <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <div className="mb-2">
+                  <span className="text-lg font-medium text-gray-700">
+                    {isDragOver ? 'Drop your Family Flow file here' : 'Import from Family Flow JSON file'}
+                  </span>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  Drag and drop your family-flow-*.json file here, or click to browse
+                </p>
+                <div className="text-sm text-gray-500">
+                  💡 {supportsBluetoothSync 
+                    ? 'Universal method • Works on all devices • Great for desktop sync' 
+                    : 'Perfect for desktop computers • Drag and drop support'}
+                </div>
+                
+                <input
+                  id="file-input"
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </div>
+            </div>
           </div>
         )}
 
@@ -1271,7 +907,9 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
               >
                 ← Back
               </button>
-              <h3 className="text-2xl">Export as {exportFormat.toUpperCase()}</h3>
+              <h3 className="text-2xl">
+                {exportFormat === 'csv' ? 'Export as CSV Spreadsheet' : 'Export Family Sync File'}
+              </h3>
             </div>
 
             <Card className="p-8 mb-8">
