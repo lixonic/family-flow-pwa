@@ -568,17 +568,19 @@ export function DayGlowScreen({
                   <p className="text-gray-700 text-lg">
                     Your daily 2-minute family wellness ritual starts here
                   </p>
-                  <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm text-gray-600">
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">😊</span>
                       <span>Mood Check</span>
                     </div>
-                    <span className="text-gray-300">→</span>
+                    <span className="text-gray-300 hidden sm:inline">→</span>
+                    <span className="text-gray-300 sm:hidden">↓</span>
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">📱</span>
                       <span>Screen Reflection</span>
                     </div>
-                    <span className="text-gray-300">→</span>
+                    <span className="text-gray-300 hidden sm:inline">→</span>
+                    <span className="text-gray-300 sm:hidden">↓</span>
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">🙏</span>
                       <span>Gratitude</span>
@@ -760,7 +762,7 @@ export function DayGlowScreen({
                           const isCurrentCategory = categoryAvatars.some(avatar => avatar.id === newMemberAvatar);
                           
                           return (
-                            <div key={category} className="border border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-colors">
+                            <div key={category} className=" hover:border-orange-300 transition-colors">
                               <div className="flex items-center justify-between mb-3">
                                 <h5 className="text-base font-medium text-gray-700 flex items-center">
                                   <span className="mr-2">
