@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-interface TransitionPrompt {
+interface TransitionPromptData {
   type: 'encourage-consistency' | 'suggest-offline' | 'graduation-ready';
   title: string;
   message: string;
@@ -8,7 +8,7 @@ interface TransitionPrompt {
 }
 
 interface TransitionPromptProps {
-  prompt: TransitionPrompt;
+  prompt: TransitionPromptData;
   onAction: (action: string) => void;
   onDismiss: () => void;
 }

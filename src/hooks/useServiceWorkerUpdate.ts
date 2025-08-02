@@ -10,7 +10,6 @@ interface UseServiceWorkerUpdateReturn {
 export function useServiceWorkerUpdate(): UseServiceWorkerUpdateReturn {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
   const [lastUpdateCheck, setLastUpdateCheck] = useState<number>(0);
 
   // Check for updates every 24 hours maximum
@@ -20,7 +19,6 @@ export function useServiceWorkerUpdate(): UseServiceWorkerUpdateReturn {
     // Register service worker update listener
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then((reg) => {
-        setRegistration(reg);
 
         // Listen for new service worker waiting
         if (reg.waiting) {

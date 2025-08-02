@@ -26,7 +26,7 @@ export function BreatheTimer() {
   };
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: number;
     
     if (isActive && timeLeft > 0) {
       interval = setInterval(() => {

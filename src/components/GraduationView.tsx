@@ -1,4 +1,3 @@
-import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { GraduationProgress } from './GraduationProgress';
 import { ArrowLeft, HelpCircle, BookOpen } from 'lucide-react';
@@ -8,10 +7,10 @@ interface GraduationViewProps {
     totalCheckIns: number;
     targetDays: number;
     progressPercentage: number;
-    nextMilestone?: any;
+    nextMilestone?: {days: number, title: string};
     readyForGraduation: boolean;
     nearGraduation: boolean;
-    achievedMilestones: any[];
+    achievedMilestones: {days: number, title: string}[];
   };
   onStartReadinessAssessment: () => void;
   onNavigate: (screen: string) => void;
@@ -32,7 +31,6 @@ export function GraduationView({
     achievedMilestones 
   } = graduationProgress;
 
-  const daysRemaining = Math.max(0, targetDays - totalCheckIns);
 
   return (
     <div className="min-h-screen safe-area-content">

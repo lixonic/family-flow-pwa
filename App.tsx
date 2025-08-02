@@ -55,7 +55,7 @@ export default function App() {
     gratitudeEntries: [],
   });
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
 
   useEffect(() => {
     // Load data from localStorage
@@ -121,7 +121,7 @@ export default function App() {
     window.addEventListener("offline", handleOffline);
 
     // PWA install prompt
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
     };
