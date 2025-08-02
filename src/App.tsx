@@ -104,7 +104,7 @@ export default function App() {
   const { updateAvailable, isUpdating, updateApp, dismissUpdate } = useServiceWorkerUpdate();
   
   // Storage handling (IndexedDB with localStorage fallback)
-  const { isStorageReady, loadData, saveData, clearData, storageError } = useAppStorage();
+  const { isStorageReady, loadData, saveData, clearData, storageError, isLoading } = useAppStorage();
 
   // Load data from IndexedDB when storage is ready
   useEffect(() => {
@@ -156,8 +156,14 @@ export default function App() {
           };
           
           setAppData(migratedData);
-          // Save migrated data back to storage (async, non-blocking)
-          await saveData(migratedData);
+          
+          // Only save if migration was needed (avoid unnecessary saves)
+          if (!savedData.graduationMilestones || !savedData.graduationSettings) {
+            // Save migrated data back to storage (async, non-blocking)
+            saveData(migratedData).catch(error => 
+              console.error('Failed to save migrated data:', error)
+            );
+          }
         } else {
           // Initialize with empty family - users will add their own members
           const initialData: AppData = {
@@ -202,7 +208,9 @@ export default function App() {
             },
           };
           setAppData(initialData);
-          await saveData(initialData);
+          saveData(initialData).catch(error => 
+            console.error('Failed to save initial data:', error)
+          );
         }
       } catch (error) {
         console.error('Failed to load family data:', error);
@@ -210,7 +218,7 @@ export default function App() {
     };
 
     loadFamilyData();
-  }, [isStorageReady, loadData, saveData]);
+  }, [isStorageReady]); // Remove loadData and saveData from dependencies to prevent unnecessary re-runs
 
   useEffect(() => {
     // Disable scroll restoration
@@ -267,17 +275,15 @@ export default function App() {
     };
   }, []);
 
-  const updateAppData = async (newData: Partial<AppData>) => {
+  const updateAppData = (newData: Partial<AppData>) => {
     const updatedData = { ...appData, ...newData };
     setAppData(updatedData);
     
     // Save to IndexedDB asynchronously (non-blocking)
-    try {
-      await saveData(updatedData);
-    } catch (error) {
+    saveData(updatedData).catch(error => {
       console.error('Failed to save app data:', error);
       // Data is still updated in state, so app continues working
-    }
+    });
   };
 
   const addFamilyMember = (member: Omit<FamilyMember, "id">) => {
@@ -715,6 +721,11 @@ export default function App() {
 
 
   const renderCurrentScreen = () => {
+    // Show loader while data is loading to prevent flickering
+    if (isLoading || (!isStorageReady && currentScreen === "loader")) {
+      return <LoaderScreen />;
+    }
+    
     if (showWelcome) {
       return <WelcomeCards onComplete={handleWelcomeComplete} />;
     }

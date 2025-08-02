@@ -19,7 +19,7 @@ interface MemoryCapsuleProps {
 }
 
 export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferredPrompt, onEraseAllData, onImportData }: MemoryCapsuleProps) {
-  const [exportFormat, setExportFormat] = useState<'csv' | 'pdf' | null>(null);
+  const [exportFormat, setExportFormat] = useState<'csv' | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
   const [showInstallSuccess, setShowInstallSuccess] = useState(false);
@@ -370,9 +370,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
       if (exportFormat === 'csv') {
         const csvContent = generateCSV();
         downloadFile(csvContent, `family-flow-memory-book-${timestamp}.csv`, 'text/csv');
-      } else if (exportFormat === 'pdf') {
-        const pdfDoc = generatePDF();
-        pdfDoc.save(`family-flow-memory-book-${timestamp}.pdf`);
       }
       
       setExportComplete(true);
@@ -389,6 +386,27 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
 
   const getTotalEntries = () => {
     return appData.moodEntries.length + appData.reflectionEntries.length + appData.gratitudeEntries.length;
+  };
+
+  const getUniqueDaysWithEntries = () => {
+    const uniqueDays = new Set<string>();
+    
+    // Add dates from mood entries
+    appData.moodEntries.forEach(entry => {
+      uniqueDays.add(entry.date);
+    });
+    
+    // Add dates from reflection entries
+    appData.reflectionEntries.forEach(entry => {
+      uniqueDays.add(entry.date);
+    });
+    
+    // Add dates from gratitude entries
+    appData.gratitudeEntries.forEach(entry => {
+      uniqueDays.add(entry.date);
+    });
+    
+    return uniqueDays.size;
   };
 
   const getStorageMetrics = async () => {
@@ -461,8 +479,12 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     return `${formatDate(earliest)} - ${formatDate(latest)}`;
   };
 
-  const hasData = () => {
-    return getTotalEntries() > 0 || appData.familyMembers.length > 3; // More than default 3 members
+  const hasDataForExport = () => {
+    return getUniqueDaysWithEntries() >= 15; // Require at least 15 days of entries to export
+  };
+
+  const hasDataForSync = () => {
+    return getTotalEntries() > 0 || appData.familyMembers.length > 0; // Any data for sync
   };
 
   // Data size validation and compression helpers
@@ -636,7 +658,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
   };
 
   const handleShareAll = async () => {
-    if (!hasData()) {
+    if (!hasDataForSync()) {
       alert('No family data to share. Add some entries first!');
       return;
     }
@@ -902,9 +924,9 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
               <Button
                 onClick={handleShareAll}
                 variant="outline"
-                disabled={!hasData()}
+                disabled={!hasDataForSync()}
                 className={`flex-1 h-auto py-4 px-6 flex flex-col items-center space-y-2 ${
-                  !hasData() ? 'opacity-50 cursor-not-allowed' : ''
+                  !hasDataForSync() ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 <Users className="w-6 h-6 text-blue-600" />
@@ -912,7 +934,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
                   <div className="font-medium">Share All Data</div>
                   <div className="text-sm text-gray-600">
                     {(() => {
-                      if (!hasData()) return 'Add some entries first';
+                      if (!hasDataForSync()) return 'Add some entries first';
                       
                       const totalEntries = getTotalEntries();
                       const size = getDataSize(appData);
@@ -1062,6 +1084,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
                     Export as CSV File Instead
                   </Button>
                   
+                  {/* PDF Export temporarily hidden
                   <Button
                     onClick={() => {
                       resetSyncMode();
@@ -1073,6 +1096,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
                     <FileText className="w-4 h-4 mr-2" />
                     Create Memory Book PDF Instead
                   </Button>
+                  */}
                 </div>
               </div>
             </Card>
@@ -1142,6 +1166,16 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
               </button>
             </div>
             
+            {/* 15-day rule hint */}
+            {!hasDataForExport() && (
+              <div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-200 text-center">
+                <p className="text-orange-700 text-sm">
+                  <span className="font-medium">Export unlocks after 15 days of family entries</span> • 
+                  This ensures your exported data represents meaningful connection patterns
+                </p>
+              </div>
+            )}
+            
             {showExportHelp && (
               <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-start justify-between mb-3">
@@ -1179,27 +1213,28 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
             )}
             <div className="space-y-4">
               <button
-                onClick={() => hasData() && setExportFormat('csv')}
-                disabled={!hasData()}
+                onClick={() => hasDataForExport() && setExportFormat('csv')}
+                disabled={!hasDataForExport()}
                 className={`w-full p-6 rounded-2xl border-3 transition-colors text-left ${
-                  hasData() 
+                  hasDataForExport() 
                     ? 'border-gray-200 hover:border-indigo-300 cursor-pointer' 
                     : 'border-gray-100 cursor-not-allowed opacity-50'
                 }`}
               >
                 <div className="flex items-center space-x-4">
-                  <FileText className={`w-8 h-8 ${hasData() ? 'text-green-600' : 'text-gray-400'}`} />
+                  <FileText className={`w-8 h-8 ${hasDataForExport() ? 'text-green-600' : 'text-gray-400'}`} />
                   <div>
-                    <div className={`font-medium text-lg ${hasData() ? 'text-gray-900' : 'text-gray-400'}`}>
+                    <div className={`font-medium text-lg ${hasDataForExport() ? 'text-gray-900' : 'text-gray-400'}`}>
                       CSV Spreadsheet
                     </div>
-                    <div className={`text-base ${hasData() ? 'text-gray-600' : 'text-gray-400'}`}>
-                      {hasData() ? 'Open in Excel, Google Sheets, etc.' : 'Add some family entries first'}
+                    <div className={`text-base ${hasDataForExport() ? 'text-gray-600' : 'text-gray-400'}`}>
+                      {hasDataForExport() ? 'Open in Excel, Google Sheets, etc.' : `${getUniqueDaysWithEntries()}/15 days needed to export`}
                     </div>
                   </div>
                 </div>
               </button>
               
+              {/* PDF Export temporarily hidden
               <button
                 onClick={() => hasData() && setExportFormat('pdf')}
                 disabled={!hasData()}
@@ -1221,6 +1256,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
                   </div>
                 </div>
               </button>
+              */}
             </div>
           </div>
         )}
@@ -1288,7 +1324,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
         </div>
 
         {/* Erase Data Button - Only show if data exists */}
-        {hasData() && (
+        {hasDataForSync() && (
           <div className="text-center mb-8">
             <button
               onClick={() => setShowEraseConfirm(true)}

@@ -91,6 +91,14 @@ class FamilyFlowStorage {
     
     if (localStorageData) {
       try {
+        // Check if data already exists in IndexedDB
+        const existingData = await this.getFamilyData();
+        
+        if (existingData) {
+          console.log('✅ Data already exists in IndexedDB, skipping migration');
+          return;
+        }
+        
         const parsedData = JSON.parse(localStorageData);
         await this.saveFamilyData(parsedData);
         

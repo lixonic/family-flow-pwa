@@ -77,20 +77,33 @@ const getMoodResponse = (emoji: string) => {
 };
 
 const AVATAR_OPTIONS = [
-  // Mother options - Blonde, Black, Grey hair
-  { id: 'mother', emoji: '👱‍♀️', label: 'Mother', category: 'Mother' },
-  { id: 'mother2', emoji: '👩', label: 'Mother', category: 'Mother' },
-  { id: 'mother3', emoji: '👩‍🦳', label: 'Mother', category: 'Mother' },
+  // Parent options - Inclusive terminology
+  { id: 'parent1', emoji: '👱‍♀️', label: 'Parent', category: 'Parent' },
+  { id: 'parent2', emoji: '👩', label: 'Parent', category: 'Parent' },
+  { id: 'parent3', emoji: '👩‍🦳', label: 'Parent', category: 'Parent' },
+  { id: 'parent4', emoji: '👱‍♂️', label: 'Parent', category: 'Parent' },
+  { id: 'parent5', emoji: '👨', label: 'Parent', category: 'Parent' },
+  { id: 'parent6', emoji: '👨‍🦳', label: 'Parent', category: 'Parent' },
   
-  // Father options - Blonde, Black, Grey hair
-  { id: 'father', emoji: '👱‍♂️', label: 'Father', category: 'Father' },
-  { id: 'father2', emoji: '👨', label: 'Father', category: 'Father' },
-  { id: 'father3', emoji: '👨‍🦳', label: 'Father', category: 'Father' },
+  // Guardian options - Gender-neutral
+  { id: 'guardian1', emoji: '🧑', label: 'Guardian', category: 'Guardian' },
+  { id: 'guardian2', emoji: '🧑‍🦱', label: 'Guardian', category: 'Guardian' },
+  { id: 'guardian3', emoji: '🧑‍🦳', label: 'Guardian', category: 'Guardian' },
   
-  // Child options - Blonde, Black, Girl
-  { id: 'child', emoji: '👶', label: 'Child', category: 'Child' },
+  // Teen options - Young adults
+  { id: 'teen1', emoji: '🧑‍🎓', label: 'Teen', category: 'Teen' },
+  { id: 'teen2', emoji: '👨‍🎓', label: 'Teen', category: 'Teen' },
+  { id: 'teen3', emoji: '👩‍🎓', label: 'Teen', category: 'Teen' },
+  
+  // Child options - Various ages
+  { id: 'child1', emoji: '👶', label: 'Child', category: 'Child' },
   { id: 'child2', emoji: '👦', label: 'Child', category: 'Child' },
   { id: 'child3', emoji: '👧', label: 'Child', category: 'Child' },
+  
+  // Extended Family options
+  { id: 'extended1', emoji: '👵', label: 'Extended Family', category: 'Extended Family' },
+  { id: 'extended2', emoji: '👴', label: 'Extended Family', category: 'Extended Family' },
+  { id: 'extended3', emoji: '🧓', label: 'Extended Family', category: 'Extended Family' },
 ];
 
 const MEMBER_COLORS = [
@@ -150,7 +163,8 @@ export function DayGlowScreen({
   const [showManageMembers, setShowManageMembers] = useState(false);
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
   const [newMemberName, setNewMemberName] = useState('');
-  const [newMemberAvatar, setNewMemberAvatar] = useState('mother');
+  const [newMemberAvatar, setNewMemberAvatar] = useState('parent1');
+  const [selectedAvatarCategory, setSelectedAvatarCategory] = useState('Parent');
   const [editingName, setEditingName] = useState('');
   const [showCooldownBanner, setShowCooldownBanner] = useState(false);
   const [showCooldownSuggestions, setShowCooldownSuggestions] = useState(false);
@@ -547,23 +561,51 @@ export function DayGlowScreen({
         {!selectedMember && !showManageMembers && familyMembers.length === 0 && (
           <div className="mb-10">
             <div className="text-center mb-8">
-              <div className="mb-6 p-6 bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl border border-orange-100">
-                <div className="text-6xl mb-4">👋</div>
-                <h3 className="text-xl font-medium mb-3 text-gray-800">Welcome to your 2-minute family ritual!</h3>
-                <p className="text-gray-600 mb-4">
-                  Let's set up your family members so everyone can share their daily check-ins.
-                </p>
-                <p className="text-sm text-gray-500">
-                  Don't worry - you can always add or change these later.
+              <div className="mb-8 p-8 bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50 rounded-3xl border-2 border-orange-100 shadow-sm">
+                <div className="text-8xl mb-6">🏠</div>
+                <h3 className="text-2xl font-medium mb-4 text-gray-800">Welcome to Family Flow!</h3>
+                <div className="space-y-3 mb-6">
+                  <p className="text-gray-700 text-lg">
+                    Your daily 2-minute family wellness ritual starts here
+                  </p>
+                  <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center space-x-1">
+                      <span className="text-lg">😊</span>
+                      <span>Mood Check</span>
+                    </div>
+                    <span className="text-gray-300">→</span>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-lg">📱</span>
+                      <span>Screen Reflection</span>
+                    </div>
+                    <span className="text-gray-300">→</span>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-lg">🙏</span>
+                      <span>Gratitude</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white/70 rounded-2xl p-4 mb-6">
+                  <p className="text-gray-600 text-base">
+                    Let's create profiles for everyone in your family. Each person gets their own space to share how they're feeling.
+                  </p>
+                </div>
+                <p className="text-sm text-gray-500 mb-2">
+                  Privacy first: All data stays on your device
                 </p>
               </div>
+              
               <button
                 onClick={() => setShowManageMembers(true)}
-                className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white px-8 py-4 rounded-2xl font-medium text-lg flex items-center mx-auto"
+                className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white px-10 py-5 rounded-2xl font-medium text-xl flex items-center mx-auto shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
               >
-                <User className="w-5 h-5 mr-2" />
-                Add Your First Family Member
+                <User className="w-6 h-6 mr-3" />
+                Set Up Your Family
               </button>
+              
+              <p className="text-xs text-gray-400 mt-4">
+                You can always add, edit, or remove family members later
+              </p>
             </div>
           </div>
         )}
@@ -613,7 +655,7 @@ export function DayGlowScreen({
                     aria-label={todayEntry ? `${member.name} has already checked in today` : `Check in as ${member.name}`}
                     title={todayEntry ? `${member.name} already checked in` : `Tap to check in as ${member.name}`}
                   >
-                    <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
+                    <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" showBackground={true} />
                     <div className="text-lg font-medium">{member.name}</div>
                     {!todayEntry && (
                       <div className="text-xs text-gray-600 mt-1 opacity-70">
@@ -653,7 +695,7 @@ export function DayGlowScreen({
           </div>
         )}
 
-        {/* Manage members screen */}
+        {/* Redesigned Family Management Interface */}
         {showManageMembers && (
           <div className="mb-10" id="manage-members-section">
             <div className="flex items-center mb-8">
@@ -666,120 +708,204 @@ export function DayGlowScreen({
               <h3 className="text-2xl">Manage Family</h3>
             </div>
 
-            {/* Add new member */}
+            {/* Add new member - Redesigned Progressive Flow */}
             {familyMembers.length < 6 && (
-              <Card className="p-6 mb-6 bg-orange-50">
-                <h4 className="text-lg mb-4">Add New Member</h4>
-                <div className="space-y-4">
-                  <Input
-                    value={newMemberName}
-                    onChange={(e) => setNewMemberName(e.target.value)}
-                    placeholder="Enter name"
-                    className="text-lg"
-                  />
+              <Card className="p-6 mb-6 bg-gradient-to-br from-orange-50 to-pink-50 border-2 border-orange-100">
+                <div className="text-center mb-6">
+                  <div className="text-4xl mb-3">👋</div>
+                  <h4 className="text-xl font-medium mb-2">Add a Family Member</h4>
+                  <p className="text-gray-600">Let's create a profile for your daily check-ins</p>
+                </div>
+                
+                <div className="space-y-6">
+                  {/* Step 1: Name Input with Gentle Prompt */}
+                  <div className="space-y-3">
+                    <label className="block text-base font-medium text-gray-700">
+                      What should we call them?
+                    </label>
+                    <Input
+                      value={newMemberName}
+                      onChange={(e) => setNewMemberName(e.target.value)}
+                      placeholder="Enter their name"
+                      className="text-lg p-4 border-2 border-orange-200 focus:border-orange-400 rounded-xl"
+                    />
+                    {newMemberName.trim() && (
+                      <div className="text-center py-3 bg-white/60 rounded-lg">
+                        <p className="text-lg text-gray-700">
+                          Hello <span className="font-semibold text-orange-600">{newMemberName.trim()}</span>! 👋
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Step 2: Avatar Selection - Progressive Disclosure */}
                   {newMemberName.trim() && (
-                    <div className="text-center py-2">
-                      <p className="text-lg text-gray-600">Hello <span className="font-medium text-orange-600">{newMemberName.trim()}</span>!</p>
+                    <div className="space-y-4 animate-in slide-in-from-bottom duration-300">
+                      <label className="block text-base font-medium text-gray-700">
+                        Choose {newMemberName.trim()}'s avatar
+                      </label>
+                      
+                      {/* Large Avatar Preview */}
+                      <div className="text-center py-4">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full mb-3">
+                          <FamilyMemberIcon avatar={newMemberAvatar} className="w-12 h-12" />
+                        </div>
+                        <p className="text-sm text-gray-600">Current selection</p>
+                      </div>
+
+                      {/* Category-Based Progressive Selection */}
+                      <div className="space-y-4">
+                        {['Parent', 'Guardian', 'Teen', 'Child', 'Extended Family'].map(category => {
+                          const categoryAvatars = getAvatarsByCategory(category);
+                          const isCurrentCategory = categoryAvatars.some(avatar => avatar.id === newMemberAvatar);
+                          
+                          return (
+                            <div key={category} className="border border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-colors">
+                              <div className="flex items-center justify-between mb-3">
+                                <h5 className="text-base font-medium text-gray-700 flex items-center">
+                                  <span className="mr-2">
+                                    {category === 'Parent' && '👨‍👩‍👧‍👦'}
+                                    {category === 'Guardian' && '🧑‍🤝‍🧑'}
+                                    {category === 'Teen' && '🎓'}
+                                    {category === 'Child' && '🧒'}
+                                    {category === 'Extended Family' && '👴👵'}
+                                  </span>
+                                  {category}
+                                </h5>
+                                {isCurrentCategory && (
+                                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+                                    Selected
+                                  </span>
+                                )}
+                              </div>
+                              
+                              <div className="grid grid-cols-3 gap-3">
+                                {categoryAvatars.map(option => (
+                                  <button
+                                    key={option.id}
+                                    onClick={() => setNewMemberAvatar(option.id)}
+                                    className={`p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center hover:scale-105 ${
+                                      newMemberAvatar === option.id 
+                                        ? 'border-orange-400 bg-orange-100 shadow-md' 
+                                        : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50'
+                                    }`}
+                                  >
+                                    <FamilyMemberIcon avatar={option.id} className="w-10 h-10 mb-2" showBackground={false} />
+                                    <span className="text-xs text-gray-600 text-center leading-tight">
+                                      Style {categoryAvatars.indexOf(option) + 1}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
-                  <div className="space-y-4">
-                    {['Mother', 'Father', 'Child'].map(category => (
-                      <div key={category}>
-                        <h5 className="text-sm font-medium text-gray-600 mb-2">{category}</h5>
-                        <div className="grid grid-cols-3 gap-2">
-                          {getAvatarsByCategory(category).map(option => {
-                            return (
-                              <button
-                                key={option.id}
-                                onClick={() => setNewMemberAvatar(option.id)}
-                                className={`p-3 rounded-xl border-2 transition-colors flex flex-col items-center ${
-                                  newMemberAvatar === option.id 
-                                    ? 'border-orange-400 bg-orange-100' 
-                                    : 'border-gray-200 hover:border-gray-300'
-                                }`}
-                              >
-                                <span className="text-2xl mb-1">{option.emoji}</span>
-                                <span className="text-xs">{getStyleLabel(option.id, option.category)}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+
+                  {/* Step 3: Confirmation Button */}
                   <Button
                     onClick={handleAddMember}
                     disabled={!newMemberName.trim()}
-                    className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-lg py-3"
+                    className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-lg py-4 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Add Member
+                    {newMemberName.trim() ? `Add ${newMemberName.trim()} to Family` : 'Enter a name to continue'}
                   </Button>
                 </div>
               </Card>
             )}
 
-            {/* Existing members */}
+            {/* Existing members - Enhanced Design */}
             <div className="space-y-4" id="members-list-section">
-              <h4 className="text-lg">Family Members ({familyMembers.length}/6)</h4>
-              {familyMembers.map(member => (
-                <Card key={member.id} className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div
-                        className="w-12 h-12 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: member.color }}
-                      >
-                        <FamilyMemberIcon avatar={member.avatar} className="w-6 h-6" />
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-xl font-medium text-gray-800">Your Family</h4>
+                <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                  {familyMembers.length} / 6 members
+                </div>
+              </div>
+              
+              {familyMembers.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <div className="text-6xl mb-4">👨‍👩‍👧‍👦</div>
+                  <p className="text-lg">No family members yet</p>
+                  <p className="text-sm">Add your first family member above</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {familyMembers.map(member => (
+                    <Card key={member.id} className="p-5 hover:shadow-md transition-shadow border-2 border-gray-100 hover:border-orange-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div
+                            className="w-14 h-14 rounded-full flex items-center justify-center shadow-sm border-2 border-white"
+                            style={{ backgroundColor: member.color }}
+                          >
+                            <FamilyMemberIcon avatar={member.avatar} className="w-8 h-8" showBackground={false} />
+                          </div>
+                          <div className="flex-1">
+                            {editingMember?.id === member.id ? (
+                              <Input
+                                value={editingName}
+                                onChange={(e) => setEditingName(e.target.value)}
+                                className="text-lg font-medium border-2 border-orange-300 focus:border-orange-500"
+                                autoFocus
+                              />
+                            ) : (
+                              <div>
+                                <span className="text-lg font-medium text-gray-800">{member.name}</span>
+                                <div className="text-sm text-gray-500 mt-1">
+                                  {(() => {
+                                    const avatar = AVATAR_OPTIONS.find(opt => opt.id === member.avatar);
+                                    return avatar ? avatar.category : 'Family Member';
+                                  })()}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          {editingMember?.id === member.id ? (
+                            <>
+                              <button
+                                onClick={handleSaveEdit}
+                                className="text-green-600 hover:text-green-700 p-3 hover:bg-green-50 rounded-lg transition-colors"
+                                title="Save changes"
+                              >
+                                <Check className="w-5 h-5" />
+                              </button>
+                              <button
+                                onClick={handleCancelEdit}
+                                className="text-gray-500 hover:text-gray-700 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                                title="Cancel editing"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => handleEditMember(member)}
+                                className="text-blue-600 hover:text-blue-700 p-3 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Edit name"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteMember(member)}
+                                className="text-red-600 hover:text-red-700 p-3 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Remove from family"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      {editingMember?.id === member.id ? (
-                        <Input
-                          value={editingName}
-                          onChange={(e) => setEditingName(e.target.value)}
-                          className="flex-1 text-lg"
-                          autoFocus
-                        />
-                      ) : (
-                        <span className="text-lg font-medium">{member.name}</span>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {editingMember?.id === member.id ? (
-                        <>
-                          <button
-                            onClick={handleSaveEdit}
-                            className="text-green-600 hover:text-green-700 p-2"
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={handleCancelEdit}
-                            className="text-gray-500 hover:text-gray-700 p-2"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => handleEditMember(member)}
-                            className="text-blue-600 hover:text-blue-700 p-2"
-                            title="Edit name"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteMember(member)}
-                            className="text-red-600 hover:text-red-700 p-2"
-                            title="Delete member"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </Card>
-              ))}
+                    </Card>
+                  ))}
+                </div>
+              )}
               
               {/* Go back button at bottom of members list */}
               <div className="pt-6">
