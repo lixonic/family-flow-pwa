@@ -11,7 +11,7 @@ export function Navigation({ currentScreen, onNavigate }: NavigationProps) {
     { id: 'day-glow', icon: Heart, label: 'Mood', color: 'text-orange-600', tooltip: 'What if connection took just 2 minutes?' },
     { id: 'screen-time', icon: MessageSquare, label: 'Reflect', color: 'text-red-600', tooltip: 'Building habits together' },
     { id: 'guide', icon: BookOpen, label: 'How To', color: 'text-blue-600', highlight: true, tooltip: 'Your journey starts here' },
-    { id: 'gratitude', icon: Wind, label: 'Mindful', color: 'text-purple-600', tooltip: 'From digital prompts to real conversations' },
+    { id: 'gratitude', icon: Wind, label: 'Grateful', color: 'text-purple-600', tooltip: 'From digital prompts to real conversations' },
     { id: 'memory', icon: Archive, label: 'Export', color: 'text-gray-600', tooltip: 'Success means you won\'t need us forever' },
   ];
 
