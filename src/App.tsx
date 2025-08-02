@@ -6,6 +6,7 @@ import { DayEntriesView } from "./components/DayEntriesView";
 import { ScreenTimeReflector } from "./components/ScreenTimeReflector";
 import { GratitudeFlipbook } from "./components/GratitudeFlipbook";
 import { MemoryCapsule } from "./components/MemoryCapsule";
+import { FamilySync } from "./components/FamilySync";
 import { AboutPage } from "./components/AboutPage";
 import { FAQPage } from "./components/FAQPage";
 import { GuidePage } from "./components/GuidePage";
@@ -95,9 +96,9 @@ export default function App() {
     },
   });
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
   const [activeMilestones, setActiveMilestones] = useState<GraduationMilestone[]>([]);
-  const [currentTransitionPrompt, setCurrentTransitionPrompt] = useState<any>(null);
+  const [currentTransitionPrompt, setCurrentTransitionPrompt] = useState<{type: string, title: string, message: string, actionText: string} | null>(null);
   const [showReadinessAssessment, setShowReadinessAssessment] = useState(false);
   
   // PWA Update handling
@@ -255,7 +256,7 @@ export default function App() {
     window.addEventListener("offline", handleOffline);
 
     // PWA install prompt
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
     };
@@ -809,6 +810,14 @@ export default function App() {
             deferredPrompt={deferredPrompt}
             setDeferredPrompt={setDeferredPrompt}
             onEraseAllData={handleEraseAllData}
+            onImportData={handleImportData}
+          />
+        );
+      case "family-sync":
+        return (
+          <FamilySync 
+            appData={appData} 
+            onNavigate={setCurrentScreen}
             onImportData={handleImportData}
           />
         );

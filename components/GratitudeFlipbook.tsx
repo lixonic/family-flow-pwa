@@ -73,7 +73,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
 
   // Auto-advance slideshow
   React.useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: number;
     if (isPlaying && slideshowMode) {
       interval = setInterval(nextSlide, 3000);
     }

@@ -135,10 +135,10 @@ interface DayGlowScreenProps {
     totalCheckIns: number;
     targetDays: number;
     progressPercentage: number;
-    nextMilestone?: any;
+    nextMilestone?: {days: number, title: string};
     readyForGraduation: boolean;
     nearGraduation: boolean;
-    achievedMilestones: any[];
+    achievedMilestones: {days: number, title: string}[];
   };
 }
 
@@ -164,7 +164,6 @@ export function DayGlowScreen({
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberAvatar, setNewMemberAvatar] = useState('parent1');
-  const [selectedAvatarCategory, setSelectedAvatarCategory] = useState('Parent');
   const [editingName, setEditingName] = useState('');
   const [showCooldownBanner, setShowCooldownBanner] = useState(false);
   const [showCooldownSuggestions, setShowCooldownSuggestions] = useState(false);
@@ -335,9 +334,6 @@ export function DayGlowScreen({
   };
 
   // Get descriptive label for avatar styles
-  const getStyleLabel = (_id: string, _category: string) => {
-    return '';
-  };
 
   // Cooldown Banner Component
   const CooldownBanner = () => (

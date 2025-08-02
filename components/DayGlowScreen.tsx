@@ -73,7 +73,6 @@ export function DayGlowScreen({
   const [cooldownSuggestions, setCooldownSuggestions] = useState<string[]>([]);
 
   const today = new Date().toDateString();
-  const todayEntries = moodEntries.filter(entry => new Date(entry.date).toDateString() === today);
 
   const isChildMember = (member: FamilyMember) => {
     return member.avatar === 'child' || member.avatar === 'child2';

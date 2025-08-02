@@ -1,15 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { formatDate } from './ui/utils';
-import { Download, FileText, Database, Smartphone, Info, Shield, HelpCircle } from 'lucide-react';
+import { Download, FileText, Database, Info, HelpCircle, Users, Smartphone } from 'lucide-react';
 
 interface MemoryCapsuleProps {
   appData: AppData;
   onNavigate: (screen: string) => void;
-  deferredPrompt: any;
-  setDeferredPrompt: (prompt: any) => void;
+  deferredPrompt: Event | null;
+  setDeferredPrompt: (prompt: Event | null) => void;
   onEraseAllData: () => void;
   onImportData: (data: Partial<AppData>) => void;
 }
@@ -24,34 +24,9 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
   const [eraseInput, setEraseInput] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const [importStatus, setImportStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
-  const [bluetoothDevice, setBluetoothDevice] = useState<BluetoothDevice | null>(null);
-  const [isBluetoothScanning, setIsBluetoothScanning] = useState(false);
-  const [bluetoothStatus, setBluetoothStatus] = useState<{type: 'success' | 'error' | 'info', message: string} | null>(null);
-  const [storageMetrics, setStorageMetrics] = useState<{
-    familyFlowSize: number;
-    totalSize: number;
-    estimatedLimit: number;
-    familyFlowPercentage: number;
-    totalPercentage: number;
-    browserType: string;
-    storageType: string;
-  } | null>(null);
 
 
 
-  // Load storage metrics on component mount and when appData changes
-  React.useEffect(() => {
-    const loadStorageMetrics = async () => {
-      try {
-        const metrics = await getStorageMetrics();
-        setStorageMetrics(metrics);
-      } catch (error) {
-        console.error('Failed to load storage metrics:', error);
-      }
-    };
-
-    loadStorageMetrics();
-  }, [appData]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
@@ -276,154 +251,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     }
   };
 
-  // Platform detection
-  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const hasBluetooth = 'bluetooth' in navigator;
-  const supportsBluetoothSync = isMobile && hasBluetooth;
-
-  // Bluetooth sync functions
-  const startBluetoothSharing = async () => {
-    if (!supportsBluetoothSync || !hasDataForSync()) return;
-    
-    setBluetoothStatus(null);
-    setIsBluetoothScanning(true);
-    
-    try {
-      // Make device discoverable for Family Flow
-      const exportData = generateJSONExport();
-      const deviceName = `FamilyFlow-${appData.familyMembers[0]?.name || 'User'}`;
-      
-      setBluetoothStatus({
-        type: 'info',
-        message: `📡 Making ${deviceName} discoverable for family sync...`
-      });
-      
-      // In a real implementation, this would:
-      // 1. Start Bluetooth advertising with Family Flow service UUID
-      // 2. Wait for connections from other Family Flow devices
-      // 3. Transfer JSON data when connected
-      
-      // Simulated for demo (real implementation needs Bluetooth API)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setBluetoothStatus({
-        type: 'success',
-        message: '✅ Ready for family sync! Have another family member scan for nearby devices.'
-      });
-      
-    } catch (error) {
-      console.error('Bluetooth sharing failed:', error);
-      setBluetoothStatus({
-        type: 'error',
-        message: 'Failed to start Bluetooth sharing. Make sure Bluetooth is enabled.'
-      });
-    } finally {
-      setIsBluetoothScanning(false);
-    }
-  };
-
-  const scanForBluetoothDevices = async () => {
-    if (!supportsBluetoothSync) return;
-    
-    setBluetoothStatus(null);
-    setIsBluetoothScanning(true);
-    
-    try {
-      // Request Bluetooth device
-      const device = await navigator.bluetooth.requestDevice({
-        filters: [
-          { namePrefix: 'FamilyFlow-' },
-          { services: ['family-sync-service'] } // Custom service UUID would be used
-        ],
-        optionalServices: ['family-sync-service']
-      });
-
-      setBluetoothDevice(device);
-      setBluetoothStatus({
-        type: 'info',
-        message: `📱 Connecting to ${device.name}...`
-      });
-      
-      // Connect to device and sync data
-      await connectAndSyncBluetooth(device);
-      
-    } catch (error: any) {
-      console.error('Bluetooth scan failed:', error);
-      if (error.name === 'NotFoundError') {
-        setBluetoothStatus({
-          type: 'error',
-          message: 'No Family Flow devices found nearby. Make sure another family member is sharing.'
-        });
-      } else if (error.name === 'NotAllowedError') {
-        setBluetoothStatus({
-          type: 'error',
-          message: 'Bluetooth access denied. Please allow Bluetooth permissions.'
-        });
-      } else {
-        setBluetoothStatus({
-          type: 'error',
-          message: 'Bluetooth connection failed. Make sure Bluetooth is enabled.'
-        });
-      }
-    } finally {
-      setIsBluetoothScanning(false);
-    }
-  };
-
-  const connectAndSyncBluetooth = async (device: BluetoothDevice) => {
-    try {
-      // Connect to GATT server
-      const server = await device.gatt?.connect();
-      if (!server) throw new Error('Failed to connect to device');
-      
-      // Get Family Flow sync service
-      const service = await server.getPrimaryService('family-sync-service');
-      const characteristic = await service.getCharacteristic('family-data-characteristic');
-      
-      // Read family data from the device
-      const value = await characteristic.readValue();
-      const jsonData = new TextDecoder().decode(value);
-      const importedData = JSON.parse(jsonData);
-      
-      // Validate and import data
-      if (importedData.familyData && importedData.metadata) {
-        const { familyData } = importedData;
-        const entryCount = 
-          (familyData.moodEntries?.length || 0) + 
-          (familyData.reflectionEntries?.length || 0) + 
-          (familyData.gratitudeEntries?.length || 0);
-        
-        const memberCount = familyData.familyMembers?.length || 0;
-        
-        const confirmed = confirm(
-          `Sync family data from ${device.name}?\n\n` +
-          `• ${entryCount} entries (mood, reflection, gratitude)\n` +
-          `• ${memberCount} family members\n` +
-          `• From: ${importedData.metadata.dateRange}\n\n` +
-          `This will add new data to your existing family entries.`
-        );
-
-        if (confirmed) {
-          onImportData(familyData);
-          setBluetoothStatus({
-            type: 'success',
-            message: `✅ Successfully synced ${entryCount} entries from ${device.name}!`
-          });
-          
-          setTimeout(() => setBluetoothStatus(null), 5000);
-        }
-      } else {
-        throw new Error('Invalid data format received');
-      }
-      
-    } catch (error) {
-      console.error('Bluetooth sync failed:', error);
-      setBluetoothStatus({
-        type: 'error',
-        message: 'Failed to sync data. Please try again.'
-      });
-    }
-  };
+  // Helper functions
 
   const getTotalEntries = () => {
     return appData.moodEntries.length + appData.reflectionEntries.length + appData.gratitudeEntries.length;
@@ -451,60 +279,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     return uniqueDays.size;
   };
 
-  const getStorageMetrics = async () => {
-    // Calculate Family Flow specific IndexedDB storage usage
-    let familyFlowSize = 0;
-    
-    try {
-      // Estimate IndexedDB storage usage
-      const dataStr = JSON.stringify(appData);
-      familyFlowSize = new Blob([dataStr]).size;
-    } catch (error) {
-      console.warn('Could not calculate IndexedDB storage size:', error);
-      // Fallback to localStorage size if available
-      const familyFlowData = localStorage.getItem('familyFlowData');
-      familyFlowSize = familyFlowData ? new Blob([familyFlowData]).size : 0;
-    }
-    
-    // Get browser storage quota (IndexedDB has much higher limits than localStorage)
-    let estimatedLimit = 50 * 1024 * 1024; // Default 50MB estimate
-    let quotaUsed = familyFlowSize;
-    
-    try {
-      // Modern browsers support navigator.storage.estimate()
-      if ('storage' in navigator && 'estimate' in navigator.storage) {
-        const estimate = await navigator.storage.estimate();
-        if (estimate.quota) {
-          estimatedLimit = estimate.quota;
-          quotaUsed = estimate.usage || familyFlowSize;
-        }
-      }
-    } catch (error) {
-      console.warn('Could not get storage quota:', error);
-    }
-    
-    // Browser detection for display purposes
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const browserType = isIOS ? 'Safari (iOS)' : 'Chrome/Android';
-    
-    return {
-      familyFlowSize,
-      totalSize: quotaUsed,
-      estimatedLimit,
-      familyFlowPercentage: (familyFlowSize / estimatedLimit) * 100,
-      totalPercentage: (quotaUsed / estimatedLimit) * 100,
-      browserType,
-      storageType: 'IndexedDB'
-    };
-  };
-
-  const formatBytes = (bytes: number) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-  };
 
   const getDateRange = () => {
     const allDates = [
@@ -530,15 +304,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
   };
 
   // Data size validation and compression helpers
-  const getDataSize = (data: any): number => {
-    const jsonString = JSON.stringify(data);
-    return new Blob([jsonString]).size;
-  };
-
-  const formatDataSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} bytes`;
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  };
 
 
   if (exportComplete) {
@@ -594,295 +359,61 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           </Card>
         )}
 
-        {/* Data Summary */}
-        <Card className="p-8 mb-10 bg-gradient-to-br from-indigo-50 to-purple-50">
-          <h3 className="text-2xl mb-6">Your Family's Data</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between text-lg">
-              <span className="text-gray-600">Family Members</span>
-              <span>{appData.familyMembers.length}</span>
-            </div>
-            <div className="flex justify-between text-lg">
-              <span className="text-gray-600">Mood Entries</span>
-              <span>{appData.moodEntries.length}</span>
-            </div>
-            <div className="flex justify-between text-lg">
-              <span className="text-gray-600">Reflections</span>
-              <span>{appData.reflectionEntries.length}</span>
-            </div>
-            <div className="flex justify-between text-lg">
-              <span className="text-gray-600">Gratitude Notes</span>
-              <span>{appData.gratitudeEntries.length}</span>
-            </div>
-            <div className="border-t pt-4 mt-4">
-              <div className="flex justify-between font-medium text-xl">
-                <span>Total Entries</span>
-                <span>{getTotalEntries()}</span>
-              </div>
-              <div className="text-lg text-gray-500 mt-2">
-                {getDateRange()}
-              </div>
-            </div>
-            
-            {/* Storage Metrics */}
-            {storageMetrics && (
-              <div className="border-t pt-4 mt-4">
-                <div className="mb-3">
-                  <div className="flex justify-between text-base">
-                    <span className="text-gray-600">Family Flow Storage ({storageMetrics.storageType})</span>
-                    <span className="font-medium">{formatBytes(storageMetrics.familyFlowSize)}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                    <div 
-                      className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min(storageMetrics.familyFlowPercentage, 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-              </div>
-            )}
-          </div>
-        </Card>
-
-
 
         {!exportFormat && (
           <div className="mb-10">
-            <div className="flex items-center justify-center mb-6">
-              <h3 className="text-2xl mr-3">Export your Family data</h3>
-              <button
-                onClick={() => setShowExportHelp(!showExportHelp)}
-                className="text-gray-400 hover:text-gray-600 p-1"
-                title="Why export family data?"
-              >
-                <HelpCircle className="w-5 h-5" />
-              </button>
+            <div className="text-center mb-8">
+              <h3 className="text-3xl font-bold mb-4">📱 Share Your Family Memories</h3>
+              <p className="text-xl text-gray-700">Choose how you'd like to save or share</p>
             </div>
             
-            {/* 5-day rule hint */}
-            {!hasDataForExport() && (
-              <div className="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-200 text-center">
-                <p className="text-orange-700 text-sm">
-                  <span className="font-medium">Export unlocks after 5 days of family entries</span> • 
-                  This ensures your exported data represents meaningful connection patterns
-                </p>
-              </div>
-            )}
-            
-            {showExportHelp && (
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-start justify-between mb-3">
-                  <h4 className="text-lg font-medium text-blue-800">Why export your family data?</h4>
-                  <button
-                    onClick={() => setShowExportHelp(false)}
-                    className="text-blue-600 hover:text-blue-800 text-xl leading-none"
-                  >
-                    ×
-                  </button>
-                </div>
-                <ul className="text-blue-700 space-y-2">
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-2 mt-1">•</span>
-                    <span>Create backups of your precious family memories</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-2 mt-1">•</span>
-                    <span>Share insights with family therapists or counselors</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-2 mt-1">•</span>
-                    <span>Print physical journals or create scrapbooks</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-2 mt-1">•</span>
-                    <span>Track long-term family patterns and growth</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-blue-500 mr-2 mt-1">•</span>
-                    <span>Keep records safe before device changes</span>
-                  </li>
-                </ul>
-              </div>
-            )}
             <div className="space-y-4">
-              <button
-                onClick={() => hasDataForExport() && setExportFormat('csv')}
-                disabled={!hasDataForExport()}
-                className={`w-full p-6 rounded-2xl border-3 transition-colors text-left ${
-                  hasDataForExport() 
-                    ? 'border-gray-200 hover:border-indigo-300 cursor-pointer' 
-                    : 'border-gray-100 cursor-not-allowed opacity-50'
-                }`}
+              {/* Share with Family - Big Simple Button */}
+              <Button
+                onClick={() => onNavigate('family-sync')}
+                className="w-full p-8 h-auto bg-blue-500 hover:bg-blue-600 text-white rounded-3xl"
               >
-                <div className="flex items-center space-x-4">
-                  <FileText className={`w-8 h-8 ${hasDataForExport() ? 'text-green-600' : 'text-gray-400'}`} />
-                  <div>
-                    <div className={`font-medium text-lg ${hasDataForExport() ? 'text-gray-900' : 'text-gray-400'}`}>
-                      CSV Spreadsheet
-                    </div>
-                    <div className={`text-base ${hasDataForExport() ? 'text-gray-600' : 'text-gray-400'}`}>
-                      {hasDataForExport() ? 'Open in Excel, Google Sheets, etc.' : `${getUniqueDaysWithEntries()}/5 days needed to export`}
-                    </div>
-                  </div>
+                <div className="text-center">
+                  <Users className="w-16 h-16 mx-auto mb-3" />
+                  <div className="text-2xl font-bold mb-2">Share with Family</div>
+                  <div className="text-lg text-blue-100">Send to other phones instantly</div>
                 </div>
-              </button>
+              </Button>
 
-              <button
-                onClick={() => hasDataForSync() && setExportFormat('json')}
-                disabled={!hasDataForSync()}
-                className={`w-full p-6 rounded-2xl border-3 transition-colors text-left ${
-                  hasDataForSync() 
-                    ? 'border-gray-200 hover:border-orange-300 cursor-pointer' 
-                    : 'border-gray-100 cursor-not-allowed opacity-50'
-                }`}
-              >
-                <div className="flex items-center space-x-4">
-                  <Database className={`w-8 h-8 ${hasDataForSync() ? 'text-orange-600' : 'text-gray-400'}`} />
-                  <div>
-                    <div className={`font-medium text-lg ${hasDataForSync() ? 'text-gray-900' : 'text-gray-400'}`}>
-                      Family Sync File (JSON)
-                    </div>
-                    <div className={`text-base ${hasDataForSync() ? 'text-gray-600' : 'text-gray-400'}`}>
-                      {hasDataForSync() ? 'Share with family devices • Perfect for desktop/mobile sync' : 'Add some family entries first'}
-                    </div>
+              {/* Download File - Simple Button */}
+              {hasDataForSync() && (
+                <Button
+                  onClick={() => setExportFormat('json')}
+                  className="w-full p-8 h-auto bg-green-500 hover:bg-green-600 text-white rounded-3xl"
+                >
+                  <div className="text-center">
+                    <Download className="w-16 h-16 mx-auto mb-3" />
+                    <div className="text-2xl font-bold mb-2">Download File</div>
+                    <div className="text-lg text-green-100">Save to your device</div>
                   </div>
-                </div>
-              </button>
-              
-              {/* PDF Export temporarily hidden
-              <button
-                onClick={() => hasData() && setExportFormat('pdf')}
-                disabled={!hasData()}
-                className={`w-full p-6 rounded-2xl border-3 transition-colors text-left ${
-                  hasData() 
-                    ? 'border-gray-200 hover:border-indigo-300 cursor-pointer' 
-                    : 'border-gray-100 cursor-not-allowed opacity-50'
-                }`}
-              >
-                <div className="flex items-center space-x-4">
-                  <FileText className={`w-8 h-8 ${hasData() ? 'text-red-600' : 'text-gray-400'}`} />
-                  <div>
-                    <div className={`font-medium text-lg ${hasData() ? 'text-gray-900' : 'text-gray-400'}`}>
-                      Memory Book PDF
-                    </div>
-                    <div className={`text-base ${hasData() ? 'text-gray-600' : 'text-gray-400'}`}>
-                      {hasData() ? 'Beautiful family keepsake document' : 'Add some family entries first'}
-                    </div>
-                  </div>
-                </div>
-              </button>
-              */}
-            </div>
-            
-            {/* Bluetooth Sync Section - Mobile Only */}
-            {supportsBluetoothSync && (
-              <div className="mt-8">
-                <h4 className="text-lg font-medium mb-4 text-gray-800">📱 Mobile Bluetooth Sync</h4>
-                
-                {bluetoothStatus && (
-                  <div className={`mb-4 p-4 rounded-lg border ${
-                    bluetoothStatus.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
-                    bluetoothStatus.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
-                    'bg-blue-50 border-blue-200 text-blue-800'
-                  }`}>
-                    {bluetoothStatus.message}
-                  </div>
-                )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button
-                    onClick={startBluetoothSharing}
-                    disabled={!hasDataForSync() || isBluetoothScanning}
-                    variant="outline"
-                    className="h-auto py-4 px-6 flex flex-col items-center space-y-2"
-                  >
-                    <Smartphone className="w-6 h-6 text-blue-600" />
-                    <div className="text-center">
-                      <div className="font-medium">Share via Bluetooth</div>
-                      <div className="text-sm text-gray-600">
-                        {isBluetoothScanning ? 'Making discoverable...' : 'Make this device discoverable'}
-                      </div>
-                    </div>
-                  </Button>
-                  
-                  <Button
-                    onClick={scanForBluetoothDevices}
-                    disabled={isBluetoothScanning}
-                    variant="outline"
-                    className="h-auto py-4 px-6 flex flex-col items-center space-y-2"
-                  >
-                    <Database className="w-6 h-6 text-green-600" />
-                    <div className="text-center">
-                      <div className="font-medium">Receive via Bluetooth</div>
-                      <div className="text-sm text-gray-600">
-                        {isBluetoothScanning ? 'Scanning for devices...' : 'Find nearby family devices'}
-                      </div>
-                    </div>
-                  </Button>
-                </div>
-                
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-blue-800 text-sm">
-                    💡 <strong>How it works:</strong> One family member shares, another receives. 
-                    Both devices need Bluetooth enabled and be within 30 feet of each other.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Platform-specific guidance for non-Bluetooth devices */}
-            {!supportsBluetoothSync && (
-              <div className="mt-8 p-4 bg-amber-50 rounded-lg border border-amber-200">
-                <h5 className="font-medium text-amber-800 mb-2">💻 Desktop & Non-Bluetooth Devices</h5>
-                <p className="text-amber-700 text-sm">
-                  You're using a desktop computer or device without Bluetooth sync support. 
-                  Use the <strong>JSON file export/import</strong> method below to share family data between devices.
-                </p>
-              </div>
-            )}
-
-            {/* Import Section */}
-            <div className="mt-8">
-              <h4 className="text-lg font-medium mb-4 text-gray-800">
-                📥 Import Family Data
-                {!supportsBluetoothSync && <span className="text-sm text-gray-500 ml-2">(Desktop/File Method)</span>}
-              </h4>
-              
-              {importStatus && (
-                <div className={`mb-4 p-4 rounded-lg border ${
-                  importStatus.type === 'success' 
-                    ? 'bg-green-50 border-green-200 text-green-800' 
-                    : 'bg-red-50 border-red-200 text-red-800'
-                }`}>
-                  {importStatus.message}
-                </div>
+                </Button>
               )}
-              
+
+              {/* Import File - Simple Button */}
               <div
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`border-3 border-dashed rounded-2xl p-8 text-center transition-colors cursor-pointer ${
+                onClick={() => document.getElementById('file-input')?.click()}
+                className={`w-full p-8 rounded-3xl border-4 border-dashed cursor-pointer transition-colors ${
                   isDragOver 
                     ? 'border-orange-400 bg-orange-50' 
-                    : 'border-gray-300 hover:border-orange-300 hover:bg-orange-50'
+                    : 'border-gray-300 hover:border-orange-400 hover:bg-orange-50'
                 }`}
-                onClick={() => document.getElementById('file-input')?.click()}
               >
-                <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <div className="mb-2">
-                  <span className="text-lg font-medium text-gray-700">
-                    {isDragOver ? 'Drop your Family Flow file here' : 'Import from Family Flow JSON file'}
-                  </span>
-                </div>
-                <p className="text-gray-600 mb-4">
-                  Drag and drop your family-flow-*.json file here, or click to browse
-                </p>
-                <div className="text-sm text-gray-500">
-                  💡 {supportsBluetoothSync 
-                    ? 'Universal method • Works on all devices • Great for desktop sync' 
-                    : 'Perfect for desktop computers • Drag and drop support'}
+                <div className="text-center">
+                  <Database className="w-16 h-16 mx-auto mb-3 text-orange-500" />
+                  <div className="text-2xl font-bold mb-2 text-gray-800">
+                    {isDragOver ? 'Drop File Here!' : 'Add Family Memories'}
+                  </div>
+                  <div className="text-lg text-gray-600">
+                    Click or drag a Family Flow file here
+                  </div>
                 </div>
                 
                 <input
@@ -894,6 +425,17 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
                 />
               </div>
             </div>
+
+            {/* Success/Error Messages */}
+            {importStatus && (
+              <div className={`mt-6 p-4 rounded-xl text-center text-lg font-medium ${
+                importStatus.type === 'success' 
+                  ? 'bg-green-100 border-2 border-green-300 text-green-800' 
+                  : 'bg-red-100 border-2 border-red-300 text-red-800'
+              }`}>
+                {importStatus.message}
+              </div>
+            )}
           </div>
         )}
 

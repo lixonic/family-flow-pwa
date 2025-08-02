@@ -161,7 +161,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
 
   // Auto-advance slideshow
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: number;
     if (isPlaying && slideshowMode) {
       interval = setInterval(nextSlide, 3000);
     }
@@ -170,7 +170,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
 
   // Breathe timer effect
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: number;
     
     if (breatheActive && breatheTimeLeft > 0) {
       interval = setInterval(() => {

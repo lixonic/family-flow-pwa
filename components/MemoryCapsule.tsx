@@ -7,8 +7,8 @@ import { Download, FileText, Database, Smartphone, Info, Shield } from 'lucide-r
 interface MemoryCapsuleProps {
   appData: AppData;
   onNavigate: (screen: string) => void;
-  deferredPrompt: any;
-  setDeferredPrompt: (prompt: any) => void;
+  deferredPrompt: Event | null;
+  setDeferredPrompt: (prompt: Event | null) => void;
 }
 
 export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferredPrompt }: MemoryCapsuleProps) {
