@@ -94,7 +94,7 @@ const FAQ_DATA: FAQItem[] = [
   },
   {
     question: "Can I export our collective ritual logs?",
-    answer: "Yes—there's a one-tap export to CSV/JSON or printable PDF, all processed locally. You decide what to share or keep, as a family."
+    answer: "Yes—there's a one-tap export to CSV format, all processed locally. You decide what to share or keep, as a family."
   },
   {
     question: "What if we're ready to graduate before 45 days?",

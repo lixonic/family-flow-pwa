@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { AppData } from '../App';
 import { familyFlowStorage } from '../utils/storage';
 
@@ -8,11 +8,13 @@ interface UseAppStorageReturn {
   saveData: (data: AppData) => Promise<void>;
   clearData: () => Promise<void>;
   storageError: string | null;
+  isLoading: boolean;
 }
 
 export function useAppStorage(): UseAppStorageReturn {
   const [isStorageReady, setIsStorageReady] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Initialize storage on mount
   useEffect(() => {
@@ -35,7 +37,8 @@ export function useAppStorage(): UseAppStorageReturn {
     initStorage();
   }, []);
 
-  const loadData = async (): Promise<AppData | null> => {
+  const loadData = useCallback(async (): Promise<AppData | null> => {
+    setIsLoading(true);
     try {
       // Try IndexedDB first
       const data = await familyFlowStorage.getFamilyData();
@@ -44,10 +47,12 @@ export function useAppStorage(): UseAppStorageReturn {
       console.warn('IndexedDB load failed, using localStorage fallback:', error);
       // Fallback to localStorage
       return familyFlowStorage.getFallbackData();
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const saveData = async (data: AppData): Promise<void> => {
+  const saveData = useCallback(async (data: AppData): Promise<void> => {
     try {
       // Save to IndexedDB (async, non-blocking)
       await familyFlowStorage.saveFamilyData(data);
@@ -59,9 +64,9 @@ export function useAppStorage(): UseAppStorageReturn {
       // Fallback to localStorage only
       familyFlowStorage.saveFallbackData(data);
     }
-  };
+  }, []);
 
-  const clearData = async (): Promise<void> => {
+  const clearData = useCallback(async (): Promise<void> => {
     try {
       // Clear IndexedDB
       await familyFlowStorage.clearFamilyData();
@@ -77,13 +82,14 @@ export function useAppStorage(): UseAppStorageReturn {
       localStorage.removeItem('familyFlowWelcomeShown');
       localStorage.removeItem('familyFlowStartDate');
     }
-  };
+  }, []);
 
   return {
     isStorageReady,
     loadData,
     saveData,
     clearData,
-    storageError
+    storageError,
+    isLoading
   };
 }
