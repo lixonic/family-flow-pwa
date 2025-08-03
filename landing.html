@@ -352,6 +352,26 @@
             opacity: 0.7;
         }
         
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        details summary::after {
+            content: '▼';
+            float: right;
+            transition: transform 0.3s ease;
+            color: var(--primary-orange);
+            font-size: 0.9rem;
+        }
+        
+        details[open] summary::after {
+            transform: rotate(180deg);
+        }
+        
+        details[open] summary {
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
@@ -377,6 +397,11 @@
             
             .features-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
             }
         }
     </style>
@@ -433,37 +458,37 @@
                 <div class="feature-card">
                     <div class="icon">🎭</div>
                     <h3>Mood Tracking & Emotional Intelligence</h3>
-                    <p>Daily mood check-ins with personalized responses that validate feelings and encourage family connection. Builds emotional vocabulary and normalizes feeling expression.</p>
+                    <p>Daily mood check-ins expand vocabulary beyond "good" and "bad." Screen time reflection connects feelings to daily choices, while emotional check-ins become automatic family habits that build resilience.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="icon">📱</div>
-                    <h3>Screen Time Reflection</h3>
-                    <p>Gentle prompting questions about digital usage without judgment. Creates family conversation starters rather than restrictive controls.</p>
+                    <h3>Screen Time Reflection (Without Judgment)</h3>
+                    <p>We don't restrict or block apps. Instead, we ask "How did that feel?" and "What do you want to try next?" Building internal awareness rather than external limits.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="icon">🧘</div>
-                    <h3>Mindful Gratitude Practice</h3>
-                    <p>2-minute breathing exercises with gratitude journaling. Combines mindfulness meditation with gratitude practice for increased family satisfaction.</p>
+                    <h3>2-Minute Connection Rituals</h3>
+                    <p>Short, frequent connections beat long meetings. 2 minutes feels effortless, captures today's feelings while fresh, and creates sustainable daily rhythm where everyone participates.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="icon">🎯</div>
                     <h3>Graduation Progress System</h3>
-                    <p>Milestone tracking with celebrations at 15, 30, and 45 days. Builds confidence in independent family connection through goal-setting theory.</p>
+                    <p>Success isn't engagement—it's independence. Milestone celebrations at 15, 30, and 45 days build confidence toward app-free family connection rituals.</p>
                 </div>
                 
                 <div class="feature-card">
                     <div class="icon">🔒</div>
                     <h3>Privacy-First Architecture</h3>
-                    <p>Zero data collection, local storage only, complete offline functionality. All family data stays on your device with full export capabilities.</p>
+                    <p>Nothing you enter leaves your device—ever. No accounts, no surveillance, no cloud sync. Even export features process data locally. Your family's journey stays with your family.</p>
                 </div>
                 
                 <div class="feature-card">
-                    <div class="icon">📲</div>
-                    <h3>Progressive Web App</h3>
-                    <p>Native app experience that installs like a regular app. Cross-platform compatibility with offline-first design and automatic updates.</p>
+                    <div class="icon">🤖</div>
+                    <h3>Human-Centered (No AI)</h3>
+                    <p>AI creates dependency, not independence. We deliberately avoid AI to protect authentic family connections and prepare you for true graduation from any wellness app.</p>
                 </div>
             </div>
         </div>
@@ -490,6 +515,112 @@
                     <h4>Independent Rituals</h4>
                     <p>Week 9+: Family connection happens naturally without digital prompts. You've graduated!</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who Is This For Section -->
+    <section class="section" style="background: white;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="font-title">Who Is Family Flow For?</h2>
+                <p class="subtitle">This app works best for specific family situations</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin: 3rem 0;">
+                <div style="background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); padding: 2.5rem; border-radius: 20px;">
+                    <h3 style="color: #065F46; margin-bottom: 1.5rem; font-size: 1.4rem;">✅ Perfect for families with:</h3>
+                    <ul style="color: #047857; line-height: 1.8; list-style: none; padding: 0;">
+                        <li>• Parents concerned about screen time balance</li>
+                        <li>• Families wanting deeper daily connections</li>
+                        <li>• Households struggling with digital wellness</li>
+                        <li>• Parents seeking structured family rituals</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); padding: 2.5rem; border-radius: 20px;">
+                    <h3 style="color: #7F1D1D; margin-bottom: 1.5rem; font-size: 1.4rem;">❌ Not ideal for:</h3>
+                    <ul style="color: #991B1B; line-height: 1.8; list-style: none; padding: 0;">
+                        <li>• Parents looking for screen time controls/blocking</li>
+                        <li>• Families preferring spontaneous interactions only</li>
+                        <li>• Those uncomfortable with structured activities</li>
+                        <li>• Families with severe communication issues</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="background: #F0FDF4; padding: 2rem; border-radius: 15px; border-left: 4px solid #22C55E; max-width: 800px; margin: 0 auto;">
+                <p style="color: #15803D; font-size: 1.1rem; margin: 0;">
+                    <strong>Key insight:</strong> Family Flow is designed as temporary scaffolding. The goal is to help your family build independent connection habits, then "graduate" from needing the app.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Common Questions FAQ -->
+    <section class="section" style="background: var(--background-warm);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="font-title">Common Questions</h2>
+                <p class="subtitle">Everything you need to know about Family Flow</p>
+            </div>
+            
+            <div style="max-width: 800px; margin: 0 auto; display: grid; gap: 1.5rem;">
+                <details style="background: white; border-radius: 15px; padding: 0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                    <summary style="padding: 1.5rem; cursor: pointer; font-weight: 600; color: var(--primary-orange); font-size: 1.1rem; border-bottom: 1px solid #F3F4F6;">
+                        What about concerns with excessive screen time affecting child development?
+                    </summary>
+                    <div style="padding: 1.5rem; color: var(--text-gray); line-height: 1.7;">
+                        <p><strong>These concerns are valid and important.</strong> Research shows excessive passive screen consumption can impact social development, particularly eye contact and face-to-face interaction skills.</p>
+                        <p><strong>How Family Flow specifically counters these concerns:</strong></p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                            <li><strong>Active family interaction:</strong> App requires looking at each other and talking, not passive consumption</li>
+                            <li><strong>Brief exposure:</strong> 2-minute daily sessions minimize screen time while maximizing connection</li>
+                            <li><strong>Face-to-face focus:</strong> Prompts discussions that happen offline, away from screens</li>
+                            <li><strong>Eye contact practice:</strong> Mood sharing and emotional check-ins encourage direct eye contact</li>
+                            <li><strong>Graduation mindset:</strong> Explicitly designed to move families away from digital dependency</li>
+                        </ul>
+                        <p style="background: #FFF7ED; padding: 1rem; border-radius: 8px; border-left: 3px solid var(--primary-orange);">
+                            <strong>Important:</strong> Family Flow works best as a catalyst for connection, not a replacement. If your family already connects well naturally, that's ideal—no app needed.
+                        </p>
+                    </div>
+                </details>
+
+                <details style="background: white; border-radius: 15px; padding: 0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                    <summary style="padding: 1.5rem; cursor: pointer; font-weight: 600; color: var(--primary-orange); font-size: 1.1rem; border-bottom: 1px solid #F3F4F6;">
+                        How is this different from parental control apps?
+                    </summary>
+                    <div style="padding: 1.5rem; color: var(--text-gray); line-height: 1.7;">
+                        <p><strong>Parental controls impose external limits.</strong> Family Flow builds internal awareness. Instead of "You can't," we ask "How did that feel?" and "What do you want to try next?"</p>
+                        <p>We don't restrict screen time or block apps. Instead, we help families reflect on their digital choices and develop awareness together. You decide what works for your family.</p>
+                    </div>
+                </details>
+
+                <details style="background: white; border-radius: 15px; padding: 0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                    <summary style="padding: 1.5rem; cursor: pointer; font-weight: 600; color: var(--primary-orange); font-size: 1.1rem; border-bottom: 1px solid #F3F4F6;">
+                        Is my family's data really private?
+                    </summary>
+                    <div style="padding: 1.5rem; color: var(--text-gray); line-height: 1.7;">
+                        <p><strong>Absolutely.</strong> Nothing you enter leaves your device—ever. There are no accounts, no surveillance, no cloud sync, and you can delete everything with one tap.</p>
+                        <p>Even the export features only process data locally in your browser, not sent anywhere. Your family's journey stays with your family.</p>
+                    </div>
+                </details>
+
+                <details style="background: white; border-radius: 15px; padding: 0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+                    <summary style="padding: 1.5rem; cursor: pointer; font-weight: 600; color: var(--primary-orange); font-size: 1.1rem; border-bottom: 1px solid #F3F4F6;">
+                        Why doesn't Family Flow use AI features?
+                    </summary>
+                    <div style="padding: 1.5rem; color: var(--text-gray); line-height: 1.7;">
+                        <p><strong>AI creates dependency, not independence.</strong> While other apps use AI for personalized responses, Family Flow deliberately avoids this to protect authentic family connections.</p>
+                        <p><strong>Why we stay human-centered:</strong></p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                            <li><strong>Intimacy matters:</strong> AI presence changes the nature of vulnerable family conversations</li>
+                            <li><strong>Graduation conflicts:</strong> AI features encourage ongoing app dependency instead of family independence</li>
+                            <li><strong>Authentic growth:</strong> Families develop better emotional intelligence by trusting their own insights</li>
+                            <li><strong>Privacy protection:</strong> No AI analysis means your intimate family moments stay completely private</li>
+                        </ul>
+                    </div>
+                </details>
             </div>
         </div>
     </section>
