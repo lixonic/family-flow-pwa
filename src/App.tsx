@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { LoaderScreen } from "./components/LoaderScreen";
 import { WelcomeCards } from "./components/WelcomeCards";
 import { DayGlowScreen } from "./components/DayGlowScreen";
 import { DayEntriesView } from "./components/DayEntriesView";
@@ -77,7 +76,7 @@ export type AppData = {
 };
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState("loader");
+  const [currentScreen, setCurrentScreen] = useState("day-glow");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showWelcome, setShowWelcome] = useState(false);
   const [appData, setAppData] = useState<AppData>({
@@ -228,21 +227,14 @@ export default function App() {
     // Check if welcome should be shown
     const welcomeShown = localStorage.getItem('familyFlowWelcomeShown');
     
-    // Auto-navigate from loader after 2 seconds
-    const timer = setTimeout(() => {
-      if (currentScreen === "loader") {
-        if (!welcomeShown) {
-          setShowWelcome(true);
-        } else {
-          setCurrentScreen("day-glow");
-        }
-      }
-    }, 2000);
+    // Show welcome for new users immediately
+    if (!welcomeShown) {
+      setShowWelcome(true);
+    }
 
     // Ensure page starts at top
     window.scrollTo(0, 0);
 
-    return () => clearTimeout(timer);
   }, [currentScreen]);
 
   useEffect(() => {
@@ -720,9 +712,20 @@ export default function App() {
 
 
   const renderCurrentScreen = () => {
-    // Show loader while data is loading to prevent flickering
-    if (isLoading || (!isStorageReady && currentScreen === "loader")) {
-      return <LoaderScreen />;
+    // Show loading state while data is being loaded
+    if (isLoading || !isStorageReady) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-100 to-pink-100">
+          <div className="text-center">
+            <h1 className="font-title text-4xl font-medium mb-4 text-orange-600">Family Flow</h1>
+            <div className="flex justify-center space-x-2">
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
+          </div>
+        </div>
+      );
     }
     
     if (showWelcome) {
@@ -730,8 +733,6 @@ export default function App() {
     }
     
     switch (currentScreen) {
-      case "loader":
-        return <LoaderScreen />;
       case "day-glow":
         return (
           <DayGlowScreen
@@ -867,7 +868,6 @@ export default function App() {
         isVisible={
           updateAvailable && 
           !showWelcome && 
-          currentScreen !== "loader" &&
           // Only show on navigation-safe screens (not during active reflection)
           !["day-glow", "screen-time", "gratitude"].includes(currentScreen)
         }
@@ -877,7 +877,7 @@ export default function App() {
       />
 
       {renderCurrentScreen()}
-      {!showWelcome && currentScreen !== "loader" && (
+      {!showWelcome && (
         <Navigation
           currentScreen={currentScreen}
           onNavigate={setCurrentScreen}

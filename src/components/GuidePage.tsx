@@ -518,6 +518,42 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
               </div>
             )}
           </Card>
+
+          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 mt-4">
+            <button
+              onClick={() => toggleTopic('no-ai-philosophy')}
+              className="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-colors"
+            >
+              <div className="flex items-center flex-1 min-w-0">
+                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">Why doesn't Family Flow use AI features?</h2>
+              </div>
+              {expandedTopics.has('no-ai-philosophy') ? (
+                <ChevronUp className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              )}
+            </button>
+            
+            {expandedTopics.has('no-ai-philosophy') && (
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 text-gray-700">
+                <p className="text-base leading-relaxed">
+                  <strong>AI creates dependency, not independence.</strong> While other apps use AI for personalized responses or conversation suggestions, Family Flow deliberately avoids this to protect the authenticity of family connections.
+                </p>
+                <p className="text-base leading-relaxed">
+                  <strong>Why we stay human-centered:</strong>
+                </p>
+                <ul className="list-disc pl-5 space-y-2 text-sm">
+                  <li><strong>Intimacy matters:</strong> AI presence changes the nature of vulnerable family conversations</li>
+                  <li><strong>Graduation conflicts:</strong> AI features encourage ongoing app dependency instead of family independence</li>
+                  <li><strong>Authentic growth:</strong> Families develop better emotional intelligence by trusting their own insights</li>
+                  <li><strong>Privacy protection:</strong> No AI analysis means your intimate family moments stay completely private</li>
+                </ul>
+                <p className="text-base leading-relaxed">
+                  <strong>The result:</strong> Your family learns to connect authentically without digital assistance—preparing you for true graduation from any wellness app.
+                </p>
+              </div>
+            )}
+          </Card>
         </div>
 
         <div className="text-center">
