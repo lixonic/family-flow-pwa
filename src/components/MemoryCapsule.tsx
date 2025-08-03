@@ -363,7 +363,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
         {!exportFormat && (
           <div className="mb-10">
             <div className="text-center mb-8">
-              <h3 className="text-3xl font-bold mb-4">📱 Share Your Family Memories</h3>
+              <h3 className="text-3xl font-bold mb-4">📱 Export & Share</h3>
               <p className="text-xl text-gray-700">Choose how you'd like to save or share</p>
             </div>
             

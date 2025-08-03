@@ -521,6 +521,46 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
 
           <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 mt-4">
             <button
+              onClick={() => toggleTopic('screen-time-concerns')}
+              className="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-colors"
+            >
+              <div className="flex items-center flex-1 min-w-0">
+                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">What about concerns with excessive screen time affecting child development?</h2>
+              </div>
+              {expandedTopics.has('screen-time-concerns') ? (
+                <ChevronUp className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              )}
+            </button>
+            
+            {expandedTopics.has('screen-time-concerns') && (
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 text-gray-700">
+                <p className="text-base leading-relaxed">
+                  <strong>These concerns are valid and important.</strong> Research shows excessive passive screen consumption can impact social development, particularly eye contact and face-to-face interaction skills.
+                </p>
+                <p className="text-base leading-relaxed">
+                  <strong>How Family Flow specifically counters these concerns:</strong>
+                </p>
+                <ul className="list-disc pl-5 space-y-2 text-sm">
+                  <li><strong>Active family interaction:</strong> App requires looking at each other and talking, not passive consumption</li>
+                  <li><strong>Brief exposure:</strong> 2-minute daily sessions minimize screen time while maximizing connection</li>
+                  <li><strong>Face-to-face focus:</strong> Prompts discussions that happen offline, away from screens</li>
+                  <li><strong>Eye contact practice:</strong> Mood sharing and emotional check-ins encourage direct eye contact</li>
+                  <li><strong>Graduation mindset:</strong> Explicitly designed to move families away from digital dependency</li>
+                </ul>
+                <p className="text-base leading-relaxed">
+                  <strong>Age considerations:</strong> Very young children (under 3) benefit more from parents modeling emotional awareness than direct app interaction. School-age children can actively participate in building emotional vocabulary.
+                </p>
+                <p className="text-base leading-relaxed bg-orange-100 p-3 rounded-lg">
+                  <strong>Important:</strong> Family Flow works best as a catalyst for connection, not a replacement. If your family already connects well naturally, that's ideal—no app needed.
+                </p>
+              </div>
+            )}
+          </Card>
+
+          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 mt-4">
+            <button
               onClick={() => toggleTopic('no-ai-philosophy')}
               className="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-colors"
             >
