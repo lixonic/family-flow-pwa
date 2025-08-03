@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Flow - Graduate from Digital Wellness Apps</title>
+    <meta name="description" content="A privacy-first family reflection PWA designed to help families graduate to independent offline connection practices. Success means you won't need us forever.">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Family Flow - Graduate from Digital Wellness Apps">
+    <meta property="og:description" content="Privacy-first family reflection tool that helps families develop independent connection habits and graduate from digital dependency.">
+    <meta property="og:image" content="./public/images/app-hero.png">
+    <meta property="og:url" content="https://family-flow.app">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Family Flow - Graduate from Digital Wellness Apps">
+    <meta name="twitter:description" content="Privacy-first family reflection tool that helps families develop independent connection habits.">
+    <meta name="twitter:image" content="./public/images/app-hero.png">
+    
+    <link rel="icon" href="./public/images/app_icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+AU+QLD:wght@100..400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-orange: #F97316;
+            --primary-orange-light: #FED7AA;
+            --background-warm: #FFF5E5;
+            --text-dark: #1F2937;
+            --text-gray: #6B7280;
+            --text-light: #9CA3AF;
+            --gradient-orange: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+            --gradient-pink: linear-gradient(135deg, #F97316 0%, #EC4899 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--background-warm);
+        }
+        
+        .font-title {
+            font-family: 'Playwrite AU QLD', cursive;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: var(--gradient-orange);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('./public/images/app-hero.png') center/cover no-repeat;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+        
+        .hero .tagline {
+            font-size: 1.25rem;
+            margin-bottom: 3rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            display: inline-block;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary-orange);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary-orange);
+        }
+        
+        .section {
+            padding: 5rem 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-pink);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-header .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin: 4rem 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .feature-card p {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+        
+        .philosophy-section {
+            background: white;
+        }
+        
+        .philosophy-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .philosophy-text h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-orange);
+        }
+        
+        .philosophy-text p {
+            margin-bottom: 1.5rem;
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .key-principle {
+            background: var(--background-warm);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border-left: 4px solid var(--primary-orange);
+            font-style: italic;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .graduation-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .step::before {
+            content: attr(data-step);
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-orange);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .step h4 {
+            margin: 1rem 0;
+            color: var(--text-dark);
+            font-size: 1.2rem;
+        }
+        
+        .step p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+        
+        .privacy-highlights {
+            background: var(--gradient-orange);
+            color: white;
+            text-align: center;
+        }
+        
+        .privacy-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .privacy-feature {
+            padding: 1.5rem;
+        }
+        
+        .privacy-feature .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .privacy-feature h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .privacy-feature p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .final-cta {
+            background: var(--background-warm);
+            text-align: center;
+        }
+        
+        .app-preview {
+            margin: 3rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .app-preview img {
+            max-width: 200px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        footer {
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        footer p {
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .philosophy-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="font-title">Family Flow</h1>
+                <p class="subtitle">Graduate from Digital Wellness Apps</p>
+                <p class="tagline">Success means you won't need us forever</p>
+                <div class="cta-buttons">
+                    <a href="./index.html" class="btn btn-primary">Start Your Journey</a>
+                    <a href="#philosophy" class="btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section id="philosophy" class="section philosophy-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="font-title">A Revolutionary Approach</h2>
+                <p class="subtitle">We're not here to create dependency. We're here to build lasting habits, then set you free.</p>
+            </div>
+            
+            <div class="philosophy-content">
+                <div class="philosophy-text">
+                    <h3>The Graduation Platform</h3>
+                    <p>Family Flow represents a fundamental shift from traditional digital wellness apps. Rather than creating dependency, our success is measured by families confidently "graduating" to independent offline connection practices.</p>
+                    <p>The app serves as temporary scaffolding that families outgrow as they develop authentic, sustainable connection habits.</p>
+                    <div class="key-principle">
+                        "Success means you won't need us forever"
+                    </div>
+                </div>
+                <div>
+                    <img src="./public/images/welcome-1.png" alt="Family Flow App Screenshot" style="width: 100%; border-radius: 15px; box-shadow: 0 15px 50px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="font-title">Complete Feature Set</h2>
+                <p class="subtitle">Everything your family needs to build lasting connection habits</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon">🎭</div>
+                    <h3>Mood Tracking & Emotional Intelligence</h3>
+                    <p>Daily mood check-ins with personalized responses that validate feelings and encourage family connection. Builds emotional vocabulary and normalizes feeling expression.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon">📱</div>
+                    <h3>Screen Time Reflection</h3>
+                    <p>Gentle prompting questions about digital usage without judgment. Creates family conversation starters rather than restrictive controls.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon">🧘</div>
+                    <h3>Mindful Gratitude Practice</h3>
+                    <p>2-minute breathing exercises with gratitude journaling. Combines mindfulness meditation with gratitude practice for increased family satisfaction.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon">🎯</div>
+                    <h3>Graduation Progress System</h3>
+                    <p>Milestone tracking with celebrations at 15, 30, and 45 days. Builds confidence in independent family connection through goal-setting theory.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon">🔒</div>
+                    <h3>Privacy-First Architecture</h3>
+                    <p>Zero data collection, local storage only, complete offline functionality. All family data stays on your device with full export capabilities.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon">📲</div>
+                    <h3>Progressive Web App</h3>
+                    <p>Native app experience that installs like a regular app. Cross-platform compatibility with offline-first design and automatic updates.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Graduation Journey -->
+    <section class="section" style="background: white;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="font-title">Your Graduation Journey</h2>
+                <p class="subtitle">From digital prompts to independent family connection</p>
+            </div>
+            
+            <div class="graduation-steps">
+                <div class="step" data-step="1">
+                    <h4>Digital Scaffolding</h4>
+                    <p>Weeks 1-4: Use the app daily to establish rhythm and discover what works for your family</p>
+                </div>
+                <div class="step" data-step="2">
+                    <h4>Hybrid Connection</h4>
+                    <p>Weeks 5-8: Start conversations without opening the app first. Build confidence in your own prompts</p>
+                </div>
+                <div class="step" data-step="3">
+                    <h4>Independent Rituals</h4>
+                    <p>Week 9+: Family connection happens naturally without digital prompts. You've graduated!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacy Highlights -->
+    <section class="section privacy-highlights">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="font-title" style="color: white;">Privacy-First by Design</h2>
+                <p class="subtitle" style="color: rgba(255,255,255,0.9);">Your family's intimate moments deserve complete privacy</p>
+            </div>
+            
+            <div class="privacy-features">
+                <div class="privacy-feature">
+                    <div class="icon">🚫</div>
+                    <h4>Zero Data Collection</h4>
+                    <p>No servers, accounts, or tracking of any kind</p>
+                </div>
+                <div class="privacy-feature">
+                    <div class="icon">📱</div>
+                    <h4>Local Storage Only</h4>
+                    <p>All data stays on your device forever</p>
+                </div>
+                <div class="privacy-feature">
+                    <div class="icon">✈️</div>
+                    <h4>Offline First</h4>
+                    <p>Works without internet after initial load</p>
+                </div>
+                <div class="privacy-feature">
+                    <div class="icon">📤</div>
+                    <h4>Full Data Control</h4>
+                    <p>Export, import, or delete everything with one tap</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="section final-cta">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="font-title">Ready to Graduate Your Family?</h2>
+                <p class="subtitle">Start your journey toward independent family connection today</p>
+            </div>
+            
+            <div class="app-preview">
+                <img src="./public/images/welcome-2.png" alt="Family Flow Screenshot 1">
+                <img src="./public/images/welcome-3.png" alt="Family Flow Screenshot 2">
+                <img src="./public/images/welcome-4.png" alt="Family Flow Screenshot 3">
+            </div>
+            
+            <div class="cta-buttons">
+                <a href="./index.html" class="btn btn-primary">Launch Family Flow</a>
+            </div>
+            
+            <p style="margin-top: 2rem; color: var(--text-gray);">
+                <strong>No signup required</strong> • <strong>No data collection</strong> • <strong>Completely free</strong>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Family Flow. Built with ❤️ for families ready to graduate from digital dependency.</p>
+        </div>
+    </footer>
+</body>
+</html>
