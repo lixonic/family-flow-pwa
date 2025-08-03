@@ -78,10 +78,10 @@ export function MilestoneCelebration({ milestone, onCelebrationComplete }: Miles
             {milestone.description}
           </p>
 
-          {/* Progress Badge */}
+          {/* Connection Badge */}
           <div className={`inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r ${getCelebrationColor()} text-white font-semibold mb-6`}>
             <span className="mr-2">{getCelebrationEmoji()}</span>
-            {milestone.threshold} Days Milestone Reached!
+            {milestone.threshold} Days of Family Connection!
           </div>
 
           {/* Motivational Message */}
@@ -89,20 +89,20 @@ export function MilestoneCelebration({ milestone, onCelebrationComplete }: Miles
             <div className="text-sm text-gray-700">
               {milestone.threshold === 15 && (
                 <>
-                  <p className="font-medium text-gray-800 mb-2">What if connection took just 2 minutes?</p>
-                  <p className="italic">No lectures. No screen time battles. Just a gentle daily ritual that brings your family's hearts back together, one check-in at a time.</p>
+                  <p className="font-medium text-gray-800 mb-2">Connection is happening, no matter how it looks</p>
+                  <p className="italic">You're building something beautiful together. Every honest moment, every shared feeling—it all matters. There's no "right" way to be a family.</p>
                 </>
               )}
               {milestone.threshold === 30 && (
                 <>
-                  <p className="font-medium text-gray-800 mb-2">From guided prompts to family wisdom</p>
-                  <p className="italic">Watch your family discover your unique connection style. Every family's digital wellness journey looks different, and that's exactly how it should be.</p>
+                  <p className="font-medium text-gray-800 mb-2">Your family rhythm is becoming clear</p>
+                  <p className="italic">Notice how natural this is starting to feel? You're learning what authentic connection looks like for your unique family. Trust what you're discovering together.</p>
                 </>
               )}
               {milestone.threshold === 45 && (
                 <>
-                  <p className="font-medium text-gray-800 mb-2">Digital wisdom, not digital rules</p>
-                  <p className="italic">You've built the confidence to make intentional choices about technology that work for your unique family. Success means knowing what serves your family best.</p>
+                  <p className="font-medium text-gray-800 mb-2">You know your family's connection language now</p>
+                  <p className="italic">The patterns, the rhythms, the ways you care for each other—you've discovered what works for your family. This wisdom belongs to you now, with or without any app.</p>
                 </>
               )}
             </div>

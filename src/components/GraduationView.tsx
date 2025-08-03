@@ -47,9 +47,9 @@ export function GraduationView({
 
         {/* Vision Context */}
         <div className="text-center mb-8 px-4">
-          <h1 className="text-2xl font-bold text-gray-800 mb-3">From guided prompts to family wisdom</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">Your Family's Connection Journey</h1>
           <p className="text-gray-600 leading-relaxed">
-            Watch your family discover your unique connection style. Every family's path to healthy technology use looks different, and that's exactly how it should be.
+            Every family finds their own rhythm for connection. This isn't about perfect consistency or hitting targets—it's about discovering what authentic family time looks like for you.
           </p>
         </div>
 
@@ -58,19 +58,19 @@ export function GraduationView({
           <div className="text-center mb-8">
             <div className="mb-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-100">
               <div className="text-6xl mb-4">🌱</div>
-              <h3 className="text-xl font-medium mb-3 text-gray-800">Your family journey starts now!</h3>
+              <h3 className="text-xl font-medium mb-3 text-gray-800">Your family connection starts here!</h3>
               <p className="text-gray-600 mb-4">
-                Begin your 2-minute daily family connection ritual to track progress toward confidence in your family's unique connection style.
+                Begin your 2-minute daily family connection ritual. There's no pressure to be perfect—just authentic moments together.
               </p>
               <p className="text-sm text-gray-500">
-                Complete daily check-ins to see your family's graduation progress and celebrate milestones together.
+                Share how you're feeling, reflect together, and discover what connection means for your unique family.
               </p>
             </div>
             <button
               onClick={() => onNavigate('day-glow')}
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-2xl font-medium text-lg"
             >
-              Start Your Family Journey
+              Begin Your Family Connection
             </button>
           </div>
         )}
@@ -109,16 +109,23 @@ export function GraduationView({
 
 
 
-        {/* Action Button */}
+        {/* Gentle Wisdom */}
         {readyForGraduation && (
           <div className="mt-6">
-            <Button
-              onClick={onStartReadinessAssessment}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"
-            >
-              <BookOpen className="w-5 h-5 mr-2" />
-              Start Readiness Assessment
-            </Button>
+            <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-100">
+              <div className="text-center">
+                <div className="text-4xl mb-3">🌱</div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  Trust Your Family Wisdom
+                </h3>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  Your family has learned what connection looks like for you. When it feels right to trust your own rhythm and create your own rituals, that's exactly when you're ready.
+                </p>
+                <p className="text-sm text-gray-600 italic">
+                  There's no test to pass, no score to achieve. You already know.
+                </p>
+              </div>
+            </div>
           </div>
         )}
           </div>
