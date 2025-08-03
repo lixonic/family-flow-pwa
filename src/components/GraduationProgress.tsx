@@ -55,10 +55,10 @@ export function GraduationProgress({
       {/* Header */}
       <div className="mb-6 text-center">
         <h3 className="text-xl font-bold text-gray-900 font-title mb-2">
-          Graduation Journey
+          Your Family's Connection Story
         </h3>
         <p className="text-gray-600 text-sm">
-          Building habits that last beyond the app
+          Moments of connection that belong to your family
         </p>
       </div>
 
@@ -66,10 +66,10 @@ export function GraduationProgress({
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-700">
-            Progress to Graduation
+            Days of Connection
           </span>
           <span className="text-sm font-bold text-gray-900">
-            {totalCheckIns} / {targetDays} days
+            {totalCheckIns} beautiful moments together
           </span>
         </div>
         
@@ -88,14 +88,14 @@ export function GraduationProgress({
           <span className={`text-sm font-semibold ${
             readyForGraduation ? 'text-purple-600' : 'text-orange-600'
           }`}>
-            {Math.round(progressPercentage)}% Complete
+            Each day adds to your family's story
           </span>
         </div>
       </div>
 
-      {/* Milestone Progress */}
+      {/* Connection Moments */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-gray-700 mb-4">Milestones</h4>
+        <h4 className="text-sm font-semibold text-gray-700 mb-4">Connection Moments</h4>
         
         <div className="space-y-3">
           {milestonePoints.map((threshold) => {
@@ -127,19 +127,19 @@ export function GraduationProgress({
                     </span>
                     
                     {isCompleted && (
-                      <span className="text-xs text-green-600 font-semibold">✓ ACHIEVED</span>
+                      <span className="text-xs text-green-600 font-semibold">✓ SHARED</span>
                     )}
                     {isNext && (
                       <span className="text-xs text-blue-600 font-semibold">
-                        {threshold - totalCheckIns} to go
+                        Coming naturally
                       </span>
                     )}
                   </div>
                   
                   <p className="text-xs text-gray-600 mt-1">
-                    {threshold === 15 && "Building the habit"}
-                    {threshold === 30 && "Training wheels off"}
-                    {threshold === 45 && "Ready to graduate"}
+                    {threshold === 15 && "Finding your rhythm"}
+                    {threshold === 30 && "Connection feels natural"}
+                    {threshold === 45 && "Your family wisdom"}
                   </p>
                 </div>
               </div>
@@ -154,38 +154,29 @@ export function GraduationProgress({
           <div className="space-y-3">
             <div className="p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl">
               <p className="text-purple-800 font-semibold text-sm mb-2">
-                🎓 Congratulations! You're ready to graduate!
+                🎓 Your family has found its connection rhythm!
               </p>
               <p className="text-purple-700 text-xs">
-                Take the readiness assessment to get your personalized transition plan.
+                Trust what you've learned together. You know when the time feels right.
               </p>
             </div>
-            
-            {onStartAssessment && (
-              <button
-                onClick={onStartAssessment}
-                className="w-full py-3 px-6 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold transition-all duration-300 hover:shadow-lg active:scale-95"
-              >
-                Start Readiness Assessment
-              </button>
-            )}
           </div>
         ) : nextMilestone ? (
           <div className="p-4 bg-blue-50 rounded-2xl">
             <p className="text-blue-800 font-semibold text-sm mb-1">
-              Next: {nextMilestone.title.split(' - ')[1] || nextMilestone.title}
+              Connection growing naturally
             </p>
             <p className="text-blue-700 text-xs">
-              {nextMilestone.threshold - totalCheckIns} more check-ins to reach this milestone
+              Your family rhythm is developing beautifully
             </p>
           </div>
         ) : (
           <div className="p-4 bg-orange-50 rounded-2xl">
             <p className="text-orange-800 font-semibold text-sm mb-1">
-              Keep Going!
+              Every moment together matters
             </p>
             <p className="text-orange-700 text-xs">
-              You're building something beautiful. Every check-in matters.
+              You're learning what connection looks like for your family
             </p>
           </div>
         )}
