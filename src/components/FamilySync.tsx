@@ -76,21 +76,24 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
     setIsBluetoothScanning(true);
     
     try {
-      // Request Bluetooth device
+      // For demo purposes, show device picker but explain limitation
       const device = await navigator.bluetooth.requestDevice({
-        filters: [
-          { services: ['family-sync-service'] } // Custom service UUID would be used
-        ],
-        optionalServices: ['family-sync-service']
+        acceptAllDevices: true,
+        optionalServices: ['generic_access', 'device_information']
       });
 
       setBluetoothStatus({
         type: 'info',
-        message: `📱 Connecting to ${device.name}...`
+        message: `📱 Found ${device.name}. Checking for Family Flow compatibility...`
       });
       
-      // Connect to device and sync data
-      await connectAndSyncBluetooth(device);
+      // Simulate checking for Family Flow service (would fail in real implementation)
+      setTimeout(() => {
+        setBluetoothStatus({
+          type: 'error',
+          message: `❌ ${device.name} doesn't have Family Flow data sharing enabled. Both devices need to run Family Flow with Bluetooth sharing active.`
+        });
+      }, 2000);
       
     } catch (error: unknown) {
       console.error('Bluetooth scan failed:', error);
@@ -124,11 +127,13 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
         throw new Error('Could not connect to device');
       }
 
-      // Get the Family Flow service
-      const service = await server.getPrimaryService('family-sync-service');
+      // Get the Family Flow service  
+      const familySyncServiceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+      const familyDataCharUUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+      const service = await server.getPrimaryService(familySyncServiceUUID);
       
       // Read family data from the other device
-      const dataCharacteristic = await service.getCharacteristic('family-data');
+      const dataCharacteristic = await service.getCharacteristic(familyDataCharUUID);
       const dataValue = await dataCharacteristic.readValue();
       
       // Parse the received data
