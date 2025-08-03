@@ -487,15 +487,16 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
         )}
 
         {/* About Section */}
-        <div className="space-y-4 mb-8">
-          <Button
-            onClick={() => onNavigate('about')}
-            variant="outline"
-            className="w-full max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"
-          >
-            <Info className="w-5 h-5 mr-3" />
-            About Family Flow
-          </Button>
+        <div className="mb-8">
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 text-center">
+            <h4 className="text-xl font-bold mb-3 text-gray-800">About Family Flow</h4>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              <strong>Success means you won't need us forever.</strong> Family Flow is a privacy-first graduation platform that helps families develop authentic connection rituals. Created by Helen Francis with love for families everywhere.
+            </p>
+            <p className="text-sm text-gray-600">
+              Built with ❤️ by Helen Francis & Lixon Louis • v2.0 • Privacy-first • No tracking • Local data only
+            </p>
+          </div>
         </div>
 
         <div className="text-center text-lg text-gray-500 mb-8">

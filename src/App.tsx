@@ -7,8 +7,6 @@ import { ScreenTimeReflector } from "./components/ScreenTimeReflector";
 import { GratitudeFlipbook } from "./components/GratitudeFlipbook";
 import { MemoryCapsule } from "./components/MemoryCapsule";
 import { FamilySync } from "./components/FamilySync";
-import { AboutPage } from "./components/AboutPage";
-import { FAQPage } from "./components/FAQPage";
 import { GuidePage } from "./components/GuidePage";
 import { Navigation } from "./components/Navigation";
 import { MilestoneCelebration } from "./components/MilestoneCelebration";
@@ -821,14 +819,6 @@ export default function App() {
             onImportData={handleImportData}
           />
         );
-      case "about":
-        return (
-          <AboutPage onNavigate={setCurrentScreen} />
-        );
-      case "faq":
-        return (
-          <FAQPage onNavigate={setCurrentScreen} />
-        );
       case "graduation":
         return (
           <GraduationView
@@ -887,7 +877,7 @@ export default function App() {
       />
 
       {renderCurrentScreen()}
-      {!showWelcome && currentScreen !== "loader" && currentScreen !== "about" && (
+      {!showWelcome && currentScreen !== "loader" && (
         <Navigation
           currentScreen={currentScreen}
           onNavigate={setCurrentScreen}

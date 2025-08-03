@@ -434,14 +434,99 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
           </Card>
         </div>
 
+        {/* Common Questions Section */}
+        <div className="mb-8">
+          <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">Common Questions</h3>
+          
+          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+            <button
+              onClick={() => toggleTopic('graduation-philosophy')}
+              className="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-colors"
+            >
+              <div className="flex items-center flex-1 min-w-0">
+                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">What is Family Flow's graduation philosophy?</h2>
+              </div>
+              {expandedTopics.has('graduation-philosophy') ? (
+                <ChevronUp className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              )}
+            </button>
+            
+            {expandedTopics.has('graduation-philosophy') && (
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 text-gray-700">
+                <p className="text-base leading-relaxed">
+                  <strong>Success means you won't need us forever.</strong> Family Flow is designed as a "graduation platform" - our success isn't measured by how long you use the app, but by how confidently your family graduates to independent connection rituals.
+                </p>
+                <p className="text-base leading-relaxed">
+                  We're here to build lasting habits, then set you free to flourish on your own. From digital prompts to real conversations - that's true success.
+                </p>
+              </div>
+            )}
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 mt-4">
+            <button
+              onClick={() => toggleTopic('privacy-first')}
+              className="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-colors"
+            >
+              <div className="flex items-center flex-1 min-w-0">
+                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">Is my family's data really private?</h2>
+              </div>
+              {expandedTopics.has('privacy-first') ? (
+                <ChevronUp className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              )}
+            </button>
+            
+            {expandedTopics.has('privacy-first') && (
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 text-gray-700">
+                <p className="text-base leading-relaxed">
+                  <strong>Absolutely.</strong> Nothing you enter leaves your device—ever. There are no accounts, no surveillance, no cloud sync, and you can delete everything with one tap.
+                </p>
+                <p className="text-base leading-relaxed">
+                  Even the export features only process data locally in your browser, not sent anywhere. Your family's journey stays with your family.
+                </p>
+              </div>
+            )}
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 mt-4">
+            <button
+              onClick={() => toggleTopic('not-parental-controls')}
+              className="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-colors"
+            >
+              <div className="flex items-center flex-1 min-w-0">
+                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">How is this different from parental control apps?</h2>
+              </div>
+              {expandedTopics.has('not-parental-controls') ? (
+                <ChevronUp className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
+              )}
+            </button>
+            
+            {expandedTopics.has('not-parental-controls') && (
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 text-gray-700">
+                <p className="text-base leading-relaxed">
+                  <strong>Parental controls impose external limits.</strong> Family Flow builds internal awareness. Instead of "You can't," we ask "How did that feel?" and "What do you want to try next?"
+                </p>
+                <p className="text-base leading-relaxed">
+                  We don't restrict screen time or block apps. Instead, we help families reflect on their digital choices and develop awareness together. You decide what works for your family.
+                </p>
+              </div>
+            )}
+          </Card>
+        </div>
+
         <div className="text-center">
-          <Button
-            onClick={() => onNavigate?.('faq')}
-            className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white max-[999px]:text-base max-[999px]:py-2 text-lg py-3 h-auto"
-          >
-            <HelpCircle className="w-5 h-5 mr-2" />
-            Frequently Asked Questions
-          </Button>
+          <p className="text-gray-600 mb-4">
+            Questions or feedback? Contact Helen at{' '}
+            <a href="mailto:helenfrancisthonakkara@gmail.com" className="text-blue-600 hover:text-blue-800">
+              helenfrancisthonakkara@gmail.com
+            </a>
+          </p>
         </div>
       </div>
     </div>
