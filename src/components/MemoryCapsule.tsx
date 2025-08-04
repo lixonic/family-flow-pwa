@@ -486,18 +486,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           </div>
         )}
 
-        {/* About Section */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 text-center">
-            <h4 className="text-xl font-bold mb-3 text-gray-800">About Family Flow</h4>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Family Flow is a privacy-first graduation platform that helps families develop authentic connection rituals. Created by Helen Francis with love for families everywhere.
-            </p>
-            <p className="text-sm text-gray-600">
-              Built with ❤️ by Helen Francis & Lixon Louis • v2.0 • Privacy-first • No tracking • Local data only
-            </p>
-          </div>
-        </div>
 
         <div className="text-center text-lg text-gray-500 mb-8">
           <p>🔒 All exports happen offline</p>
