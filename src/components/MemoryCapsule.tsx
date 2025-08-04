@@ -364,7 +364,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
           <div className="mb-10">
             <div className="text-center mb-8">
               <h3 className="text-3xl font-bold mb-4">📱 Share with Family</h3>
-              <p className="text-xl text-gray-700">Add Family Flow to another device</p>
+              <p className="text-xl text-gray-700">Send your family memories</p>
             </div>
             
             <div className="space-y-4">

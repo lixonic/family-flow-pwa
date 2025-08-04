@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { ArrowLeft, QrCode, Share, Download, Upload, Camera, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Share, Download, Upload, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface FamilySyncProps {
   appData: AppData;
@@ -11,7 +11,6 @@ interface FamilySyncProps {
 }
 
 export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProps) {
-  const [shareStep, setShareStep] = useState<'start' | 'qr-shown' | 'sharing' | 'import-ready'>('start');
   const [importStatus, setImportStatus] = useState<{type: 'success' | 'error' | 'info', message: string} | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -62,11 +61,6 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
     return `familyflow-${familyName}-${entryCount}entries-${timestamp}.json`;
   };
 
-  // Start sharing process
-  const startSharing = () => {
-    if (!hasDataForSync()) return;
-    setShareStep('qr-shown');
-  };
 
   // Share via Web Share API or download
   const shareViaWebShare = async (format: 'json' | 'txt' = 'txt') => {
@@ -205,8 +199,6 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
     }
   };
 
-  // App URL for QR code (replace with actual app URL)
-  const appUrl = window.location.origin;
 
   return (
     <div className="min-h-screen px-6 py-8 pb-28">
@@ -226,7 +218,7 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
             Share with Family
           </h2>
           <p className="text-gray-600">
-            Add another family member's device securely - data never leaves your family
+            Send your family memories to another device securely - data never leaves your family
           </p>
         </div>
 
@@ -245,103 +237,50 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
           </div>
         </Card>
 
-        {/* Simple Two-Step Process */}
-        {shareStep === 'start' && (
-          <div className="space-y-4 mb-6">
-            {/* Step 1: Start Sharing */}
-            <Card className="p-6">
-              <div className="text-center">
-                <div className="text-6xl mb-4">🚀</div>
-                <h3 className="text-xl font-medium mb-3 text-gray-800">
-                  Let's add another device!
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Help your family member get Family Flow and all your family memories on their device.
-                </p>
+        {/* Share Data Section - Always Visible */}
+        <div className="space-y-6">
+          {/* Share Data */}
+          <Card className="p-6">
+            <div className="text-center">
+              <div className="text-6xl mb-4">📤</div>
+              <h3 className="text-xl font-medium mb-4 text-gray-800">
+                Send your family memories
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Share your family data with them via your preferred method.
+              </p>
+              
+              <div className="space-y-3 mb-4">
+                {/* WhatsApp/Messages friendly option */}
                 <Button
-                  onClick={startSharing}
+                  onClick={() => shareViaWebShare('txt')}
                   disabled={!hasDataForSync()}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-lg py-4 h-auto"
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-lg py-4 h-auto"
                 >
-                  Start Family Sharing
+                  <Share className="w-5 h-5 mr-2" />
+                  Share as Text File (.txt)
                 </Button>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Step 2: QR + Share */}
-        {shareStep === 'qr-shown' && (
-          <div className="space-y-6">
-            {/* QR Code */}
-            <Card className="p-6">
-              <div className="text-center">
-                <h3 className="text-lg font-medium mb-4 text-gray-800">
-                  📱 Step 1: They scan this code
-                </h3>
-                <div className="bg-white p-6 rounded-2xl border-2 border-gray-200 inline-block mb-4">
-                  {/* QR Code placeholder - would need actual QR generation library */}
-                  <div className="w-48 h-48 bg-gradient-to-tr from-blue-100 to-purple-100 flex items-center justify-center text-6xl rounded-lg">
-                    <QrCode className="w-32 h-32 text-gray-600" />
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">
-                  Have them point their camera at this code
-                </p>
-                <p className="text-xs text-gray-500">
-                  Or they can type: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{appUrl}</span>
-                </p>
-              </div>
-            </Card>
-
-            {/* Share Data */}
-            <Card className="p-6">
-              <div className="text-center">
-                <h3 className="text-lg font-medium mb-4 text-gray-800">
-                  📤 Step 2: Send your family memories
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Once they have the app open, share your family data with them.
+                <p className="text-xs text-green-600">
+                  ✅ Works with WhatsApp, Messages, Email - any app accepts text files
                 </p>
                 
-                <div className="space-y-3 mb-4">
-                  {/* WhatsApp/Messages friendly option */}
-                  <Button
-                    onClick={() => shareViaWebShare('txt')}
-                    className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-lg py-4 h-auto"
-                  >
-                    <Share className="w-5 h-5 mr-2" />
-                    Share as Text File (.txt)
-                  </Button>
-                  <p className="text-xs text-green-600">
-                    ✅ Works with WhatsApp, Messages, Email - any app accepts text files
-                  </p>
-                  
-                  {/* Technical users option */}
-                  <Button
-                    onClick={() => shareViaWebShare('json')}
-                    variant="outline"
-                    className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 py-3"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download as JSON (.json)
-                  </Button>
-                  <p className="text-xs text-gray-500">
-                    For technical users or email sharing
-                  </p>
-                </div>
+                {/* Technical users option */}
+                <Button
+                  onClick={() => shareViaWebShare('json')}
+                  disabled={!hasDataForSync()}
+                  variant="outline"
+                  className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 py-3"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download as JSON (.json)
+                </Button>
+                <p className="text-xs text-gray-500">
+                  For technical users or email sharing
+                </p>
               </div>
-            </Card>
-
-            <Button
-              onClick={() => setShareStep('start')}
-              variant="outline"
-              className="w-full"
-            >
-              ← Back
-            </Button>
-          </div>
-        )}
+            </div>
+          </Card>
+        </div>
 
         {/* Status Messages */}
         {importStatus && (
@@ -390,24 +329,6 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
           />
         </Card>
 
-        {/* Help Section */}
-        <Card className="p-6 mb-6 bg-gray-50">
-          <div className="text-center">
-            <Camera className="w-8 h-8 mx-auto mb-3 text-gray-600" />
-            <h4 className="font-medium text-gray-800 mb-3">How it works</h4>
-            <div className="space-y-2 text-sm text-gray-600">
-              <div>📱 <strong>Step 1:</strong> They scan the code to get the app</div>
-              <div>📤 <strong>Step 2:</strong> You share the family data file</div>
-              <div>📥 <strong>Step 3:</strong> They import the file into their app</div>
-            </div>
-            <div className="mt-4 p-3 bg-white rounded-lg">
-              <div className="text-xs text-gray-500">
-                🔒 <strong>100% Private:</strong> Data goes directly between your devices.<br/>
-                No cloud servers, no accounts needed.
-              </div>
-            </div>
-          </div>
-        </Card>
 
         {/* Privacy Notice */}
         <div className="text-center text-sm text-gray-500 mb-8">
