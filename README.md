@@ -314,3 +314,9 @@ All updates align with the graduation platform approach - helping families devel
 - **Removed QR Code Complexity**: Eliminated QR code generation and scanning instructions for cleaner, more direct experience
 - **Cleaner Interface**: Removed "How it works" section and unnecessary step-by-step instructions
 - **Maintained Privacy**: All sharing still happens offline with no servers or cloud storage involved
+
+### Unlimited Family Support (August 2025)
+- **No Member Limits**: Removed the 6 family member restriction - families can now add unlimited members
+- **Flexible Family Sizes**: Support for families of any size, from small nuclear families to large extended families
+- **Simplified Add Flow**: Always show "Add Family Member" option without arbitrary limits
+- **Updated Documentation**: Removed all references to family size restrictions in code and documentation
