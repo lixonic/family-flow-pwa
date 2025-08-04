@@ -717,8 +717,7 @@ export function DayGlowScreen({
                   </button>
                 );
               })}
-              {
-                <button
+              <button
                   onClick={() => {
                     setShowManageMembers(true);
                     // Scroll to add member form after a brief delay to ensure DOM is updated
@@ -735,7 +734,6 @@ export function DayGlowScreen({
                   <Plus className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3" />
                   <div className="text-base sm:text-lg font-medium text-center">Add Family Member</div>
                 </button>
-              )}
             </div>
           </div>
         )}
@@ -754,8 +752,7 @@ export function DayGlowScreen({
             </div>
 
             {/* Add new member - Redesigned Progressive Flow */}
-            {(
-              <Card className="p-6 mb-6 bg-gradient-to-br from-orange-50 to-pink-50 border-2 border-orange-100">
+            <Card className="p-6 mb-6 bg-gradient-to-br from-orange-50 to-pink-50 border-2 border-orange-100">
                 <div className="text-center mb-6">
                   <div className="text-4xl mb-3">👋</div>
                   <h4 className="text-xl font-medium mb-2">Add a Family Member</h4>
@@ -859,7 +856,6 @@ export function DayGlowScreen({
                   </Button>
                 </div>
               </Card>
-            )}
 
             {/* Existing members - Enhanced Design */}
             <div className="space-y-4" id="members-list-section">
