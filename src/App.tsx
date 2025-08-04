@@ -278,7 +278,6 @@ export default function App() {
   };
 
   const addFamilyMember = (member: Omit<FamilyMember, "id">) => {
-    if (appData.familyMembers.length >= 6) return false;
     
     const newMember = { 
       ...member, 
