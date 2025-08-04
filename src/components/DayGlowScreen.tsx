@@ -246,14 +246,7 @@ export function DayGlowScreen({
       setNote('');
       setShowSuccess(true);
       
-      // Hide success after 3 seconds to allow time for cooldown banner
-      setTimeout(() => {
-        setShowSuccess(false);
-        if (showCooldownBanner) {
-          // Keep banner visible for longer
-          setTimeout(() => setShowCooldownBanner(false), 8000);
-        }
-      }, 2000);
+      // Don't auto-hide success screen - let user choose next action
     }
   };
 
@@ -906,12 +899,6 @@ export function DayGlowScreen({
                             ) : (
                               <div>
                                 <span className="text-lg font-medium text-gray-800">{member.name}</span>
-                                <div className="text-sm text-gray-500 mt-1">
-                                  {(() => {
-                                    const avatar = AVATAR_OPTIONS.find(opt => opt.id === member.avatar);
-                                    return avatar ? avatar.category : 'Family Member';
-                                  })()}
-                                </div>
                               </div>
                             )}
                           </div>
@@ -1002,17 +989,16 @@ export function DayGlowScreen({
                   {/* Main content - always visible */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
-                      <span className="text-2xl flex-shrink-0">{member.avatar}</span>
+                      <FamilyMemberIcon avatar={member.avatar} className="w-8 h-8 flex-shrink-0" showBackground={true} />
                       <div className="flex-1 min-w-0">
                         <span className="font-medium text-gray-800 text-lg block truncate">{member.name}</span>
                         {entry ? (
                           <div className="flex items-center space-x-2 mt-1">
-                            <span className="text-xl">{entry.emoji}</span>
                             <span className="text-sm text-gray-600 hidden sm:inline">
-                              Shared their feelings
+                              Feeling {MOOD_OPTIONS.find(mood => mood.emoji === entry.emoji)?.name || 'good'}
                             </span>
                             <span className="text-sm text-gray-600 sm:hidden">
-                              Shared
+                              {MOOD_OPTIONS.find(mood => mood.emoji === entry.emoji)?.name || 'Good'}
                             </span>
                           </div>
                         ) : (

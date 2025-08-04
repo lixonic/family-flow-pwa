@@ -6,53 +6,103 @@ import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
 
-const BASE_REFLECTION_PROMPTS = [
-  "What was your best offline moment today?",
-  "Something online you loved today?",
-  "What digital experience didn't serve you well today?",
-  "How did screen time make you feel?",
-  "What other activities brought you joy today?",
-  "Did you feel connected or disconnected?",
-  "What made you smile away from screens?",
-  "How long do you think you spent online?",
-  "What did you learn today offline?",
-  "What app did you use most today?",
-  "When did you feel most present today?",
-  "What would you tell your younger self about screens?",
-  "What's one digital habit you're proud of?",
-  "How did technology help you today?",
-  "What's something you discovered offline?",
-  "When did you choose to put your phone down?",
-  "What made you laugh without a screen?",
-  "How did you connect with someone today?",
-  "What's a skill you practiced offline?",
-  "What did you notice about your surroundings?",
-  "What role did screens play in helping you today?",
-  "Which digital tools supported your wellbeing?",
-  "How did technology help you connect with others?",
-  "What screen time felt most purposeful today?"
+const REFLECTION_PROMPTS = [
+  "What's the first thing you see when you look up right now?",
+  "Name a sound you can hear that's not from a phone or TV",
+  "What did you have for lunch today?",
+  "Who made you laugh today?",
+  "What's the weather like outside?",
+  "What color are you wearing right now?",
+  "What did you learn today that wasn't from a screen?",
+  "How many steps did you take outside today?",
+  "What's something you touched with your hands today?",
+  "Who did you hug today?",
+  "What made you smile without taking a photo?",
+  "What game did you play offline today?",
+  "What's your favorite smell in your house right now?",
+  "How did you help someone today?",
+  "What did you cook or eat that tasted really good?",
+  "What animal did you see today (pet, bird, anything!)?",
+  "How long did you go without checking your phone?",
+  "What did you build, fix, or make with your hands?",
+  "Who did you have a real conversation with today?",
+  "What's something beautiful you noticed outside?",
+  "How did you move your body today (walk, dance, stretch)?",
+  "What made you curious about something today?",
+  "What's the best part of your day so far?",
+  "How did you take care of yourself today?",
+  "What tradition or habit made you feel good today?",
+  "What problem did you solve without googling it?",
+  "How did you connect with nature today?",
+  "What made you feel proud of yourself today?",
+  "Who in your family made you feel loved today?",
+  "What's something you're looking forward to tomorrow?",
+  "How did you make someone else's day better?",
+  "What's your favorite thing about where you live?",
+  "What did you do that felt really 'you' today?",
+  "How did you slow down and just breathe today?",
+  "What made you feel grateful without posting about it?",
+  "What skill did you practice today?",
+  "How did you show kindness to yourself today?",
+  "What surprised you about today?",
+  "What's something you accomplished with patience?",
+  "How did you connect with your family today?",
+  "What made you feel calm and peaceful?",
+  "What's something you love about your daily routine?",
+  "How did you use your imagination today?",
+  "What made you feel strong or capable today?",
+  "What did you notice about your neighborhood today?",
+  "How did you make an ordinary moment special?",
+  "What's something you're getting better at?",
+  "How did you practice being present with someone?",
+  "What made you feel connected to your community?",
+  "What's the most interesting thing you learned today?",
+  "How did you take a break from being busy today?",
+  "What made you feel thankful for your body today?",
+  "What's something you created or made today?",
+  "How did you show love to someone today?",
+  "What made you feel really awake and alive?",
+  "What's your favorite memory from today?",
+  "How did you practice patience today?",
+  "What made you feel like you belong somewhere?",
+  "What's something you're proud you didn't need help with?",
+  "How did you make time for fun today?",
+  "What made you feel peaceful inside?",
+  "What's something you noticed for the first time?",
+  "How did you connect with your values today?",
+  "What made you feel grateful for your family?",
+  "What's the kindest thing someone did for you today?",
+  "How did you turn off distractions and focus today?",
+  "What made you feel confident in yourself?",
+  "What's something simple that brought you joy?",
+  "How did you practice gratitude in action today?",
+  "What made you feel proud of your family?",
+  "What's something you love about being you?",
+  "How did you make today different from yesterday?",
+  "What made you feel connected to something bigger?",
+  "What's the best conversation you had today?",
+  "How did you choose quality over quantity today?",
+  "What made you feel at home and comfortable?",
+  "What's something you're grateful happened today?",
+  "How did you practice being kind to yourself?",
+  "What made you feel like you have enough?",
+  "What's something you want to remember about today?",
+  "How did you make space for what matters most?",
+  "What made today feel like a gift?",
+  "What's something you appreciated without taking a picture?",
+  "How did you choose connection over perfection today?",
+  "What made you feel alive and present?",
+  "What's the most meaningful moment of your day?",
+  "How did you practice gratitude for ordinary things?",
+  "What made you feel blessed to be part of your family?",
+  "What's something beautiful about this exact moment?",
+  "How did you choose love over fear today?",
+  "What made today worth celebrating?",
+  "What's something you want to carry into tomorrow?",
+  "How did you practice being fully here today?",
+  "What made you feel grateful for this ordinary, precious day?"
 ];
 
-const SOCIAL_MEDIA_MICRO_ACTIONS = [
-  "Unfollow an account that stresses you",
-  "Turn off comments on one post",
-  "Set a 10-minute timer before opening social media",
-  "Delete one app you don't really need",
-  "Put your phone in another room for an hour"
-];
-
-const CHECK_THE_SOURCE_PROMPTS = [
-  "Did you see something online that made you feel upset or unsure? Pause—can you tell who posted it and why?",
-  "What's one thing you saw online today that made you compare yourself to others? How did that feel?",
-  "Did you notice any posts that seemed too good to be true? What made you think that?",
-  "Can you spot the difference between news, opinions, and ads in your feed today?",
-  "What's one account you follow that always makes you feel good? What makes it different?",
-  "Did you see any content that tried to make you angry or scared? Why do you think it was made that way?",
-  "How do you know if something you see online is real or edited? What clues do you look for?",
-  "What's one thing you learned today—online or offline? Which source do you trust more and why?",
-  "Did you feel pressured to like, share, or comment on something today? What was driving that feeling?",
-  "If you could fact-check one thing you saw online today, what would it be and how would you do it?"
-];
 
 interface ScreenTimeReflectorProps {
   familyMembers: FamilyMember[];
@@ -74,87 +124,29 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
       new Date(entry.date).toDateString() === today
     );
   };
-  const [currentPrompts, setCurrentPrompts] = useState<string[]>([]);
-  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+  const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [response, setResponse] = useState('');
-  const [completedResponses, setCompletedResponses] = useState<{ prompt: string; response: string }[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Get the app start date from localStorage or set it
-  const getAppStartDate = () => {
-    const startDate = localStorage.getItem('familyFlowStartDate');
-    if (startDate) {
-      return new Date(startDate);
-    } else {
-      const today = new Date();
-      localStorage.setItem('familyFlowStartDate', today.toISOString());
-      return today;
-    }
-  };
-
-  // Check if it's the 7th day (or multiple of 7)
-  const isSeventhDay = () => {
-    const startDate = getAppStartDate();
-    const today = new Date();
-    const daysDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    return daysDiff > 0 && daysDiff % 7 === 0;
-  };
-
-  const getReflectionPrompts = () => {
-    let allPrompts = [...BASE_REFLECTION_PROMPTS, ...SOCIAL_MEDIA_MICRO_ACTIONS];
-    
-    // Add Check-the-Source prompt if it's the 7th day
-    if (isSeventhDay()) {
-      const randomSourcePrompt = CHECK_THE_SOURCE_PROMPTS[Math.floor(Math.random() * CHECK_THE_SOURCE_PROMPTS.length)];
-      allPrompts = [randomSourcePrompt, ...allPrompts];
-    }
-    
-    return allPrompts;
-  };
-
-  const shufflePrompts = () => {
-    const allPrompts = getReflectionPrompts();
-    const shuffled = [...allPrompts].sort(() => Math.random() - 0.5);
-    setCurrentPrompts(shuffled.slice(0, 3));
-    setCurrentPromptIndex(0);
-    setCompletedResponses([]);
+  const getRandomPrompt = () => {
+    // Get random prompt from main collection
+    const randomPrompt = REFLECTION_PROMPTS[Math.floor(Math.random() * REFLECTION_PROMPTS.length)];
+    return randomPrompt;
   };
 
   const handleMemberSelect = (member: FamilyMember) => {
     setSelectedMember(member);
-    shufflePrompts();
+    setCurrentPrompt(getRandomPrompt());
   };
 
-  const handleNextPrompt = () => {
+  const handleSubmit = () => {
     if (response.trim()) {
-      const newResponse = {
-        prompt: currentPrompts[currentPromptIndex],
-        response: response.trim()
-      };
-      setCompletedResponses([...completedResponses, newResponse]);
-    }
-
-    if (currentPromptIndex < currentPrompts.length - 1) {
-      setCurrentPromptIndex(currentPromptIndex + 1);
-      setResponse('');
-    } else {
-      // Save all responses
-      completedResponses.forEach(cr => {
-        onAddReflectionEntry({
-          memberId: selectedMember!.id,
-          prompt: cr.prompt,
-          response: cr.response,
-          date: new Date().toISOString()
-        });
+      onAddReflectionEntry({
+        memberId: selectedMember!.id,
+        prompt: currentPrompt,
+        response: response.trim(),
+        date: new Date().toISOString()
       });
-      if (response.trim()) {
-        onAddReflectionEntry({
-          memberId: selectedMember!.id,
-          prompt: currentPrompts[currentPromptIndex],
-          response: response.trim(),
-          date: new Date().toISOString()
-        });
-      }
       
       // Show success celebration
       setShowSuccess(true);
@@ -162,48 +154,21 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
       // Reset after celebration
       setTimeout(() => {
         setSelectedMember(null);
-        setCurrentPrompts([]);
-        setCurrentPromptIndex(0);
+        setCurrentPrompt('');
         setResponse('');
-        setCompletedResponses([]);
         setShowSuccess(false);
       }, 3000);
     }
   };
 
   const handleSkip = () => {
-    if (currentPromptIndex < currentPrompts.length - 1) {
-      setCurrentPromptIndex(currentPromptIndex + 1);
-      setResponse('');
-    } else {
-      // Save completed responses only
-      completedResponses.forEach(cr => {
-        onAddReflectionEntry({
-          memberId: selectedMember!.id,
-          prompt: cr.prompt,
-          response: cr.response,
-          date: new Date().toISOString()
-        });
-      });
-      
-      // Show success celebration
-      setShowSuccess(true);
-      
-      // Reset after celebration
-      setTimeout(() => {
-        setSelectedMember(null);
-        setCurrentPrompts([]);
-        setCurrentPromptIndex(0);
-        setResponse('');
-        setCompletedResponses([]);
-        setShowSuccess(false);
-      }, 3000);
-    }
+    // Just reset without saving
+    setSelectedMember(null);
+    setCurrentPrompt('');
+    setResponse('');
   };
 
-  // Check if current prompt is a Check-the-Source weekly prompt
-  const isWeeklyPrompt = CHECK_THE_SOURCE_PROMPTS.includes(currentPrompts[currentPromptIndex]);
-  const isSocialMediaAction = SOCIAL_MEDIA_MICRO_ACTIONS.includes(currentPrompts[currentPromptIndex]);
+  // All prompts are now simple reflection questions
 
   // Confetti celebration screen
   if (showSuccess) {
@@ -252,14 +217,9 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-            Screen Reflector
+            Daily Reflection
           </h1>
-          <p className="text-gray-600 text-xl">Quick reflection on today's digital habits</p>
-          {isSeventhDay() && !selectedMember && (
-            <div className="mt-4 p-3 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg">
-              <p className="text-sm text-purple-700">🔍 Check-the-Source reflection available today</p>
-            </div>
-          )}
+          <p className="text-gray-600 text-xl">A moment of mindful reflection</p>
         </div>
 
         {/* No family members guidance */}
@@ -320,39 +280,22 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
           </div>
         )}
 
-        {selectedMember && currentPrompts.length > 0 && (
+        {selectedMember && currentPrompt && (
           <div className="mb-10">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center mb-8">
               <button
                 onClick={() => setSelectedMember(null)}
                 className="text-gray-500 hover:text-gray-700 text-2xl"
               >
                 ← Back
               </button>
-              <div className="text-lg text-gray-500">
-                {currentPromptIndex + 1} of {currentPrompts.length}
-              </div>
             </div>
 
-            <Card className={`p-8 mb-8 border-0 ${
-              isWeeklyPrompt 
-                ? 'bg-gradient-to-br from-purple-50 to-pink-50' 
-                : isSocialMediaAction
-                ? 'bg-gradient-to-br from-teal-50 to-cyan-50'
-                : 'bg-gradient-to-br from-blue-50 to-green-50'
-            }`}>
+            <Card className="p-8 mb-8 border-0 bg-gradient-to-br from-blue-50 to-green-50">
               <div className="text-center mb-6">
-                <div className="text-6xl mb-4">
-                  {isWeeklyPrompt ? '🔍' : isSocialMediaAction ? '📱' : '💭'}
-                </div>
-                {isWeeklyPrompt && (
-                  <div className="text-sm text-purple-600 mb-2 font-medium">🔍 Check-the-Source</div>
-                )}
-                {isSocialMediaAction && (
-                  <div className="text-sm text-teal-600 mb-2 font-medium">Digital Wellness Action</div>
-                )}
+                <div className="text-6xl mb-4">🌿</div>
                 <h3 className="text-2xl">
-                  {currentPrompts[currentPromptIndex]}
+                  {currentPrompt}
                 </h3>
               </div>
             </Card>
@@ -361,15 +304,9 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
               <Textarea
                 value={response}
                 onChange={(e) => setResponse(e.target.value)}
-                placeholder={
-                  isWeeklyPrompt 
-                    ? "Think critically about what you saw and felt..."
-                    : isSocialMediaAction
-                    ? "How did this action feel? What did you notice?"
-                    : "Share your thoughts..."
-                }
+                placeholder="Share your thoughts..."
                 className="w-full text-lg p-4"
-                rows={5}
+                rows={4}
               />
             </div>
 
@@ -382,38 +319,12 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
                 Skip
               </Button>
               <Button
-                onClick={handleNextPrompt}
-                className={`flex-1 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto ${
-                  isWeeklyPrompt
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
-                    : isSocialMediaAction
-                    ? 'bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600'
-                    : 'bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600'
-                }`}
-                disabled={!response.trim() && currentPromptIndex === currentPrompts.length - 1}
+                onClick={handleSubmit}
+                className="flex-1 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600"
+                disabled={!response.trim()}
               >
-                {currentPromptIndex === currentPrompts.length - 1 ? 'Finish' : 'Next'}
+                Save Reflection
               </Button>
-            </div>
-
-            {/* Progress indicator */}
-            <div className="mt-8">
-              <div className="flex space-x-3 justify-center">
-                {currentPrompts.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-4 h-4 rounded-full ${
-                      index <= currentPromptIndex 
-                        ? isWeeklyPrompt
-                          ? 'bg-purple-400'
-                          : isSocialMediaAction
-                          ? 'bg-teal-400'
-                          : 'bg-blue-400'
-                        : 'bg-gray-200'
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
           </div>
         )}
@@ -424,8 +335,6 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
             <div className="space-y-4">
               {reflectionEntries.slice(-3).map(entry => {
                 const member = familyMembers.find(m => m.id === entry.memberId);
-                const isWeeklyEntry = CHECK_THE_SOURCE_PROMPTS.includes(entry.prompt);
-                const isSocialMediaEntry = SOCIAL_MEDIA_MICRO_ACTIONS.includes(entry.prompt);
                 
                 return (
                   <Card key={entry.id} className="p-6">
@@ -437,15 +346,6 @@ export function ScreenTimeReflector({ familyMembers, reflectionEntries, onAddRef
                         <FamilyMemberIcon avatar={member?.avatar || 'mother'} className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
-                        {(isWeeklyEntry || isSocialMediaEntry) && (
-                          <div className={`text-xs font-medium mb-1 ${
-                            isWeeklyEntry 
-                              ? 'text-purple-600' 
-                              : 'text-teal-600'
-                          }`}>
-                            {isWeeklyEntry ? '🔍 Check-the-Source' : '📱 Digital Action'}
-                          </div>
-                        )}
                         <div className="text-lg text-gray-600 mb-2">{entry.prompt}</div>
                         <div className="text-lg">{entry.response}</div>
                         <div className="text-sm text-gray-400 mt-2">

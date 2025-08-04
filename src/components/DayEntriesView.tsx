@@ -58,7 +58,7 @@ export function DayEntriesView({
   const handleDeleteWithConfirm = (type: 'mood' | 'reflection' | 'gratitude', id: string, memberName: string) => {
     const typeMap = {
       mood: 'mood entry',
-      reflection: 'screen time reflection',
+      reflection: 'daily reflection',
       gratitude: 'gratitude entry'
     };
     
@@ -185,7 +185,7 @@ export function DayEntriesView({
                         <div>
                           <div className="flex items-center text-sm text-gray-500">
                             <MessageSquare className="w-3 h-3 mr-1" />
-                            Screen Time Reflection
+                            Daily Reflection
                             <span className="mx-2">•</span>
                             <Clock className="w-3 h-3 mr-1" />
                             {formatTime(entry.date)}
