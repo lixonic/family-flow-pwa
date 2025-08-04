@@ -268,7 +268,7 @@ export function DayGlowScreen({
 
 
   const handleAddMember = () => {
-    if (newMemberName.trim() && familyMembers.length < 6) {
+    if (newMemberName.trim()) {
       const colorIndex = familyMembers.length % MEMBER_COLORS.length;
       const memberName = newMemberName.trim();
       const memberData = {
@@ -717,7 +717,7 @@ export function DayGlowScreen({
                   </button>
                 );
               })}
-              {familyMembers.length < 6 && (
+              {
                 <button
                   onClick={() => {
                     setShowManageMembers(true);
@@ -754,7 +754,7 @@ export function DayGlowScreen({
             </div>
 
             {/* Add new member - Redesigned Progressive Flow */}
-            {familyMembers.length < 6 && (
+            {(
               <Card className="p-6 mb-6 bg-gradient-to-br from-orange-50 to-pink-50 border-2 border-orange-100">
                 <div className="text-center mb-6">
                   <div className="text-4xl mb-3">👋</div>
@@ -866,7 +866,7 @@ export function DayGlowScreen({
               <div className="flex items-center justify-between mb-6">
                 <h4 className="text-xl font-medium text-gray-800">Your Family</h4>
                 <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                  {familyMembers.length} / 6 members
+                  {familyMembers.length} members
                 </div>
               </div>
               
