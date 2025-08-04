@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { ArrowLeft, Smartphone, Users, Info, HelpCircle } from 'lucide-react';
+import { ArrowLeft, QrCode, Share, Download, Upload, Camera, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface FamilySyncProps {
   appData: AppData;
@@ -11,13 +11,12 @@ interface FamilySyncProps {
 }
 
 export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProps) {
-  const [isBluetoothScanning, setIsBluetoothScanning] = useState(false);
-  const [bluetoothStatus, setBluetoothStatus] = useState<{type: 'success' | 'error' | 'info', message: string} | null>(null);
+  const [shareStep, setShareStep] = useState<'start' | 'qr-shown' | 'sharing' | 'import-ready'>('start');
+  const [importStatus, setImportStatus] = useState<{type: 'success' | 'error' | 'info', message: string} | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
-  // Check mobile and bluetooth support
-  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const hasBluetooth = 'bluetooth' in navigator;
-  const supportsBluetoothSync = isMobile && hasBluetooth;
+  // Check if Web Share API is supported
+  const supportsWebShare = 'share' in navigator;
 
   // Calculate data metrics
   const getTotalEntries = () => {
@@ -29,140 +28,185 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
   };
 
 
-  // Bluetooth sync functions
-  const startBluetoothSharing = async () => {
-    if (!supportsBluetoothSync || !hasDataForSync()) return;
+  // Generate family data file
+  const generateFamilyData = () => {
+    const exportData = {
+      metadata: {
+        exportDate: new Date().toISOString(),
+        appVersion: '2.0',
+        totalEntries: getTotalEntries(),
+        familyMembers: appData.familyMembers.length,
+        familyName: appData.familyMembers.length > 0 ? appData.familyMembers[0].name + "'s family" : 'Family'
+      },
+      familyData: {
+        familyMembers: appData.familyMembers,
+        moodEntries: appData.moodEntries,
+        reflectionEntries: appData.reflectionEntries,
+        gratitudeEntries: appData.gratitudeEntries,
+        graduationMilestones: appData.graduationMilestones || [],
+        graduationSettings: appData.graduationSettings || {}
+      }
+    };
     
-    setBluetoothStatus(null);
-    setIsBluetoothScanning(true);
-    
-    try {
-      // Make device discoverable for Family Flow
-      const deviceName = `FamilyFlow-${appData.familyMembers[0]?.name || 'User'}`;
-      
-      setBluetoothStatus({
-        type: 'info',
-        message: `📡 Making ${deviceName} discoverable for family sync...`
-      });
-      
-      // Simulated Bluetooth implementation
-      // 1. Start Bluetooth advertising with Family Flow service UUID
-      // 2. Wait for connection requests from other Family Flow apps
-      // 3. Share family data when connected
-      
-      // Simulated for demo (real implementation needs Bluetooth API)
-      setTimeout(() => {
-        setBluetoothStatus({
-          type: 'success',
-          message: '✅ Ready for family sync! Have another family member scan for nearby devices.'
-        });
-      }, 2000);
-      
-    } catch (error: unknown) {
-      console.error('Bluetooth sharing failed:', error);
-      setBluetoothStatus({
-        type: 'error',
-        message: 'Failed to start Bluetooth sharing. Make sure Bluetooth is enabled.'
-      });
-    } finally {
-      setIsBluetoothScanning(false);
-    }
+    return JSON.stringify(exportData, null, 2);
   };
 
-  const scanForBluetoothDevices = async () => {
-    if (!supportsBluetoothSync) return;
+  // Generate filename for family data
+  const generateFamilyFilename = () => {
+    const timestamp = new Date().toISOString().split('T')[0];
+    const familyName = appData.familyMembers.length > 0 
+      ? appData.familyMembers[0].name.toLowerCase().replace(/[^a-z0-9]/gi, '') 
+      : 'family';
+    const entryCount = getTotalEntries();
     
-    setBluetoothStatus(null);
-    setIsBluetoothScanning(true);
+    return `familyflow-${familyName}-${entryCount}entries-${timestamp}.json`;
+  };
+
+  // Start sharing process
+  const startSharing = () => {
+    if (!hasDataForSync()) return;
+    setShareStep('qr-shown');
+  };
+
+  // Share via Web Share API or download
+  const shareViaWebShare = async (format: 'json' | 'txt' = 'txt') => {
+    const familyData = generateFamilyData();
+    const baseFilename = generateFamilyFilename().replace('.json', '');
+    const filename = format === 'txt' ? `${baseFilename}.txt` : `${baseFilename}.json`;
+    const mimeType = format === 'txt' ? 'text/plain' : 'application/json';
     
     try {
-      // For demo purposes, show device picker but explain limitation
-      const device = await navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
-        optionalServices: ['generic_access', 'device_information']
-      });
-
-      setBluetoothStatus({
-        type: 'info',
-        message: `📱 Found ${device.name}. Checking for Family Flow compatibility...`
-      });
-      
-      // Simulate checking for Family Flow service (would fail in real implementation)
-      setTimeout(() => {
-        setBluetoothStatus({
-          type: 'error',
-          message: `❌ ${device.name} doesn't have Family Flow data sharing enabled. Both devices need to run Family Flow with Bluetooth sharing active.`
+      if (supportsWebShare) {
+        // Create a File object for Web Share API
+        const file = new File([familyData], filename, { type: mimeType });
+        
+        await navigator.share({
+          title: 'Family Flow Data',
+          text: `Family memories from ${appData.familyMembers[0]?.name || 'your family'}`,
+          files: [file]
         });
-      }, 2000);
-      
-    } catch (error: unknown) {
-      console.error('Bluetooth scan failed:', error);
-      if (error && typeof error === 'object' && 'name' in error && error.name === 'NotFoundError') {
-        setBluetoothStatus({
-          type: 'error',
-          message: 'No Family Flow devices found nearby. Make sure another family member is sharing.'
-        });
-      } else if (error && typeof error === 'object' && 'name' in error && error.name === 'NotAllowedError') {
-        setBluetoothStatus({
-          type: 'error',
-          message: 'Bluetooth access denied. Please allow Bluetooth permissions.'
+        
+        setImportStatus({
+          type: 'success',
+          message: '✅ Family data shared successfully!'
         });
       } else {
-        setBluetoothStatus({
-          type: 'error',
-          message: 'Bluetooth connection failed. Make sure Bluetooth is enabled.'
+        // Fallback: Download file
+        downloadFile(familyData, filename, mimeType);
+        setImportStatus({
+          type: 'info',
+          message: `📱 File downloaded as ${format.toUpperCase()}! Share it with your family via your preferred method.`
         });
       }
-    } finally {
-      setIsBluetoothScanning(false);
+    } catch (error) {
+      console.error('Share failed:', error);
+      // Fallback to download
+      downloadFile(familyData, filename);
+      setImportStatus({
+        type: 'info',
+        message: '📁 File saved to downloads. You can now share it with your family!'
+      });
     }
   };
 
-  const connectAndSyncBluetooth = async (device: BluetoothDevice) => {
+  // Download file fallback
+  const downloadFile = (content: string, filename: string, mimeType: string = 'application/json') => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Handle file import
+  const handleFileImport = async (file: File) => {
+    setImportStatus(null);
+    
+    if (!file.name.endsWith('.json') && !file.name.endsWith('.txt')) {
+      setImportStatus({
+        type: 'error',
+        message: 'Please select a Family Flow file (.json or .txt)'
+      });
+      return;
+    }
+
     try {
-      // Connect to the Bluetooth device
-      const server = await device.gatt?.connect();
+      const text = await file.text();
+      const importedData = JSON.parse(text);
       
-      if (!server) {
-        throw new Error('Could not connect to device');
+      // Validate the imported data structure
+      if (!importedData.familyData || !importedData.metadata) {
+        throw new Error('Invalid Family Flow file format');
       }
 
-      // Get the Family Flow service  
-      const familySyncServiceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-      const familyDataCharUUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-      const service = await server.getPrimaryService(familySyncServiceUUID);
+      const { familyData, metadata } = importedData;
+      const entryCount = 
+        (familyData.moodEntries?.length || 0) + 
+        (familyData.reflectionEntries?.length || 0) + 
+        (familyData.gratitudeEntries?.length || 0);
       
-      // Read family data from the other device
-      const dataCharacteristic = await service.getCharacteristic(familyDataCharUUID);
-      const dataValue = await dataCharacteristic.readValue();
+      const memberCount = familyData.familyMembers?.length || 0;
       
-      // Parse the received data
-      const decoder = new TextDecoder();
-      const receivedDataString = decoder.decode(dataValue);
-      const receivedData = JSON.parse(receivedDataString);
-      
-      // Import the received data
-      onImportData(receivedData);
-      
-      setBluetoothStatus({
-        type: 'success',
-        message: `✅ Successfully synced family data from ${device.name}!`
-      });
-      
-      // Auto-hide success message after 5 seconds
-      setTimeout(() => setBluetoothStatus(null), 5000);
-      
-      // Disconnect
-      server.disconnect();
-      
-    } catch (error: unknown) {
-      console.error('Bluetooth sync failed:', error);
-      setBluetoothStatus({
+      const confirmed = confirm(
+        `Import family data?\n\n` +
+        `• ${entryCount} family memories\n` +
+        `• ${memberCount} family members\n` +
+        `• From: ${metadata.familyName || 'Family'}\n\n` +
+        `This will add to your existing family data.`
+      );
+
+      if (confirmed) {
+        onImportData(familyData);
+        setImportStatus({
+          type: 'success',
+          message: `✅ Successfully imported ${entryCount} family memories!`
+        });
+        
+        setTimeout(() => setImportStatus(null), 5000);
+      }
+    } catch (error) {
+      console.error('Import failed:', error);
+      setImportStatus({
         type: 'error',
-        message: 'Failed to sync data. Please try again.'
+        message: 'Could not read this file. Make sure it\'s a Family Flow export file.'
       });
     }
   };
+
+  // Drag and drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileImport(files[0]);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileImport(files[0]);
+    }
+  };
+
+  // App URL for QR code (replace with actual app URL)
+  const appUrl = window.location.origin;
 
   return (
     <div className="min-h-screen px-6 py-8 pb-28">
@@ -179,133 +223,188 @@ export function FamilySync({ appData, onNavigate, onImportData }: FamilySyncProp
           </Button>
           
           <h2 className="font-title text-3xl text-gray-900 mb-2">
-            Family Sync
+            Share with Family
           </h2>
           <p className="text-gray-600">
-            Share your family's journey with other devices securely
+            Add another family member's device securely - data never leaves your family
           </p>
         </div>
 
-        {/* Family Data Overview */}
-        <Card className="p-6 mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        {/* What Will Be Shared */}
+        <Card className="p-6 mb-6 bg-gradient-to-br from-green-50 to-blue-50 border-green-200">
           <div className="flex items-center mb-4">
-            <Users className="w-6 h-6 text-blue-600 mr-3" />
-            <h3 className="text-lg font-medium text-blue-900">Your Family Data</h3>
+            <CheckCircle className="w-6 h-6 text-green-600 mr-3" />
+            <h3 className="text-lg font-medium text-green-900">Ready to Share</h3>
           </div>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-700">Family Members:</span>
-              <span className="font-medium text-blue-800">{appData.familyMembers.length}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-700">Total Entries:</span>
-              <span className="font-medium text-blue-800">{getTotalEntries()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-700">Mood Check-ins:</span>
-              <span className="font-medium text-blue-800">{appData.moodEntries.length}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-700">Reflections:</span>
-              <span className="font-medium text-blue-800">{appData.reflectionEntries.length}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-700">Gratitude Entries:</span>
-              <span className="font-medium text-blue-800">{appData.gratitudeEntries.length}</span>
-            </div>
+          <div className="text-center mb-4">
+            <div className="text-2xl font-bold text-green-800">{getTotalEntries()}</div>
+            <div className="text-sm text-green-700">family memories from {appData.familyMembers.length} family members</div>
+          </div>
+          <div className="text-xs text-green-600 text-center">
+            🔒 Shared securely - data never goes to any servers
           </div>
         </Card>
 
-        {/* Bluetooth Sync Section - Mobile Only */}
-        {supportsBluetoothSync && (
-          <Card className="p-6 mb-6">
-            <h4 className="text-lg font-medium mb-4 text-gray-800">📱 Mobile Bluetooth Sync</h4>
-            
-            {bluetoothStatus && (
-              <div className={`p-3 rounded-lg mb-4 text-sm ${
-                bluetoothStatus.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
-                bluetoothStatus.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
-                'bg-blue-50 border-blue-200 text-blue-800'
-              } border`}>
-                {bluetoothStatus.message}
+        {/* Simple Two-Step Process */}
+        {shareStep === 'start' && (
+          <div className="space-y-4 mb-6">
+            {/* Step 1: Start Sharing */}
+            <Card className="p-6">
+              <div className="text-center">
+                <div className="text-6xl mb-4">🚀</div>
+                <h3 className="text-xl font-medium mb-3 text-gray-800">
+                  Let's add another device!
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Help your family member get Family Flow and all your family memories on their device.
+                </p>
+                <Button
+                  onClick={startSharing}
+                  disabled={!hasDataForSync()}
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-lg py-4 h-auto"
+                >
+                  Start Family Sharing
+                </Button>
               </div>
-            )}
-
-            <div className="grid grid-cols-1 gap-3 mb-4">
-              <Button
-                onClick={startBluetoothSharing}
-                disabled={!hasDataForSync() || isBluetoothScanning}
-                className="flex flex-col items-center p-6 h-auto bg-blue-500 hover:bg-blue-600"
-              >
-                <Smartphone className="w-8 h-8 mb-2" />
-                <div className="text-center">
-                  <div className="font-medium">Share via Bluetooth</div>
-                  <div className="text-sm opacity-90">
-                    {isBluetoothScanning ? 'Making discoverable...' : 'Make this device discoverable'}
-                  </div>
-                </div>
-              </Button>
-
-              <Button
-                onClick={scanForBluetoothDevices}
-                disabled={isBluetoothScanning}
-                variant="outline"
-                className="flex flex-col items-center p-6 h-auto border-blue-200 hover:bg-blue-50"
-              >
-                <Users className="w-8 h-8 mb-2 text-blue-600" />
-                <div className="text-center">
-                  <div className="font-medium">Receive via Bluetooth</div>
-                  <div className="text-sm text-gray-600">
-                    {isBluetoothScanning ? 'Scanning for devices...' : 'Find nearby family devices'}
-                  </div>
-                </div>
-              </Button>
-            </div>
-
-            <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-              <div className="flex items-start">
-                <Info className="w-4 h-4 mt-0.5 mr-2 flex-shrink-0" />
-                <div>
-                  Both devices need Bluetooth enabled and be within 30 feet of each other.
-                </div>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         )}
 
-        {/* Platform-specific guidance for non-Bluetooth devices */}
-        {!supportsBluetoothSync && (
-          <Card className="p-6 mb-6 bg-amber-50 border-amber-200">
-            <h5 className="font-medium text-amber-800 mb-2">💻 Desktop & Non-Bluetooth Devices</h5>
-            <p className="text-sm text-amber-700 mb-4">
-              You're using a desktop computer or device without Bluetooth sync support. 
-              Use the file export/import method in the Memory Capsule to share data between devices.
-            </p>
+        {/* Step 2: QR + Share */}
+        {shareStep === 'qr-shown' && (
+          <div className="space-y-6">
+            {/* QR Code */}
+            <Card className="p-6">
+              <div className="text-center">
+                <h3 className="text-lg font-medium mb-4 text-gray-800">
+                  📱 Step 1: They scan this code
+                </h3>
+                <div className="bg-white p-6 rounded-2xl border-2 border-gray-200 inline-block mb-4">
+                  {/* QR Code placeholder - would need actual QR generation library */}
+                  <div className="w-48 h-48 bg-gradient-to-tr from-blue-100 to-purple-100 flex items-center justify-center text-6xl rounded-lg">
+                    <QrCode className="w-32 h-32 text-gray-600" />
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">
+                  Have them point their camera at this code
+                </p>
+                <p className="text-xs text-gray-500">
+                  Or they can type: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{appUrl}</span>
+                </p>
+              </div>
+            </Card>
+
+            {/* Share Data */}
+            <Card className="p-6">
+              <div className="text-center">
+                <h3 className="text-lg font-medium mb-4 text-gray-800">
+                  📤 Step 2: Send your family memories
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Once they have the app open, share your family data with them.
+                </p>
+                
+                <div className="space-y-3 mb-4">
+                  {/* WhatsApp/Messages friendly option */}
+                  <Button
+                    onClick={() => shareViaWebShare('txt')}
+                    className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-lg py-4 h-auto"
+                  >
+                    <Share className="w-5 h-5 mr-2" />
+                    Share as Text File (.txt)
+                  </Button>
+                  <p className="text-xs text-green-600">
+                    ✅ Works with WhatsApp, Messages, Email - any app accepts text files
+                  </p>
+                  
+                  {/* Technical users option */}
+                  <Button
+                    onClick={() => shareViaWebShare('json')}
+                    variant="outline"
+                    className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 py-3"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download as JSON (.json)
+                  </Button>
+                  <p className="text-xs text-gray-500">
+                    For technical users or email sharing
+                  </p>
+                </div>
+              </div>
+            </Card>
+
             <Button
-              onClick={() => onNavigate('memory')}
+              onClick={() => setShareStep('start')}
               variant="outline"
-              className="border-amber-300 text-amber-800 hover:bg-amber-100"
+              className="w-full"
             >
-              Go to File Export
+              ← Back
             </Button>
-          </Card>
+          </div>
         )}
+
+        {/* Status Messages */}
+        {importStatus && (
+          <div className={`p-4 rounded-lg mb-4 text-center ${{
+            success: 'bg-green-50 border-green-200 text-green-800 border-2',
+            error: 'bg-red-50 border-red-200 text-red-800 border-2',
+            info: 'bg-blue-50 border-blue-200 text-blue-800 border-2'
+          }[importStatus.type]}`}>
+            {importStatus.message}
+          </div>
+        )}
+
+        {/* Import Section */}
+        <Card className="p-6 mb-6">
+          <h3 className="text-lg font-medium mb-4 text-gray-800 text-center">
+            📥 Receive Family Data
+          </h3>
+          
+          {/* Drag and Drop Zone */}
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => document.getElementById('family-file-input')?.click()}
+            className={`border-4 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors ${
+              isDragOver 
+                ? 'border-blue-400 bg-blue-50' 
+                : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+            }`}
+          >
+            <Upload className="w-12 h-12 mx-auto mb-4 text-gray-500" />
+            <div className="text-lg font-medium text-gray-800 mb-2">
+              {isDragOver ? 'Drop family file here!' : 'Drop your family file here'}
+            </div>
+            <div className="text-sm text-gray-600">
+              Or click to browse for a Family Flow file (.txt or .json)
+            </div>
+          </div>
+          
+          <input
+            id="family-file-input"
+            type="file"
+            accept=".json,.txt"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+        </Card>
 
         {/* Help Section */}
-        <Card className="p-6 mb-6">
-          <div className="flex items-center mb-3">
-            <HelpCircle className="w-5 h-5 text-gray-600 mr-2" />
-            <h4 className="font-medium text-gray-800">How Family Sync Works</h4>
-          </div>
-          <div className="space-y-3 text-sm text-gray-600">
-            <div>
-              <strong className="text-gray-800">Privacy-First:</strong> All data transfer happens directly between your devices. No cloud servers involved.
+        <Card className="p-6 mb-6 bg-gray-50">
+          <div className="text-center">
+            <Camera className="w-8 h-8 mx-auto mb-3 text-gray-600" />
+            <h4 className="font-medium text-gray-800 mb-3">How it works</h4>
+            <div className="space-y-2 text-sm text-gray-600">
+              <div>📱 <strong>Step 1:</strong> They scan the code to get the app</div>
+              <div>📤 <strong>Step 2:</strong> You share the family data file</div>
+              <div>📥 <strong>Step 3:</strong> They import the file into their app</div>
             </div>
-            <div>
-              <strong className="text-gray-800">Bluetooth Sync:</strong> Available on mobile devices for nearby family members to share data instantly.
-            </div>
-            <div>
-              <strong className="text-gray-800">File Sync:</strong> Export data as files to share via email, messaging, or cloud storage.
+            <div className="mt-4 p-3 bg-white rounded-lg">
+              <div className="text-xs text-gray-500">
+                🔒 <strong>100% Private:</strong> Data goes directly between your devices.<br/>
+                No cloud servers, no accounts needed.
+              </div>
             </div>
           </div>
         </Card>

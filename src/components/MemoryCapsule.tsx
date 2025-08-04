@@ -363,8 +363,8 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
         {!exportFormat && (
           <div className="mb-10">
             <div className="text-center mb-8">
-              <h3 className="text-3xl font-bold mb-4">📱 Export & Share</h3>
-              <p className="text-xl text-gray-700">Choose how you'd like to save or share</p>
+              <h3 className="text-3xl font-bold mb-4">📱 Share with Family</h3>
+              <p className="text-xl text-gray-700">Add Family Flow to another device</p>
             </div>
             
             <div className="space-y-4">
@@ -379,63 +379,8 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
                   <div className="text-lg text-blue-100">Send to other phones instantly</div>
                 </div>
               </Button>
-
-              {/* Download File - Simple Button */}
-              {hasDataForSync() && (
-                <Button
-                  onClick={() => setExportFormat('json')}
-                  className="w-full p-8 h-auto bg-green-500 hover:bg-green-600 text-white rounded-3xl"
-                >
-                  <div className="text-center">
-                    <Download className="w-16 h-16 mx-auto mb-3" />
-                    <div className="text-2xl font-bold mb-2">Download File</div>
-                    <div className="text-lg text-green-100">Save to your device</div>
-                  </div>
-                </Button>
-              )}
-
-              {/* Import File - Simple Button */}
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => document.getElementById('file-input')?.click()}
-                className={`w-full p-8 rounded-3xl border-4 border-dashed cursor-pointer transition-colors ${
-                  isDragOver 
-                    ? 'border-orange-400 bg-orange-50' 
-                    : 'border-gray-300 hover:border-orange-400 hover:bg-orange-50'
-                }`}
-              >
-                <div className="text-center">
-                  <Database className="w-16 h-16 mx-auto mb-3 text-orange-500" />
-                  <div className="text-2xl font-bold mb-2 text-gray-800">
-                    {isDragOver ? 'Drop File Here!' : 'Add Family Memories'}
-                  </div>
-                  <div className="text-lg text-gray-600">
-                    Click or drag a Family Flow file here
-                  </div>
-                </div>
-                
-                <input
-                  id="file-input"
-                  type="file"
-                  accept=".json"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </div>
             </div>
 
-            {/* Success/Error Messages */}
-            {importStatus && (
-              <div className={`mt-6 p-4 rounded-xl text-center text-lg font-medium ${
-                importStatus.type === 'success' 
-                  ? 'bg-green-100 border-2 border-green-300 text-green-800' 
-                  : 'bg-red-100 border-2 border-red-300 text-red-800'
-              }`}>
-                {importStatus.message}
-              </div>
-            )}
           </div>
         )}
 
