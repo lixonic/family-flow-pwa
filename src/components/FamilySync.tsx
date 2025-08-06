@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AppData } from '../App';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { ArrowLeft, Share, Download, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Share, Download, Upload, CheckCircle } from 'lucide-react';
 
 interface FamilySyncProps {
   appData: AppData;

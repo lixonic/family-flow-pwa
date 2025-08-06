@@ -8,7 +8,7 @@ interface UseServiceWorkerUpdateReturn {
 }
 
 export function useServiceWorkerUpdate(): UseServiceWorkerUpdateReturn {
-  const [updateAvailable, setUpdateAvailable] = useState(false);
+  // Note: updateAvailable state removed since we handle updates silently
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdateCheck, setLastUpdateCheck] = useState<number>(0);
 
@@ -22,7 +22,10 @@ export function useServiceWorkerUpdate(): UseServiceWorkerUpdateReturn {
 
         // Listen for new service worker waiting
         if (reg.waiting) {
-          setUpdateAvailable(true);
+          console.log('Family Flow: Update already waiting, reloading silently...');
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000); // 2 second delay to ensure smooth transition
         }
 
         // Listen for updates
@@ -31,8 +34,11 @@ export function useServiceWorkerUpdate(): UseServiceWorkerUpdateReturn {
           if (newWorker) {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New service worker is installed and waiting
-                setUpdateAvailable(true);
+                // Auto-reload silently after a brief delay
+                console.log('Family Flow: Update available, reloading silently...');
+                setTimeout(() => {
+                  window.location.reload();
+                }, 2000); // 2 second delay to ensure smooth transition
               }
             });
           }
@@ -88,29 +94,13 @@ export function useServiceWorkerUpdate(): UseServiceWorkerUpdateReturn {
   };
 
   const dismissUpdate = () => {
-    setUpdateAvailable(false);
-    // Remember dismissal for this session
-    sessionStorage.setItem('updateDismissed', 'true');
+    // No-op since we don't show update notifications anymore
   };
 
-  // Don't show update if dismissed in this session
-  useEffect(() => {
-    const dismissed = sessionStorage.getItem('updateDismissed');
-    if (dismissed && updateAvailable) {
-      setUpdateAvailable(false);
-    }
-  }, [updateAvailable]);
-
-  // Log version updates for debugging (optional)
-  useEffect(() => {
-    if (updateAvailable) {
-      console.log('Family Flow: Update available - users may skip intermediate versions');
-      // Could add version checking logic here if needed in future
-    }
-  }, [updateAvailable]);
+  // Log version updates for debugging (optional) - removed since we handle silently
 
   return {
-    updateAvailable: updateAvailable && !isUpdating,
+    updateAvailable: false, // Always false since we handle updates silently
     isUpdating,
     updateApp,
     dismissUpdate,

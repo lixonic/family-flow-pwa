@@ -12,7 +12,7 @@ import { MilestoneCelebration } from "./components/MilestoneCelebration";
 import { TransitionPrompt } from "./components/TransitionPrompt";
 import { ReadinessAssessment } from "./components/ReadinessAssessment";
 import { GraduationView } from "./components/GraduationView";
-import { UpdateNotification } from "./components/UpdateNotification";
+// import { UpdateNotification } from "./components/UpdateNotification"; // Disabled: Updates now silent
 import { useServiceWorkerUpdate } from "./hooks/useServiceWorkerUpdate";
 import { useAppStorage } from "./hooks/useAppStorage";
 
@@ -99,7 +99,7 @@ export default function App() {
   const [showReadinessAssessment, setShowReadinessAssessment] = useState(false);
   
   // PWA Update handling
-  const { updateAvailable, isUpdating, updateApp, dismissUpdate } = useServiceWorkerUpdate();
+  useServiceWorkerUpdate(); // Silent updates - no UI needed
   
   // Storage handling (IndexedDB with localStorage fallback)
   const { isStorageReady, loadData, saveData, clearData, storageError, isLoading } = useAppStorage();
@@ -862,18 +862,7 @@ export default function App() {
         </div>
       )}
 
-      {/* PWA Update Notification - Only show during safe moments */}
-      <UpdateNotification
-        isVisible={
-          updateAvailable && 
-          !showWelcome && 
-          // Only show on navigation-safe screens (not during active reflection)
-          !["day-glow", "screen-time", "gratitude"].includes(currentScreen)
-        }
-        onUpdate={updateApp}
-        onDismiss={dismissUpdate}
-        isUpdating={isUpdating}
-      />
+      {/* PWA Update Notification - Disabled: Updates now happen silently */}
 
       {renderCurrentScreen()}
       {!showWelcome && (

@@ -660,14 +660,7 @@ export function DayGlowScreen({
               </button>
             </div>
             
-            {/* Progressive contextual messaging */}
-            {familyMembers.length > 0 && familyMembers.length <= 2 && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl border border-orange-100">
-                <p className="text-sm text-gray-700 text-center">
-                  <span className="font-medium">Your 2-minute family ritual:</span> Daily mood check-ins → Screen time reflection → Gratitude practice. Simple steps that build lasting connection.
-                </p>
-              </div>
-            )}
+            {/* Progressive contextual messaging - removed overkill guide */}
             
             {familyMembers.filter(member => !getMemberTodayMoodEntry(member.id)).length === familyMembers.length && familyMembers.length > 0 && (
               <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl border border-blue-100">
@@ -1066,14 +1059,7 @@ export function DayGlowScreen({
               <h3 className="text-2xl">{selectedMember.name}, how are you feeling today?</h3>
             </div>
             
-            {/* First mood entry guidance */}
-            {moodEntries.filter(entry => entry.memberId === selectedMember.id).length === 0 && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl border border-purple-100">
-                <p className="text-sm text-gray-700 text-center">
-                  <span className="font-medium">Sharing with your family:</span> Your feelings matter and help everyone understand how to support each other today.
-                </p>
-              </div>
-            )}
+            {/* First mood entry guidance - removed overkill messaging */}
             
             <div className="grid grid-cols-2 gap-4">
               {MOOD_OPTIONS.map((mood, index) => (
