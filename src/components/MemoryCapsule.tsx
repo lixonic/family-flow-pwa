@@ -338,7 +338,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
             Memory
           </h1>
           <p className="text-gray-600 text-xl mb-3">Export your family's digital memories</p>
-          <p className="text-sm text-gray-500 italic">Success means you won't need us forever - take your memories with you</p>
+          <p className="text-sm text-gray-500 italic">Your Connection Tools foundation - with Development and Harmony tools coming soon</p>
         </div>
 
         {/* Install App Section - Only show if prompt is available */}

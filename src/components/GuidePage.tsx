@@ -199,7 +199,7 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
               className="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-colors"
             >
               <div className="flex items-center flex-1 min-w-0">
-                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">Your graduation roadmap</h2>
+                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">Your family tools roadmap</h2>
               </div>
               {expandedTopics.has('graduation-roadmap') ? (
                 <ChevronUp className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
@@ -211,7 +211,7 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
             {expandedTopics.has('graduation-roadmap') && (
               <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-6 text-gray-700">
                 <p className="text-lg leading-relaxed">
-                  <strong>Success means independence from this app.</strong> Your journey from digital prompts to natural family connection:
+                  <strong>Your family's connection journey starts here.</strong> Building from daily Connection Tools to comprehensive family support:
                 </p>
                 
                 <div className="space-y-4">
@@ -241,7 +241,7 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
                 </div>
                 
                 <p className="text-lg leading-relaxed bg-blue-100 p-4 rounded-lg">
-                  <strong>Graduation success:</strong> When your family naturally shares feelings, reflects together, and connects daily without needing the app to prompt you—you've graduated to independent family wellness.
+                  <strong>Connection Tools foundation success:</strong> When your family naturally shares feelings, reflects together, and connects daily, you've built the foundation for Development Tools (AI education) and Harmony Tools (family boundaries) that help you thrive in the digital age.
                 </p>
               </div>
             )}
@@ -444,7 +444,7 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
               className="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-blue-50/50 transition-colors"
             >
               <div className="flex items-center flex-1 min-w-0">
-                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">What is Family Flow's graduation philosophy?</h2>
+                <h2 className="text-base sm:text-lg font-semibold text-blue-800 leading-tight">What's coming next in Family Flow?</h2>
               </div>
               {expandedTopics.has('graduation-philosophy') ? (
                 <ChevronUp className="w-5 h-5 text-blue-600 ml-3 flex-shrink-0" />
@@ -456,10 +456,10 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
             {expandedTopics.has('graduation-philosophy') && (
               <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 text-gray-700">
                 <p className="text-base leading-relaxed">
-                  <strong>Success means you won't need us forever.</strong> Family Flow is designed as a "graduation platform" - our success isn't measured by how long you use the app, but by how confidently your family graduates to independent connection rituals.
+                  <strong>This is your Connection Tools foundation.</strong> Family Flow starts with essential daily connection habits, with Development Tools (AI education) and Harmony Tools (family boundaries) coming soon to support your family's growth journey.
                 </p>
                 <p className="text-base leading-relaxed">
-                  We're here to build lasting habits, then set you free to flourish on your own. From digital prompts to real conversations - that's true success.
+                  The Connection Tools you're using now build the foundation for everything else - family AI education, technology boundaries, and conflict resolution tools that help families thrive in the digital age.
                 </p>
               </div>
             )}
