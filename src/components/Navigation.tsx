@@ -12,7 +12,7 @@ export function Navigation({ currentScreen, onNavigate }: NavigationProps) {
     { id: 'screen-time', icon: MessageSquare, label: 'Reflect', color: 'text-red-600', tooltip: 'Building habits together' },
     { id: 'guide', icon: BookOpen, label: 'How To', color: 'text-blue-600', highlight: true, tooltip: 'Your journey starts here' },
     { id: 'gratitude', icon: Wind, label: 'Grateful', color: 'text-purple-600', tooltip: 'From digital prompts to real conversations' },
-    { id: 'memory', icon: Archive, label: 'Export', color: 'text-gray-600', tooltip: 'Success means you won\'t need us forever' },
+    { id: 'memory', icon: Archive, label: 'Export', color: 'text-gray-600', tooltip: 'Your family memories and connection foundation' },
   ];
 
   return (

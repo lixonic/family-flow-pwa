@@ -2,39 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Family Flow - Privacy-First Family Reflection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Flow - The Graduation Platform for Family Connection</title>
   
-  <!-- PWA Meta Tags -->
-  <meta name="description" content="Privacy-first family reflection tool for mood tracking, gratitude, and mindfulness">
-  <meta name="theme-color" content="#8b5cf6">
-  <meta name="application-name" content="Family Flow">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Family Flow">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="msapplication-TileColor" content="#8b5cf6">
-  <meta name="msapplication-config" content="browserconfig.xml">
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="A revolutionary family app designed for graduation, not dependency. Build authentic offline connections through 2-minute daily rituals. Success means you won't need us forever.">
+  <meta name="keywords" content="family graduation platform, digital wellness, family connection, emotional intelligence, offline connection, anti-engagement app, family mindfulness">
+  <meta name="author" content="Family Flow">
   
-  <!-- Manifest -->
-  <link rel="manifest" href="/manifest.json">
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://familyflow.vercel.app/">
+  <meta property="og:title" content="Family Flow - The Graduation Platform for Family Connection">
+  <meta property="og:description" content="Success means you won't need us forever. A family reflection tool that helps you graduate to independent offline connection.">
+  <meta property="og:image" content="https://familyflow.vercel.app/images/app-hero.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://familyflow.vercel.app/">
+  <meta property="twitter:title" content="Family Flow - The Graduation Platform for Family Connection">
+  <meta property="twitter:description" content="Success means you won't need us forever. A family reflection tool that helps you graduate to independent offline connection.">
+  <meta property="twitter:image" content="https://familyflow.vercel.app/images/app-hero.png">
   
-  <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
-  <link rel="apple-touch-icon" href="/icon-192.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="./images/app_icon.png">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playwrite+AU+QLD:wght@100..400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playwrite+AU+QLD:wght@100..400&display=swap" rel="stylesheet">
   
-  <!-- Preload Critical Resources -->
-  <link rel="preload" href="/src/styles/globals.css" as="style">
-  
-  <!-- Inline Critical CSS -->
   <style>
-    /* Critical CSS for initial render */
     * {
       margin: 0;
       padding: 0;
@@ -42,84 +40,1719 @@
     }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       line-height: 1.6;
+      color: #1f2937;
+      overflow-x: hidden;
+    }
+    
+    .gradient-bg {
       background: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 50%, #eff6ff 100%);
       min-height: 100vh;
+      position: relative;
+      overflow: hidden;
     }
     
-    .loader {
+    .gradient-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      z-index: 0;
+    }
+    
+    .gradient-bg::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      right: -50%;
+      bottom: -50%;
+      background-image: 
+        radial-gradient(circle at 60% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 30% 70%, rgba(236, 72, 153, 0.05) 0%, transparent 40%);
+      animation: float 25s ease-in-out infinite reverse;
+      z-index: 0;
+    }
+    
+    .gradient-bg > * {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    /* Header */
+    .header {
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      z-index: 1000;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .nav {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      flex-direction: column;
     }
     
-    .loader h1 {
+    .logo {
       font-family: 'Playwrite AU QLD', cursive;
-      font-size: 2rem;
-      background: linear-gradient(45deg, #8b5cf6, #ec4899);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #8b5cf6;
+      text-decoration: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: #6b7280;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    .nav-links a:hover {
+      color: #8b5cf6;
+    }
+    
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      flex-direction: column;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      z-index: 1001;
+    }
+    
+    .hamburger {
+      width: 25px;
+      height: 3px;
+      background: #6b7280;
+      margin: 3px 0;
+      transition: 0.3s;
+      border-radius: 2px;
+    }
+    
+    .mobile-menu-btn.active .hamburger:nth-child(1) {
+      transform: rotate(-45deg) translate(-5px, 6px);
+      background: #8b5cf6;
+    }
+    
+    .mobile-menu-btn.active .hamburger:nth-child(2) {
+      opacity: 0;
+    }
+    
+    .mobile-menu-btn.active .hamburger:nth-child(3) {
+      transform: rotate(45deg) translate(-5px, -6px);
+      background: #8b5cf6;
+    }
+    
+    .mobile-nav-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      padding-top: 6rem;
+    }
+    
+    .mobile-nav-overlay.active {
+      display: block;
+    }
+    
+    .mobile-nav-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+    }
+    
+    .mobile-nav-links li {
+      margin: 2rem 0;
+    }
+    
+    .mobile-nav-links a {
+      font-size: 1.5rem;
+      color: #1f2937;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+    
+    .mobile-nav-links a:hover {
+      color: #8b5cf6;
+    }
+    
+    /* Hero Section */
+    .hero {
+      padding: 6rem 0;
+      text-align: center;
+    }
+    
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: white;
+      padding: 0.5rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+    
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #3b82f6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.4rem;
+      color: #374151;
+      margin-bottom: 1.5rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+    
+    .hero-description {
+      font-size: 1.1rem;
+      color: #6b7280;
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+    }
+    
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin: 3rem 0;
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #8b5cf6;
+      display: block;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 1rem;
+      display: inline-block;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: white;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #8b5cf6;
+      border: 2px solid #8b5cf6;
+    }
+    
+    .btn-secondary:hover {
+      background: #8b5cf6;
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    /* Hero Image */
+    .hero-image {
+      margin: 4rem auto 0;
+      max-width: 600px;
+      position: relative;
+    }
+    
+    .hero-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Our Story Section */
+    .story {
+      padding: 6rem 0;
+      background: white;
+    }
+    
+    .story-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    
+    .story-header {
+      margin-bottom: 3rem;
+    }
+    
+    .story-header h2 {
+      font-size: 2.5rem;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .story-tagline {
+      font-size: 1.2rem;
+      color: #8b5cf6;
+      font-weight: 600;
+    }
+    
+    .story-narrative p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #374151;
+      margin-bottom: 1.5rem;
+    }
+    
+    .story-lead {
+      font-size: 1.3rem !important;
+      color: #1f2937 !important;
+      font-weight: 500;
+    }
+    
+    .story-insight {
+      background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+      padding: 2rem;
+      border-radius: 1rem;
+      border-left: 4px solid #8b5cf6;
+      margin: 2rem 0;
+    }
+    
+    .insight-quote {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #5b21b6;
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+    
+    .insight-attribution {
+      font-size: 0.9rem;
+      color: #7c3aed;
+      font-weight: 500;
+    }
+    
+    .creator-profile {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      padding: 2rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      margin: 2rem 0;
+    }
+    
+    .creator-profile h3 {
+      font-size: 1.4rem;
+      color: #1f2937;
       margin-bottom: 1rem;
     }
     
-    .bounce {
-      display: inline-block;
-      animation: bounce 1s infinite;
+    .creator-profile p {
+      font-size: 1.1rem !important;
+      line-height: 1.7;
+      color: #374151;
+      margin: 0;
     }
     
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    .story-conclusion {
+      font-size: 1.2rem !important;
+      padding: 1.5rem;
+      background: rgba(139, 92, 246, 0.05);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+    }
+    
+    .story-visual {
+      position: sticky;
+      top: 2rem;
+    }
+    
+    .story-stats {
+      background: linear-gradient(135deg, #faf5ff 0%, #f0f9ff 100%);
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+    }
+    
+    .story-stat {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .story-stat:last-child {
+      margin-bottom: 0;
+    }
+    
+    .stat-visual {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .story-stat h3 {
+      font-size: 1.2rem;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .story-stat p {
+      font-size: 0.95rem;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    /* Common Section Styles */
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    
+    .section-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #1f2937;
+    }
+    
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: #6b7280;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Philosophy Section */
+    .philosophy {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 100%);
+    }
+    
+    .philosophy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .philosophy-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .philosophy-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .philosophy-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: #1f2937;
+    }
+    
+    .philosophy-card p {
+      color: #6b7280;
+      line-height: 1.7;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 6rem 0;
+      background: white;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 3rem;
+    }
+    
+    .feature-card.detailed {
+      background: #faf5ff;
+      padding: 2.5rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+    }
+    
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
+    }
+    
+    .feature-header h3 {
+      font-size: 1.4rem;
+      color: #1f2937;
+      margin: 0;
+    }
+    
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 1.5rem;
+    }
+    
+    .feature-list li {
+      padding: 0.5rem 0;
+      position: relative;
+      padding-left: 1.5rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    
+    .feature-list li:before {
+      content: "•";
+      color: #8b5cf6;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+    
+    .feature-psychology {
+      background: rgba(139, 92, 246, 0.1);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      color: #5b21b6;
+      margin: 0;
+    }
+
+    /* Graduation Section */
+    .graduation {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, #eff6ff 0%, #fef3c7 100%);
+    }
+    
+    .graduation-timeline {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .timeline-item {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      align-items: flex-start;
+    }
+    
+    .timeline-marker {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    
+    .graduation-final .timeline-marker {
+      background: linear-gradient(135deg, #10b981, #34d399);
+      font-size: 1.5rem;
+    }
+    
+    .timeline-content {
+      flex: 1;
+    }
+    
+    .timeline-content h3 {
+      font-size: 1.4rem;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .timeline-content p {
+      color: #6b7280;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    
+    .timeline-goals {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .goal-tag {
+      background: rgba(139, 92, 246, 0.1);
+      color: #7c3aed;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .goal-tag.success {
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+    }
+
+    /* Science Section */
+    .science {
+      padding: 6rem 0;
+      background: white;
+    }
+    
+    .science-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2.5rem;
+    }
+    
+    .science-card {
+      background: linear-gradient(135deg, #faf5ff 0%, #fdf2f8 100%);
+      padding: 2.5rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+    }
+    
+    .science-card h3 {
+      font-size: 1.3rem;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+    }
+    
+    .science-points p {
+      margin-bottom: 1rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+    
+    .science-points strong {
+      color: #8b5cf6;
+    }
+
+    /* App Journey Section */
+    .app-journey {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+    
+    .journey-grid {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .journey-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      margin-bottom: 5rem;
+    }
+    
+    .journey-item.reverse {
+      direction: rtl;
+    }
+    
+    .journey-item.reverse > * {
+      direction: ltr;
+    }
+    
+    .journey-image {
+      position: relative;
+    }
+    
+    .journey-image img {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+    }
+    
+    .journey-image:hover img {
+      transform: scale(1.05);
+    }
+    
+    .journey-content h3 {
+      font-size: 1.8rem;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+    
+    .journey-content p {
+      font-size: 1.1rem;
+      color: #6b7280;
+      line-height: 1.7;
+    }
+
+    /* Metrics Section */
+    .metrics {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+      color: white;
+    }
+    
+    .metrics .section-header h2 {
+      color: white;
+    }
+    
+    .metrics .section-subtitle {
+      color: #d1d5db;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    
+    .metric-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .metric-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    
+    .metric-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+    
+    .metric-card p {
+      color: #d1d5db;
+      font-size: 0.9rem;
+    }
+
+    /* Call to Action Section */
+    .cta-section {
+      padding: 6rem 0;
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #3b82f6 100%);
+      color: white;
+      text-align: center;
+    }
+    
+    .cta-content h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+    
+    .cta-content p {
+      font-size: 1.2rem;
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      opacity: 0.95;
+    }
+    
+    .btn-large {
+      padding: 1.25rem 2.5rem;
+      font-size: 1.1rem;
+    }
+    
+    .cta-section .btn-primary {
+      background: white;
+      color: #8b5cf6;
+    }
+    
+    .cta-section .btn-primary:hover {
+      background: #f8fafc;
+      transform: translateY(-2px);
+    }
+    
+    .cta-section .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+    
+    .cta-section .btn-secondary:hover {
+      background: white;
+      color: #8b5cf6;
+    }
+    
+    .cta-note {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    
+    /* Footer */
+    .footer {
+      background: #111827;
+      color: white;
+      padding: 4rem 0 2rem;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      margin-bottom: 3rem;
+    }
+    
+    .footer-logo {
+      font-family: 'Playwrite AU QLD', cursive;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #8b5cf6;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-description {
+      color: #9ca3af;
+      line-height: 1.6;
+      max-width: 300px;
+    }
+    
+    .footer-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    
+    .footer-section h4 {
+      color: white;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .footer-section a {
+      display: block;
+      color: #9ca3af;
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-section a:hover {
+      color: #8b5cf6;
+    }
+    
+    .footer-bottom {
+      border-top: 1px solid #374151;
+      padding-top: 2rem;
+      text-align: center;
+    }
+    
+    .footer-bottom p {
+      color: #9ca3af;
+      margin: 0;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .story-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      
+      .story-visual {
+        position: static;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      
+      .footer-links {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: flex;
+      }
+      
+      .header {
+        position: fixed;
+        width: 100%;
+        padding: 0.75rem 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      .gradient-bg {
+        padding-top: 80px;
+      }
+      
+      .hero {
+        padding: 3rem 0;
+      }
+      
+      .hero-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 1rem;
+      }
+      
+      .hero h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+      
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+      
+      .section-header h2 {
+        font-size: 2rem;
+      }
+      
+      .section-subtitle {
+        font-size: 1rem;
+      }
+      
+      .philosophy-card h3 {
+        font-size: 1.1rem;
+      }
+      
+      .philosophy-card p {
+        font-size: 0.95rem;
+      }
+      
+      .feature-header h3 {
+        font-size: 1.2rem;
+      }
+      
+      .feature-list li {
+        font-size: 0.9rem;
+      }
+      
+      .timeline-content h3 {
+        font-size: 1.2rem;
+      }
+      
+      .timeline-content p {
+        font-size: 0.95rem;
+      }
+      
+      .science-card h3 {
+        font-size: 1.1rem;
+      }
+      
+      .science-points p {
+        font-size: 0.9rem;
+      }
+      
+      .journey-content h3 {
+        font-size: 1.4rem;
+      }
+      
+      .journey-content p {
+        font-size: 0.95rem;
+      }
+      
+      .story-header h2 {
+        font-size: 2rem;
+      }
+      
+      .story-tagline {
+        font-size: 1rem;
+      }
+      
+      .hero-stats {
+        gap: 2rem;
+      }
+      
+      .stat-number {
+        font-size: 2.5rem;
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
+      }
+      
+      .philosophy-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .science-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .journey-item {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+      }
+      
+      .journey-item.reverse {
+        direction: ltr;
+      }
+      
+      .journey-image img {
+        max-width: 300px;
+      }
+      
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .timeline-item {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+      
+      .timeline-marker {
+        align-self: center;
+      }
+      
+      .footer-links {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .cta-content h2 {
+        font-size: 2rem;
+      }
+      
+      .cta-content p {
+        font-size: 1.1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      
+      .hero-subtitle {
+        font-size: 0.95rem;
+      }
+      
+      .section-header h2 {
+        font-size: 1.75rem;
+      }
+      
+      .philosophy-card h3 {
+        font-size: 1rem;
+      }
+      
+      .philosophy-card p {
+        font-size: 0.9rem;
+      }
+      
+      .feature-header h3 {
+        font-size: 1.1rem;
+      }
+      
+      .journey-content h3 {
+        font-size: 1.2rem;
+      }
+      
+      .timeline-content h3 {
+        font-size: 1.1rem;
+      }
+      
+      .hero-stats {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .goal-tag {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+      }
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translate(0px, 0px) rotate(0deg);
+      }
+      33% {
+        transform: translate(30px, -30px) rotate(1deg);
+      }
+      66% {
+        transform: translate(-20px, 20px) rotate(-1deg);
+      }
+    }
+    
+    .hero, .features {
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .feature-card {
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
     }
   </style>
 </head>
 <body>
-  <div id="root">
-    <!-- Fallback content while React loads -->
-    <div class="loader">
-       <div class="bounce">🌸</div>
-    </div>
+  <div class="gradient-bg">
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav container">
+        <a href="#" class="logo">Family Flow</a>
+        
+        <!-- Desktop Navigation -->
+        <ul class="nav-links">
+          <li><a href="#story">Meet Creators</a></li>
+          <li><a href="#philosophy">Philosophy</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#graduation">Journey</a></li>
+          <li><a href="#download">Start Now</a></li>
+        </ul>
+        
+        <!-- Mobile Hamburger Menu -->
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle mobile menu">
+          <span class="hamburger"></span>
+          <span class="hamburger"></span>
+          <span class="hamburger"></span>
+        </button>
+        
+        <!-- Mobile Navigation Overlay -->
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+          <ul class="mobile-nav-links">
+            <li><a href="#story" onclick="closeMobileMenu()">Meet Creators</a></li>
+            <li><a href="#philosophy" onclick="closeMobileMenu()">Philosophy</a></li>
+            <li><a href="#features" onclick="closeMobileMenu()">Features</a></li>
+            <li><a href="#graduation" onclick="closeMobileMenu()">Journey</a></li>
+            <li><a href="#download" onclick="closeMobileMenu()">Start Now</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero container">
+      <div class="hero-badge">❤️ Family First Digital Wellness</div>
+      <h1>Building Connections That<br>Last Beyond Any App</h1>
+      <p class="hero-subtitle">
+        Family Flow represents a fundamental shift from traditional digital wellness apps. Rather than creating dependency, 
+        <strong>our success is measured by families confidently "graduating" to independent offline connection practices</strong>.
+      </p>
+      
+      <div class="cta-buttons">
+        <a href="#philosophy" class="btn btn-primary">Discover the Philosophy</a>
+        <a href="#graduation" class="btn btn-secondary">Your Graduation Journey</a>
+      </div>
+      
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-number">2</div>
+          <div class="stat-label">Minutes Daily</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">45</div>
+          <div class="stat-label">Day Graduation</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">0</div>
+          <div class="stat-label">Data Collection</div>
+        </div>
+      </div>
+      
+      <div class="hero-image">
+        <img src="./images/app-hero.png" alt="Family Flow App Preview" onerror="this.style.display='none'">
+      </div>
+    </section>
   </div>
-  
-  <!-- React App Script -->
-  <script type="module" src="/src/main.tsx"></script>
-  
-  <!-- Service Worker Registration -->
+
+  <!-- Philosophy Section -->
+  <section id="philosophy" class="philosophy">
+    <div class="container">
+      <div class="section-header">
+        <h2>The 2-Minute Connection Ritual</h2>
+        <p class="section-subtitle">Based on attachment theory and positive psychology research</p>
+      </div>
+      
+      <div class="philosophy-grid">
+        <div class="philosophy-card">
+          <div class="philosophy-icon">🤗</div>
+          <h3>No Lectures or Screen Time Battles</h3>
+          <p>Creates psychological safety through gentle, non-judgmental interactions that families actually enjoy.</p>
+        </div>
+        
+        <div class="philosophy-card">
+          <div class="philosophy-icon">💬</div>
+          <h3>Gentle Daily Check-ins</h3>
+          <p>Builds consistent connection patterns through micro-moments of authentic family engagement.</p>
+        </div>
+        
+        <div class="philosophy-card">
+          <div class="philosophy-icon">❤️</div>
+          <h3>Emotional Validation</h3>
+          <p>Each mood entry receives a supportive, personalized response that encourages family emotional awareness.</p>
+        </div>
+        
+        <div class="philosophy-card">
+          <div class="philosophy-icon">🌟</div>
+          <h3>Shared Vulnerability</h3>
+          <p>Family members model emotional openness for each other, building deeper authentic connections.</p>
+        </div>
+        
+        <div class="philosophy-card">
+          <div class="philosophy-icon">⏰</div>
+          <h3>Micro-Moment Mastery</h3>
+          <p>Research shows that small, consistent interactions are more powerful than occasional long conversations for building lasting family bonds.</p>
+        </div>
+        
+        <div class="philosophy-card">
+          <div class="philosophy-icon">🔄</div>
+          <h3>Progressive Independence</h3>
+          <p>Each interaction builds confidence and skills, gradually reducing dependence on digital prompts while strengthening natural family rhythms.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Complete Feature Set</h2>
+        <p class="section-subtitle">Every feature designed to progressively encourage offline alternatives</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card detailed">
+          <div class="feature-header">
+            <div class="feature-icon">🧠</div>
+            <h3>Mood Tracking & Emotional Intelligence</h3>
+          </div>
+          <ul class="feature-list">
+            <li>Daily mood check-ins with 9 carefully selected emotions</li>
+            <li>Personalized responses that validate feelings</li>
+            <li>Visual activity tracking showing family engagement</li>
+            <li>Emotional pattern recognition through streak tracking</li>
+            <li>Family member avatars with diverse representation</li>
+          </ul>
+          <p class="feature-psychology"><strong>Psychology:</strong> Builds emotional vocabulary, normalizes feeling expression, and creates family emotional awareness.</p>
+        </div>
+        
+        <div class="feature-card detailed">
+          <div class="feature-header">
+            <div class="feature-icon">📱</div>
+            <h3>Daily Reflection (Without Judgment)</h3>
+          </div>
+          <ul class="feature-list">
+            <li>Gentle prompting questions about digital device usage</li>
+            <li>Family conversation starters rather than restrictions</li>
+            <li>Reflection-based approach encouraging self-awareness</li>
+            <li>Weekly family discussions about healthy boundaries</li>
+          </ul>
+          <p class="feature-psychology"><strong>Psychology:</strong> Uses intrinsic motivation rather than external control, building long-term behavioral change through self-reflection.</p>
+        </div>
+        
+        <div class="feature-card detailed">
+          <div class="feature-header">
+            <div class="feature-icon">🙏</div>
+            <h3>Mindful Gratitude Practice</h3>
+          </div>
+          <ul class="feature-list">
+            <li>2-minute breathing exercises with color-changing guidance</li>
+            <li>Gratitude journaling with family sharing capabilities</li>
+            <li>Weekly gratitude slideshows celebrating positive moments</li>
+            <li>Mindfulness integration connecting breath work to gratitude</li>
+          </ul>
+          <p class="feature-psychology"><strong>Psychology:</strong> Combines mindfulness meditation with gratitude practice, proven to increase family satisfaction and emotional regulation.</p>
+        </div>
+        
+        <div class="feature-card detailed">
+          <div class="feature-header">
+            <div class="feature-icon">🎓</div>
+            <h3>Graduation Progress System</h3>
+          </div>
+          <ul class="feature-list">
+            <li>Milestone tracking with celebrations at 15, 30, 45 days</li>
+            <li>Family readiness assessments for independence evaluation</li>
+            <li>Transition coaching with offline practice recommendations</li>
+            <li>Success metrics focused on offline connection, not app engagement</li>
+          </ul>
+          <p class="feature-psychology"><strong>Psychology:</strong> Uses goal-setting theory and self-efficacy building to create confidence in independent family connection.</p>
+        </div>
+        
+        <div class="feature-card detailed">
+          <div class="feature-header">
+            <div class="feature-icon">🔒</div>
+            <h3>Privacy-First Data Architecture</h3>
+          </div>
+          <ul class="feature-list">
+            <li>Zero data collection - no servers, accounts, or tracking</li>
+            <li>Local storage only - all family data stays on device</li>
+            <li>Offline functionality - works without internet</li>
+            <li>Family data export - complete ownership of memories</li>
+            <li>Selective data management - families control everything</li>
+          </ul>
+          <p class="feature-psychology"><strong>Psychology:</strong> Builds trust through transparency, ensuring families feel safe sharing vulnerable emotions.</p>
+        </div>
+        
+        <div class="feature-card detailed">
+          <div class="feature-header">
+            <div class="feature-icon">📲</div>
+            <h3>Progressive Web App Technology</h3>
+          </div>
+          <ul class="feature-list">
+            <li>Native app experience - installs like a regular app</li>
+            <li>Cross-platform compatibility - phones, tablets, desktops</li>
+            <li>Offline-first design - functionality without connectivity</li>
+            <li>Fast loading - optimized for quick daily check-ins</li>
+            <li>Automatic updates - always current without app stores</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Graduation Journey Section -->
+  <section id="graduation" class="graduation">
+    <div class="container">
+      <div class="section-header">
+        <h2>Your 45-Day Graduation Journey</h2>
+        <p class="section-subtitle">Scaffolded independence building toward authentic family connection</p>
+      </div>
+      
+      <div class="graduation-timeline">
+        <div class="timeline-item">
+          <div class="timeline-marker">1-2</div>
+          <div class="timeline-content">
+            <h3>Weeks 1-2: Foundation Building</h3>
+            <p>App-guided daily check-ins to establish habit. Focus on creating psychological safety and consistent 2-minute family rituals.</p>
+            <div class="timeline-goals">
+              <span class="goal-tag">Establish daily ritual</span>
+              <span class="goal-tag">Increase emotional vocabulary</span>
+              <span class="goal-tag">Begin pattern recognition</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-marker">3-4</div>
+          <div class="timeline-content">
+            <h3>Weeks 3-4: Transition Introduction</h3>
+            <p>Introduction of offline alternatives and transition prompts. Develop consistent family check-in habits and practice offline techniques.</p>
+            <div class="timeline-goals">
+              <span class="goal-tag">Consistent family habits</span>
+              <span class="goal-tag">Offline practice techniques</span>
+              <span class="goal-tag">Confidence building</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="timeline-item">
+          <div class="timeline-marker">5-6</div>
+          <div class="timeline-content">
+            <h3>Weeks 5-6: Graduation Preparation</h3>
+            <p>Readiness assessment and graduation pathway preparation. Graduate to self-directed family connection practices.</p>
+            <div class="timeline-goals">
+              <span class="goal-tag">Independent practices</span>
+              <span class="goal-tag">Healthy digital boundaries</span>
+              <span class="goal-tag">Lasting family rituals</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="timeline-item graduation-final">
+          <div class="timeline-marker">🎓</div>
+          <div class="timeline-content">
+            <h3>Post-Graduation: Independent Success</h3>
+            <p><strong>Ultimate Success:</strong> Families confidently delete the app because they no longer need digital scaffolding for authentic connection.</p>
+            <div class="timeline-goals">
+              <span class="goal-tag success">Offline conversations</span>
+              <span class="goal-tag success">Emotional awareness</span>
+              <span class="goal-tag success">Independent rituals</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Behavioral Science Section -->
+  <section id="science" class="science">
+    <div class="container">
+      <div class="section-header">
+        <h2>Behavioral Science Integration</h2>
+        <p class="section-subtitle">Evidence-based design rooted in psychology research</p>
+      </div>
+      
+      <div class="science-grid">
+        <div class="science-card">
+          <h3>🔄 Habit Formation (21-66 Day Cycle)</h3>
+          <div class="science-points">
+            <p><strong>Minimum effective dose:</strong> 2 minutes daily prevents overwhelm</p>
+            <p><strong>Consistent cuing:</strong> Same time, same format builds automatic behavior</p>
+            <p><strong>Immediate rewards:</strong> Personalized responses provide instant gratification</p>
+            <p><strong>Social accountability:</strong> Family participation increases adherence</p>
+          </div>
+        </div>
+        
+        <div class="science-card">
+          <h3>🎯 Intrinsic Motivation Theory</h3>
+          <div class="science-points">
+            <p><strong>Autonomy:</strong> Families choose their own connection style and pace</p>
+            <p><strong>Competence:</strong> Progressive skill building in emotional communication</p>
+            <p><strong>Relatedness:</strong> Strengthening family bonds through shared vulnerability</p>
+          </div>
+        </div>
+        
+        <div class="science-card">
+          <h3>✨ Positive Psychology Principles</h3>
+          <div class="science-points">
+            <p><strong>Strength-based approach:</strong> Focuses on what families do well</p>
+            <p><strong>Growth mindset cultivation:</strong> Frames challenges as learning opportunities</p>
+            <p><strong>Gratitude practice:</strong> Scientifically proven to increase family satisfaction</p>
+            <p><strong>Mindfulness integration:</strong> Reduces stress and increases present-moment awareness</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- App Journey Section -->
+  <section class="app-journey">
+    <div class="container">
+      <div class="section-header">
+        <h2>Experience Your Family's Journey</h2>
+        <p class="section-subtitle">See how Family Flow guides families through their 2-minute daily connection ritual</p>
+      </div>
+      
+      <div class="journey-grid">
+        <div class="journey-item">
+          <div class="journey-image">
+            <img src="./images/welcome-1.png" alt="Family Check-in Welcome" loading="lazy">
+          </div>
+          <div class="journey-content">
+            <h3>Welcome to Connection</h3>
+            <p>Begin your family's journey with a warm welcome that sets the tone for authentic, judgment-free sharing.</p>
+          </div>
+        </div>
+        
+        <div class="journey-item reverse">
+          <div class="journey-image">
+            <img src="./images/welcome-2.png" alt="Mood Tracking Interface" loading="lazy">
+          </div>
+          <div class="journey-content">
+            <h3>Emotional Intelligence Building</h3>
+            <p>Daily mood check-ins with 9 carefully selected emotions, each receiving personalized, validating responses.</p>
+          </div>
+        </div>
+        
+        <div class="journey-item">
+          <div class="journey-image">
+            <img src="./images/welcome-3.png" alt="Family Gratitude Practice" loading="lazy">
+          </div>
+          <div class="journey-content">
+            <h3>Mindful Gratitude Practice</h3>
+            <p>2-minute breathing exercises and gratitude journaling that connects families through shared positive moments.</p>
+          </div>
+        </div>
+        
+        <div class="journey-item reverse">
+          <div class="journey-image">
+            <img src="./images/welcome-4.png" alt="Graduation Progress" loading="lazy">
+          </div>
+          <div class="journey-content">
+            <h3>Progress Toward Independence</h3>
+            <p>Track your family's journey to graduation with milestone celebrations at 15, 30, and 45 days.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Anti-Engagement Metrics Section -->
+  <section class="metrics" id="metrics">
+    <div class="container">
+      <div class="section-header">
+        <h2>Success Metrics (Anti-Engagement Design)</h2>
+        <p class="section-subtitle">Unlike traditional apps that maximize screen time, Family Flow measures success through offline connection</p>
+      </div>
+      
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon">💬</div>
+          <h3>Offline Conversation Frequency</h3>
+          <p>Families talking without digital prompts</p>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-icon">🎭</div>
+          <h3>Emotional Awareness Growth</h3>
+          <p>Family members recognizing each other's needs</p>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-icon">🤝</div>
+          <h3>Conflict Resolution Improvement</h3>
+          <p>Using connection skills during disagreements</p>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-icon">⚖️</div>
+          <h3>Digital Boundary Self-Regulation</h3>
+          <p>Healthy technology choices without app enforcement</p>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-icon">🎉</div>
+          <h3>Independent Celebration Rituals</h3>
+          <p>Families creating their own connection traditions</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action Section -->
+  <section id="download" class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Ready to Begin Your Family's Graduation Journey?</h2>
+        <p>Join families who are building authentic connections that last beyond any app. Your 45-day journey to independent family connection starts now.</p>
+        <div class="cta-buttons">
+          <a href="https://app.familyflow.space/" class="btn btn-primary btn-large">Start Your 2-Minute Ritual</a>
+          <a href="./pdf/Family Flow.pdf" class="btn btn-secondary btn-large" target="_blank">Download Project Report</a>
+        </div>
+        <p class="cta-note">✅ No sign-up required • ✅ Zero data collection • ✅ Works offline</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Meet the Creators Section -->
+  <section id="story" class="story">
+    <div class="container">
+      <div class="story-content">
+        <div class="story-text">
+          <div class="story-header">
+            <h2>Meet the Creators</h2>
+            <p class="story-tagline">From Weekend Project to Family Revolution</p>
+          </div>
+          
+          <div class="story-narrative">
+            <p>
+              <strong>Helen Francis</strong> created Family Flow during her final-year BBA project, combining business insight with her nursing background. Built in one focused weekend with simple HTML and JavaScript. <strong>Lixon Louis</strong> later transformed it into the full-featured PWA you see today.
+            </p>
+          </div>
+        </div>
+        
+        <div class="story-visual">
+          <div class="story-stats">
+            <div class="story-stat">
+              <div class="stat-visual">⏰</div>
+              <h3>Weekend Build</h3>
+              <p>Built in one focused weekend</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-main">
+          <a href="#" class="footer-logo">Family Flow</a>
+          <p class="footer-description">A graduation platform for authentic family connection. Success means you won't need us forever.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-section">
+            <h4>Philosophy</h4>
+            <a href="#philosophy">2-Minute Ritual</a>
+            <a href="#graduation">Graduation Journey</a>
+            <a href="#science">Behavioral Science</a>
+          </div>
+          <div class="footer-section">
+            <h4>Features</h4>
+            <a href="#features">Complete Feature Set</a>
+            <a href="#metrics">Success Metrics</a>
+            <a href="./pdf/Family Flow.pdf" target="_blank">Project Report (PDF)</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="current-year"></span> Family Flow. Built with love for families everywhere. Designed for graduation, not dependency.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Analytics (Optional) -->
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
-          });
-      });
-    }
+    // Set current year in footer
+    document.getElementById('current-year').textContent = new Date().getFullYear();
     
-    // PWA Install Prompt
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      // Show install button or banner
-      showInstallPrompt();
+    // Enhanced mobile header on scroll
+    let lastScrollTop = 0;
+    const header = document.querySelector('.header');
+    
+    window.addEventListener('scroll', function() {
+      if (window.innerWidth <= 768) {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+          // Scrolling down - slightly reduce header size
+          header.style.padding = '0.5rem 0';
+        } else {
+          // Scrolling up - restore header size
+          header.style.padding = '0.75rem 0';
+        }
+        
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      }
     });
     
-    function showInstallPrompt() {
-      // You can show a custom install button here
-      console.log('PWA can be installed');
+    // Mobile menu functionality
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    
+    function toggleMobileMenu() {
+      mobileMenuBtn.classList.toggle('active');
+      mobileNavOverlay.classList.toggle('active');
+      document.body.style.overflow = mobileNavOverlay.classList.contains('active') ? 'hidden' : '';
     }
     
-    // Handle app installed
-    window.addEventListener('appinstalled', (evt) => {
-      console.log('PWA was installed');
+    function closeMobileMenu() {
+      mobileMenuBtn.classList.remove('active');
+      mobileNavOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    
+    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+    
+    // Close mobile menu when clicking outside
+    mobileNavOverlay.addEventListener('click', function(e) {
+      if (e.target === mobileNavOverlay) {
+        closeMobileMenu();
+      }
     });
+    
+    // Close mobile menu on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && mobileNavOverlay.classList.contains('active')) {
+        closeMobileMenu();
+      }
+    });
+    
+    // Simple privacy-friendly analytics
+    if (typeof gtag !== 'undefined') {
+      gtag('config', 'GA_MEASUREMENT_ID');
+    }
   </script>
 </body>
 </html>
