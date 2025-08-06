@@ -1,6 +1,6 @@
 import { Button } from './ui/button';
 import { GraduationProgress } from './GraduationProgress';
-import { ArrowLeft, HelpCircle, BookOpen } from 'lucide-react';
+import { ArrowLeft, HelpCircle } from 'lucide-react';
 
 interface GraduationViewProps {
   graduationProgress: {

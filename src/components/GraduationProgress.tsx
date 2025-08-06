@@ -12,12 +12,12 @@ interface GraduationProgressProps {
 
 export function GraduationProgress({
   totalCheckIns,
-  targetDays,
+  targetDays: _targetDays,
   progressPercentage,
   nextMilestone,
   achievedMilestones: _achievedMilestones,
   readyForGraduation,
-  onStartAssessment
+  onStartAssessment: _onStartAssessment
 }: GraduationProgressProps) {
   const milestonePoints = [15, 30, 45];
 
