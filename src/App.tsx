@@ -415,7 +415,24 @@ export default function App() {
     if (!appData.graduationMilestones) return [];
     
     const streakData = getStreakData();
-    const totalCheckIns = streakData.totalActiveDays;
+    let totalCheckIns = streakData.totalActiveDays;
+    
+    // Apply same cheat code logic as getGraduationProgress
+    const godmodeMember = appData.familyMembers?.find(member => 
+      member.name.toLowerCase().includes('godmode-15') ||
+      member.name.toLowerCase().includes('godmode-30') ||
+      member.name.toLowerCase().includes('godmode-45')
+    );
+    
+    if (godmodeMember) {
+      if (godmodeMember.name.toLowerCase().includes('godmode-15')) {
+        totalCheckIns = 15;
+      } else if (godmodeMember.name.toLowerCase().includes('godmode-30')) {
+        totalCheckIns = 30;
+      } else if (godmodeMember.name.toLowerCase().includes('godmode-45')) {
+        totalCheckIns = 45;
+      }
+    }
 
     const updatedMilestones = appData.graduationMilestones.map(milestone => {
       if (!milestone.achieved && totalCheckIns >= milestone.threshold) {
@@ -449,8 +466,26 @@ export default function App() {
 
   const getGraduationProgress = () => {
     const streakData = getStreakData();
-    const totalCheckIns = streakData.totalActiveDays;
+    let totalCheckIns = streakData.totalActiveDays;
     const targetDays = appData.graduationSettings?.targetGraduationDays || 45;
+    
+    // Cheat codes for testing - check if any family member has godmode name
+    const godmodeMember = appData.familyMembers?.find(member => 
+      member.name.toLowerCase().includes('godmode-15') ||
+      member.name.toLowerCase().includes('godmode-30') ||
+      member.name.toLowerCase().includes('godmode-45')
+    );
+    
+    if (godmodeMember) {
+      if (godmodeMember.name.toLowerCase().includes('godmode-15')) {
+        totalCheckIns = 15;
+      } else if (godmodeMember.name.toLowerCase().includes('godmode-30')) {
+        totalCheckIns = 30;
+      } else if (godmodeMember.name.toLowerCase().includes('godmode-45')) {
+        totalCheckIns = 45;
+      }
+    }
+    
     const progressPercentage = Math.min((totalCheckIns / targetDays) * 100, 100);
 
     const nextMilestone = appData.graduationMilestones
