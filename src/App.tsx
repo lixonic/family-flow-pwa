@@ -35,9 +35,13 @@ export type MoodEntry = {
 export type ReflectionEntry = {
   id: string;
   memberId: string;
-  prompt: string;
-  response: string;
+  feelChoice: string;
+  needChoice: string;
+  nextChoice: string;
   date: string;
+  // Legacy support
+  prompt?: string;
+  response?: string;
 };
 
 export type GratitudeEntry = {
