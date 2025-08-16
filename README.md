@@ -164,6 +164,14 @@ Family Flow represents a mature approach to digital wellness—**success is meas
 - **Background Sync**: Storage operations happen asynchronously without interrupting family time
 - **Error Resilience**: User-friendly status indicators with graceful error handling
 
+### Feel→Need→Next Reflection System
+- **Visual Regulation First**: 40-second breathing animation replaces overwhelming text entry with calming visual regulation
+- **Constrained Choice Architecture**: Family-centered emotion cards eliminate "overthinking" through guided selection paths
+- **Development Tools Enhancement**: Transforms underutilized reflection module from 10% to engaging family emotional intelligence building
+- **Family Self-Advocacy**: Structured Feel→Need→Next progression teaches emotional vocabulary families can use offline
+- **Backward Compatibility**: Legacy text reflections preserved while new entries build on family-first language
+- **Graduation Alignment**: Enhanced engagement drives consistent daily use, strengthening milestone progression toward independence
+
 ### Refined Graduation Philosophy
 - **Reflection Over Restriction**: Screen time features emphasize family conversation over digital control
 - **Regulatory Screen Support**: Acknowledges families where screens serve important functions (medical, accessibility, educational)
