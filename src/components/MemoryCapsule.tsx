@@ -1,29 +1,31 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AppData } from '../App';
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): void;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { formatDate } from './ui/utils';
-import { Download, FileText, Database, Info, HelpCircle, Users, Smartphone } from 'lucide-react';
+import { Download, Users, Smartphone } from 'lucide-react';
 
 interface MemoryCapsuleProps {
   appData: AppData;
   onNavigate: (screen: string) => void;
-  deferredPrompt: Event | null;
-  setDeferredPrompt: (prompt: Event | null) => void;
+  deferredPrompt: BeforeInstallPromptEvent | null;
+  setDeferredPrompt: (prompt: BeforeInstallPromptEvent | null) => void;
   onEraseAllData: () => void;
   onImportData: (data: Partial<AppData>) => void;
 }
 
-export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferredPrompt, onEraseAllData, onImportData }: MemoryCapsuleProps) {
+export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferredPrompt, onEraseAllData, onImportData: _onImportData }: MemoryCapsuleProps) {
   const [exportFormat, setExportFormat] = useState<'csv' | 'json' | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
   const [showInstallSuccess, setShowInstallSuccess] = useState(false);
-  const [showExportHelp, setShowExportHelp] = useState(false);
   const [showEraseConfirm, setShowEraseConfirm] = useState(false);
   const [eraseInput, setEraseInput] = useState('');
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [importStatus, setImportStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
 
 
 
@@ -170,86 +172,7 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     }
   };
 
-  const handleFileImport = async (file: File) => {
-    setImportStatus(null);
-    
-    if (!file.name.endsWith('.json')) {
-      setImportStatus({
-        type: 'error',
-        message: 'Please select a Family Flow JSON file (.json)'
-      });
-      return;
-    }
 
-    try {
-      const text = await file.text();
-      const importedData = JSON.parse(text);
-      
-      // Validate the imported data structure
-      if (!importedData.familyData || !importedData.metadata) {
-        throw new Error('Invalid Family Flow file format');
-      }
-
-      const { familyData } = importedData;
-      const entryCount = 
-        (familyData.moodEntries?.length || 0) + 
-        (familyData.reflectionEntries?.length || 0) + 
-        (familyData.gratitudeEntries?.length || 0);
-      
-      const memberCount = familyData.familyMembers?.length || 0;
-      
-      const confirmed = confirm(
-        `Import family data from ${importedData.metadata.dateRange}?\n\n` +
-        `• ${entryCount} entries (mood, reflection, gratitude)\n` +
-        `• ${memberCount} family members\n` +
-        `• Exported: ${new Date(importedData.metadata.exportDate).toLocaleDateString()}\n\n` +
-        `This will add new data to your existing family entries.`
-      );
-
-      if (confirmed) {
-        onImportData(familyData);
-        setImportStatus({
-          type: 'success',
-          message: `✅ Successfully imported ${entryCount} entries and ${memberCount} family members!`
-        });
-        
-        setTimeout(() => setImportStatus(null), 5000);
-      }
-    } catch (error) {
-      console.error('Import failed:', error);
-      setImportStatus({
-        type: 'error',
-        message: 'Failed to import file. Please ensure it\'s a valid Family Flow JSON export.'
-      });
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      handleFileImport(files[0]);
-    }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      handleFileImport(files[0]);
-    }
-  };
 
   // Helper functions
 
@@ -295,9 +218,6 @@ export function MemoryCapsule({ appData, onNavigate, deferredPrompt, setDeferred
     return `${formatDate(earliest)} - ${formatDate(latest)}`;
   };
 
-  const hasDataForExport = () => {
-    return getUniqueDaysWithEntries() >= 5; // Require at least 5 days of entries to export
-  };
 
   const hasDataForSync = () => {
     return getTotalEntries() > 0 || appData.familyMembers.length > 0; // Any data for sync

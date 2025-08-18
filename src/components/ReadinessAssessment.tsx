@@ -1,11 +1,5 @@
 import { useState } from 'react';
 
-interface ReadinessQuestion {
-  id: string;
-  question: string;
-  options: string[];
-  weight: number;
-}
 
 interface ReadinessAssessmentProps {
   onComplete: (score: number, recommendations: string[]) => void;
@@ -60,16 +54,6 @@ export function ReadinessAssessment({ onComplete, onCancel }: ReadinessAssessmen
     }, 4000);
   };
 
-  const getOfflineInspiration = (): string[] => {
-    return [
-      "🌅 Try morning check-ins over breakfast",
-      "🚗 Use car rides for connection conversations",
-      "📝 Keep a family gratitude jar",
-      "🍽️ Create device-free dinner rituals",
-      "🌙 End days with appreciation sharing",
-      "🎯 Trust the connection patterns you've discovered"
-    ];
-  };
 
   if (showConclusion) {
     return (

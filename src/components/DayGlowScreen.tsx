@@ -5,6 +5,7 @@ import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
+import { FamilyConnectionViz } from './ui/FamilyConnectionViz';
 import { formatDate } from './ui/utils';
 import { Plus, Edit2, Trash2, Check, X, User, ChevronRight } from 'lucide-react';
 
@@ -165,6 +166,7 @@ export function DayGlowScreen({
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberAvatar, setNewMemberAvatar] = useState('parent1');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [editingName, setEditingName] = useState('');
   const [showCooldownBanner, setShowCooldownBanner] = useState(false);
   const [showCooldownSuggestions, setShowCooldownSuggestions] = useState(false);
@@ -195,14 +197,6 @@ export function DayGlowScreen({
   const streakData = getStreakData();
 
 
-  const getActivityLevelColor = (level: 'none' | 'low' | 'medium' | 'high') => {
-    switch (level) {
-      case 'none': return 'bg-gray-200';
-      case 'low': return 'bg-orange-200';
-      case 'medium': return 'bg-orange-400';
-      case 'high': return 'bg-gradient-to-br from-orange-400 to-pink-400';
-    }
-  };
 
   const isChildMember = (member: FamilyMember) => {
     return member.avatar === 'child' || member.avatar === 'child2';
@@ -285,7 +279,8 @@ export function DayGlowScreen({
         
         // Clear form
         setNewMemberName('');
-        setNewMemberAvatar('mother');
+        setNewMemberAvatar('parent1');
+        setSelectedCategory('');
         
         // Show success message
         setShowProfileAdded(true);
@@ -420,7 +415,7 @@ export function DayGlowScreen({
           <h2 className="text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
             {currentMoodResponse?.title || 'Thank you!'}
           </h2>
-          <p className="text-gray-600 text-xl mb-8">{currentMoodResponse?.message || 'Your mood has been saved'}</p>
+          <p className="text-black text-xl mb-8">{currentMoodResponse?.message || 'Your mood has been saved'}</p>
           
           {/* Family connection options */}
           <div className="space-y-3">
@@ -489,10 +484,10 @@ export function DayGlowScreen({
           <h2 className="text-3xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
             Profile Added!
           </h2>
-          <p className="text-gray-600 text-xl mb-2">
+          <p className="text-black text-xl mb-2">
             Welcome <span className="font-semibold text-orange-600">{addedMemberName}</span>!
           </p>
-          <p className="text-gray-500">
+          <p className="text-black">
             Redirecting to mood selection...
           </p>
         </div>
@@ -510,7 +505,7 @@ export function DayGlowScreen({
             <h1 className="font-title text-2xl sm:text-4xl mb-4 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
               Day Glow
             </h1>
-            <p className="text-gray-600 text-xl">How was your day?</p>
+            <p className="text-black text-xl">How was your day?</p>
           </div>
         )}
 
@@ -519,8 +514,8 @@ export function DayGlowScreen({
         {!showManageMembers && (
           <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg text-gray-500">Last 5 days</h3>
-            <div className="text-sm text-gray-400">
+            <h3 className="text-lg text-black">Last 5 days</h3>
+            <div className="text-sm text-black">
               {streakData.totalActiveDays} active days total
             </div>
           </div>
@@ -532,12 +527,12 @@ export function DayGlowScreen({
               
               return (
                 <div key={index} className="flex flex-col items-center">
-                  <div className={`text-sm mb-2 ${isToday ? 'font-medium text-orange-600' : 'text-gray-500'}`}>
+                  <div className={`text-sm mb-2 ${isToday ? 'font-medium text-orange-600' : 'text-black'}`}>
                     {date.toLocaleDateString('en', { weekday: 'short' })}
                   </div>
                   <button
                     onClick={() => onDaySelect(date)}
-                    className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative ${getActivityLevelColor(activityLevel)} hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
+                    className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative bg-white hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
                     title={`View entries for ${formatDate(date)}`}
                   >
                     {dayMoods.length > 0 ? (
@@ -558,7 +553,7 @@ export function DayGlowScreen({
                       <div className="absolute -bottom-1 -right-1 text-xs">⭐</div>
                     )}
                   </button>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-black mt-1">
                     {date.getDate()}
                   </div>
                 </div>
@@ -567,7 +562,7 @@ export function DayGlowScreen({
           </div>
           
           {/* Activity level legend */}
-          <div className="mt-4 flex justify-center space-x-4 text-xs text-gray-500">
+          <div className="mt-4 flex justify-center space-x-4 text-xs text-black">
             <div className="flex items-center space-x-1">
               <div className="w-3 h-3 rounded-full bg-gray-200"></div>
               <span>No activity</span>
@@ -588,6 +583,7 @@ export function DayGlowScreen({
         </div>
         )}
 
+
         {/* First-time user guidance - only show when no family members */}
         {!selectedMember && !showManageMembers && familyMembers.length === 0 && (
           <div className="mb-10">
@@ -599,19 +595,19 @@ export function DayGlowScreen({
                   <p className="text-gray-700 text-lg">
                     Your daily 2-minute family wellness ritual starts here
                   </p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm text-gray-600">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm text-black">
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">😊</span>
                       <span>Mood Check</span>
                     </div>
-                    <span className="text-gray-300 hidden sm:inline">→</span>
-                    <span className="text-gray-300 sm:hidden">↓</span>
+                    <span className="text-black hidden sm:inline">→</span>
+                    <span className="text-black sm:hidden">↓</span>
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">📱</span>
                       <span>Screen Reflection</span>
                     </div>
-                    <span className="text-gray-300 hidden sm:inline">→</span>
-                    <span className="text-gray-300 sm:hidden">↓</span>
+                    <span className="text-black hidden sm:inline">→</span>
+                    <span className="text-black sm:hidden">↓</span>
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">🙏</span>
                       <span>Gratitude</span>
@@ -619,11 +615,11 @@ export function DayGlowScreen({
                   </div>
                 </div>
                 <div className="bg-white/70 rounded-2xl p-4 mb-6">
-                  <p className="text-gray-600 text-base">
+                  <p className="text-black text-base">
                     Let's create profiles for everyone in your family. Each person gets their own space to share how they're feeling.
                   </p>
                 </div>
-                <p className="text-sm text-gray-500 mb-2">
+                <p className="text-sm text-black mb-2">
                   Privacy first: All data stays on your device
                 </p>
               </div>
@@ -636,7 +632,7 @@ export function DayGlowScreen({
                 Set Up Your Family
               </button>
               
-              <p className="text-xs text-gray-400 mt-4">
+              <p className="text-xs text-black mt-4">
                 You can always add, edit, or remove family members later
               </p>
             </div>
@@ -695,7 +691,7 @@ export function DayGlowScreen({
                     <FamilyMemberIcon avatar={member.avatar} className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3" showBackground={true} />
                     <div className="text-base sm:text-lg font-medium text-center">{member.name}</div>
                     {!todayEntry && (
-                      <div className="text-xs sm:text-xs text-gray-600 mt-1 opacity-70">
+                      <div className="text-xs sm:text-xs text-black mt-1 opacity-70">
                         👆 Tap to check in
                       </div>
                     )}
@@ -736,8 +732,14 @@ export function DayGlowScreen({
           <div className="mb-10" id="manage-members-section">
             <div className="flex items-center mb-8">
               <button
-                onClick={() => setShowManageMembers(false)}
-                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
+                onClick={() => {
+                  setShowManageMembers(false);
+                  // Reset form state when backing out
+                  setNewMemberName('');
+                  setNewMemberAvatar('parent1');
+                  setSelectedCategory('');
+                }}
+                className="text-black hover:text-gray-700 mr-4 text-2xl"
               >
                 ← Back
               </button>
@@ -749,7 +751,7 @@ export function DayGlowScreen({
                 <div className="text-center mb-6">
                   <div className="text-4xl mb-3">👋</div>
                   <h4 className="text-xl font-medium mb-2">Add a Family Member</h4>
-                  <p className="text-gray-600">Let's create a profile for your daily check-ins</p>
+                  <p className="text-black">Let's create a profile for your daily check-ins</p>
                 </div>
                 
                 <div className="space-y-6">
@@ -773,80 +775,112 @@ export function DayGlowScreen({
                     )}
                   </div>
 
-                  {/* Step 2: Avatar Selection - Progressive Disclosure */}
-                  {newMemberName.trim() && (
-                    <div className="space-y-4 animate-in slide-in-from-bottom duration-300">
-                      <label className="block text-base font-medium text-gray-700">
-                        Choose {newMemberName.trim()}'s avatar
-                      </label>
-                      
-                      {/* Large Avatar Preview */}
-                      <div className="text-center py-4">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full mb-3">
-                          <FamilyMemberIcon avatar={newMemberAvatar} className="w-12 h-12" />
-                        </div>
-                        <p className="text-sm text-gray-600">Current selection</p>
+                  {/* Step 2: Category Selection */}
+                  {newMemberName.trim() && !selectedCategory && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      <div className="text-center">
+                        <h4 className="text-xl mb-2">What describes {newMemberName.trim()} in your family?</h4>
+                        <p className="text-gray-600 text-sm">Choose the category that feels right</p>
                       </div>
 
-                      {/* Category-Based Progressive Selection */}
-                      <div className="space-y-4">
-                        {['Parent', 'Guardian', 'Teen', 'Child', 'Extended Family'].map(category => {
-                          const categoryAvatars = getAvatarsByCategory(category);
-                          const isCurrentCategory = categoryAvatars.some(avatar => avatar.id === newMemberAvatar);
-                          
-                          return (
-                            <div key={category} className=" hover:border-orange-300 transition-colors">
-                              <div className="flex items-center justify-between mb-3">
-                                <h5 className="text-base font-medium text-gray-700 flex items-center">
-                                  <span className="mr-2">
-                                    {category === 'Parent' && '👨‍👩‍👧‍👦'}
-                                    {category === 'Guardian' && '🧑‍🤝‍🧑'}
-                                    {category === 'Teen' && '🎓'}
-                                    {category === 'Child' && '🧒'}
-                                    {category === 'Extended Family' && '👴👵'}
-                                  </span>
-                                  {category}
-                                </h5>
-                                {isCurrentCategory && (
-                                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
-                                    Selected
-                                  </span>
-                                )}
-                              </div>
-                              
-                              <div className="grid grid-cols-3 gap-3">
-                                {categoryAvatars.map(option => (
-                                  <button
-                                    key={option.id}
-                                    onClick={() => setNewMemberAvatar(option.id)}
-                                    className={`p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center hover:scale-105 ${
-                                      newMemberAvatar === option.id 
-                                        ? 'border-orange-400 bg-orange-100 shadow-md' 
-                                        : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50'
-                                    }`}
-                                  >
-                                    <FamilyMemberIcon avatar={option.id} className="w-10 h-10 mb-2" showBackground={false} />
-                                    <span className="text-xs text-gray-600 text-center leading-tight">
-                                      Style {categoryAvatars.indexOf(option) + 1}
-                                    </span>
-                                  </button>
-                                ))}
-                              </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        {['Parent', 'Guardian', 'Teen', 'Child', 'Extended Family'].map(category => (
+                          <button
+                            key={category}
+                            onClick={() => {
+                              setSelectedCategory(category);
+                              // Set first avatar of category as default
+                              const categoryAvatars = getAvatarsByCategory(category);
+                              if (categoryAvatars.length > 0) {
+                                setNewMemberAvatar(categoryAvatars[0].id);
+                              }
+                            }}
+                            className="p-6 rounded-xl border-2 border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 hover:scale-105 flex flex-col items-center text-center"
+                          >
+                            <div className="text-4xl mb-3">
+                              {category === 'Parent' && '👨‍👩‍👧‍👦'}
+                              {category === 'Guardian' && '🧑‍🤝‍🧑'}
+                              {category === 'Teen' && '🎓'}
+                              {category === 'Child' && '🧒'}
+                              {category === 'Extended Family' && '👴👵'}
                             </div>
-                          );
-                        })}
+                            <span className="text-lg font-medium text-gray-700">{category}</span>
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Step 3: Confirmation Button */}
-                  <Button
-                    onClick={handleAddMember}
-                    disabled={!newMemberName.trim()}
-                    className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-lg py-4 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {newMemberName.trim() ? `Add ${newMemberName.trim()} to Family` : 'Enter a name to continue'}
-                  </Button>
+                  {/* Step 3: Avatar Selection */}
+                  {newMemberName.trim() && selectedCategory && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                      <div className="text-center">
+                        <button
+                          onClick={() => {
+                            setSelectedCategory('');
+                            setNewMemberAvatar('parent1');
+                          }}
+                          className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center justify-center w-full"
+                        >
+                          ← Back to categories
+                        </button>
+                        
+                        <h4 className="text-xl mb-2">Choose a style for {newMemberName.trim()}</h4>
+                        <div className="flex justify-center mb-6">
+                          <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center">
+                            <FamilyMemberIcon avatar={newMemberAvatar} className="w-16 h-16" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {getAvatarsByCategory(selectedCategory).map((option, index) => (
+                          <button
+                            key={option.id}
+                            onClick={() => setNewMemberAvatar(option.id)}
+                            className={`p-6 rounded-xl border-2 transition-all duration-200 flex flex-col items-center hover:scale-105 ${
+                              newMemberAvatar === option.id 
+                                ? 'border-orange-400 bg-orange-100 shadow-md' 
+                                : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50'
+                            }`}
+                          >
+                            <FamilyMemberIcon avatar={option.id} className="w-14 h-14 mb-3" showBackground={false} />
+                            <span className="text-sm text-gray-700 text-center">
+                              {index === 0 && selectedCategory === 'Parent' && 'Blonde hair'}
+                              {index === 1 && selectedCategory === 'Parent' && 'Brown hair'}
+                              {index === 2 && selectedCategory === 'Parent' && 'Silver hair'}
+                              {index === 3 && selectedCategory === 'Parent' && 'Blonde hair'}
+                              {index === 4 && selectedCategory === 'Parent' && 'Brown hair'}
+                              {index === 5 && selectedCategory === 'Parent' && 'Silver hair'}
+                              {index === 0 && selectedCategory === 'Guardian' && 'Style 1'}
+                              {index === 1 && selectedCategory === 'Guardian' && 'Curly hair'}
+                              {index === 2 && selectedCategory === 'Guardian' && 'Silver hair'}
+                              {index === 0 && selectedCategory === 'Teen' && 'Graduate'}
+                              {index === 1 && selectedCategory === 'Teen' && 'Graduate'}
+                              {index === 2 && selectedCategory === 'Teen' && 'Graduate'}
+                              {index === 0 && selectedCategory === 'Child' && 'Baby'}
+                              {index === 1 && selectedCategory === 'Child' && 'Boy'}
+                              {index === 2 && selectedCategory === 'Child' && 'Girl'}
+                              {index === 0 && selectedCategory === 'Extended Family' && 'Grandmother'}
+                              {index === 1 && selectedCategory === 'Extended Family' && 'Grandfather'}
+                              {index === 2 && selectedCategory === 'Extended Family' && 'Grandparent'}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 4: Confirmation Button */}
+                  {selectedCategory && (
+                    <Button
+                      onClick={handleAddMember}
+                      disabled={!newMemberName.trim()}
+                      className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-lg py-4 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Add {newMemberName.trim()} to Family
+                    </Button>
+                  )}
                 </div>
               </Card>
 
@@ -854,13 +888,13 @@ export function DayGlowScreen({
             <div className="space-y-4" id="members-list-section">
               <div className="flex items-center justify-between mb-6">
                 <h4 className="text-xl font-medium text-gray-800">Your Family</h4>
-                <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                <div className="text-sm text-black bg-gray-100 px-3 py-1 rounded-full">
                   {familyMembers.length} members
                 </div>
               </div>
               
               {familyMembers.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12 text-black">
                   <div className="text-6xl mb-4">👨‍👩‍👧‍👦</div>
                   <p className="text-lg">No family members yet</p>
                   <p className="text-sm">Add your first family member above</p>
@@ -904,7 +938,7 @@ export function DayGlowScreen({
                               </button>
                               <button
                                 onClick={handleCancelEdit}
-                                className="text-gray-500 hover:text-gray-700 p-3 hover:bg-gray-50 rounded-lg transition-colors"
+                                className="text-black hover:text-gray-700 p-3 hover:bg-gray-50 rounded-lg transition-colors"
                                 title="Cancel editing"
                               >
                                 <X className="w-5 h-5" />
@@ -938,9 +972,15 @@ export function DayGlowScreen({
               {/* Go back button at bottom of members list */}
               <div className="pt-6">
                 <Button
-                  onClick={() => setShowManageMembers(false)}
+                  onClick={() => {
+                    setShowManageMembers(false);
+                    // Reset form state when backing out
+                    setNewMemberName('');
+                    setNewMemberAvatar('parent1');
+                    setSelectedCategory('');
+                  }}
                   variant="outline"
-                  className="w-full border-2 border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700"
+                  className="w-full border-2 border-gray-300 hover:border-gray-400 text-black hover:text-gray-700"
                 >
                   ← Back to Day Glow
                 </Button>
@@ -957,7 +997,7 @@ export function DayGlowScreen({
               <h3 className="text-xl sm:text-2xl font-bold">Today's Family</h3>
               <button
                 onClick={() => setShowFamilyView(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl p-2 -mr-2 touch-target"
+                className="text-black hover:text-gray-700 text-2xl p-2 -mr-2 touch-target"
                 aria-label="Close family view"
               >
                 ×
@@ -983,15 +1023,15 @@ export function DayGlowScreen({
                         <span className="font-medium text-gray-800 text-lg block truncate">{member.name}</span>
                         {entry ? (
                           <div className="flex items-center space-x-2 mt-1">
-                            <span className="text-sm text-gray-600 hidden sm:inline">
+                            <span className="text-sm text-black hidden sm:inline">
                               Feeling {MOOD_OPTIONS.find(mood => mood.emoji === entry.emoji)?.name || 'good'}
                             </span>
-                            <span className="text-sm text-gray-600 sm:hidden">
+                            <span className="text-sm text-black sm:hidden">
                               {MOOD_OPTIONS.find(mood => mood.emoji === entry.emoji)?.name || 'Good'}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-sm text-gray-500 block">
+                          <span className="text-sm text-black block">
                             <span className="hidden sm:inline">Haven't checked in yet</span>
                             <span className="sm:hidden">Not yet</span>
                           </span>
@@ -1052,7 +1092,7 @@ export function DayGlowScreen({
             <div className="flex items-center mb-6">
               <button
                 onClick={() => setSelectedMember(null)}
-                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
+                className="text-black hover:text-gray-700 mr-4 text-2xl"
               >
                 ←
               </button>
@@ -1083,7 +1123,7 @@ export function DayGlowScreen({
             <div className="flex items-center mb-6">
               <button
                 onClick={() => setSelectedMood(null)}
-                className="text-gray-500 hover:text-gray-700 mr-4 text-2xl"
+                className="text-black hover:text-gray-700 mr-4 text-2xl"
               >
                 ←
               </button>
@@ -1103,7 +1143,7 @@ export function DayGlowScreen({
             )}
             
             <div className="mb-8">
-              <label className="block text-lg text-gray-600 mb-3">
+              <label className="block text-lg text-black mb-3">
                 Want to add a note? (optional)
               </label>
               <Textarea
@@ -1124,9 +1164,26 @@ export function DayGlowScreen({
           </div>
         )}
 
+        {/* Family Connection Visualization - moved to bottom for better UX flow */}
+        {!showManageMembers && !selectedMember && familyMembers.length > 1 && (
+          <div className="mt-10 mb-8">
+            <div className="text-center mb-4">
+              <h3 className="text-lg text-black mb-1">Family Connections Today</h3>
+              <p className="text-sm text-black">See how your family is connecting</p>
+            </div>
+            <Card className="glass-card border-primary/20 overflow-hidden">
+              <FamilyConnectionViz 
+                familyMembers={familyMembers}
+                moodEntries={moodEntries}
+                className="animate-fade-in-scale"
+              />
+            </Card>
+          </div>
+        )}
+
         {/* Family Connection Journey Button - only show with minimum 1 day of data */}
         {graduationProgress && !showManageMembers && !selectedMember && moodEntries.length > 0 && (
-          <div className="mt-10">
+          <div className="mt-10 mb-10">
             <Button
               onClick={() => _onNavigate?.('graduation')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"

@@ -37,7 +37,7 @@ export const VisualRegulationBar: React.FC<VisualRegulationBarProps> = ({
       });
 
       setPhaseTime(prev => {
-        const newPhaseTime = prev + 0.1;
+        prev + 0.1;
         const currentCycleTime = (timeElapsed + 0.1) % cycleLength;
 
         if (currentCycleTime <= inhaleLength) {
@@ -57,7 +57,6 @@ export const VisualRegulationBar: React.FC<VisualRegulationBarProps> = ({
   }, [isActive, duration, onComplete, timeElapsed]);
 
   const getBarGradient = () => {
-    const progress = timeElapsed / duration;
     const cycleProgress = phaseTime / (breathPhase === 'inhale' ? inhaleLength : breathPhase === 'hold' ? holdLength : exhaleLength);
     
     if (breathPhase === 'inhale') {

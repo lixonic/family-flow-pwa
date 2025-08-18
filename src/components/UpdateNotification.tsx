@@ -1,4 +1,3 @@
-import React from 'react';
 import { Download, X } from 'lucide-react';
 
 interface UpdateNotificationProps {

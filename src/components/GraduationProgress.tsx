@@ -1,11 +1,10 @@
-import { GraduationMilestone } from '../App';
 
 interface GraduationProgressProps {
   totalCheckIns: number;
   targetDays: number;
   progressPercentage: number;
-  nextMilestone?: GraduationMilestone;
-  achievedMilestones: GraduationMilestone[];
+  nextMilestone?: {days: number, title: string};
+  achievedMilestones: {days: number, title: string}[];
   readyForGraduation: boolean;
   onStartAssessment?: () => void;
 }
@@ -23,7 +22,7 @@ export function GraduationProgress({
 
   const getMilestoneStatus = (threshold: number) => {
     if (totalCheckIns >= threshold) return 'completed';
-    if (nextMilestone && threshold === nextMilestone.threshold) return 'next';
+    if (nextMilestone && threshold === nextMilestone.days) return 'next';
     return 'pending';
   };
 

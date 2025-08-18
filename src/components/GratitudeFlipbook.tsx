@@ -5,7 +5,7 @@ import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
-import { Plus, Play, Pause, SkipBack, SkipForward, X, Wind } from 'lucide-react';
+import { Plus, Play, Pause, SkipBack, SkipForward, X, Wind, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface GratitudeFlipbookProps {
   familyMembers: FamilyMember[];
@@ -13,6 +13,88 @@ interface GratitudeFlipbookProps {
   onAddGratitudeEntry: (entry: Omit<GratitudeEntry, 'id'>) => void;
   onDeleteGratitudeEntry?: (id: string) => void;
   onNavigate?: (screen: string) => void;
+}
+
+interface GratitudeListProps {
+  gratitudeEntries: GratitudeEntry[];
+  familyMembers: FamilyMember[];
+  onDeleteGratitudeEntry?: (id: string) => void;
+}
+
+function GratitudeList({ gratitudeEntries, familyMembers, onDeleteGratitudeEntry }: GratitudeListProps) {
+  const [currentPage, setCurrentPage] = useState(0);
+  const entriesPerPage = 10;
+  
+  // Sort entries by date (newest first)
+  const sortedEntries = [...gratitudeEntries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  const totalPages = Math.ceil(sortedEntries.length / entriesPerPage);
+  const startIndex = currentPage * entriesPerPage;
+  const endIndex = startIndex + entriesPerPage;
+  const currentEntries = sortedEntries.slice(startIndex, endIndex);
+
+  return (
+    <div>
+      <div className="space-y-4">
+        {currentEntries.map(entry => {
+          const member = familyMembers.find(m => m.id === entry.memberId);
+          return (
+            <Card key={entry.id} className="p-6">
+              <div className="flex items-start space-x-4">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: member?.color || '#F3F4F6' }}
+                >
+                  <FamilyMemberIcon avatar={member?.avatar || 'mother'} className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-lg mb-2">{entry.text}</div>
+                  <div className="text-sm text-gray-400">
+                    {member?.name} • {formatDate(entry.date)}
+                  </div>
+                </div>
+                {onDeleteGratitudeEntry && (
+                  <button
+                    onClick={() => onDeleteGratitudeEntry(entry.id)}
+                    className="text-gray-400 hover:text-red-500 transition-colors p-2"
+                    title="Delete gratitude entry"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+      
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+            disabled={currentPage === 0}
+            className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Previous</span>
+          </button>
+          
+          <span className="text-sm text-gray-500">
+            Page {currentPage + 1} of {totalPages} ({sortedEntries.length} total)
+          </span>
+          
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+            disabled={currentPage === totalPages - 1}
+            className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span>Next</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratitudeEntry, onDeleteGratitudeEntry, onNavigate }: GratitudeFlipbookProps) {
@@ -468,38 +550,11 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                   <p className="text-lg mt-2">Start by adding something you're grateful for!</p>
                 </Card>
               ) : (
-                <div className="space-y-4">
-                  {thisWeekEntries.slice(-5).map(entry => {
-                    const member = familyMembers.find(m => m.id === entry.memberId);
-                    return (
-                      <Card key={entry.id} className="p-6">
-                        <div className="flex items-start space-x-4">
-                          <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: member?.color || '#F3F4F6' }}
-                          >
-                            <FamilyMemberIcon avatar={member?.avatar || 'mother'} className="w-5 h-5" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="text-lg mb-2">{entry.text}</div>
-                            <div className="text-sm text-gray-400">
-                              {member?.name} • {formatDate(entry.date)}
-                            </div>
-                          </div>
-                          {onDeleteGratitudeEntry && (
-                            <button
-                              onClick={() => onDeleteGratitudeEntry(entry.id)}
-                              className="text-gray-400 hover:text-red-500 transition-colors p-2"
-                              title="Delete gratitude entry"
-                            >
-                              🗑️
-                            </button>
-                          )}
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
+                <GratitudeList 
+                  gratitudeEntries={thisWeekEntries}
+                  familyMembers={familyMembers}
+                  onDeleteGratitudeEntry={onDeleteGratitudeEntry}
+                />
               )}
             </div>
           </>

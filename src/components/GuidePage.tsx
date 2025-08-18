@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { BookOpen, ArrowRight, Heart, Target, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookOpen, ArrowRight, Heart, Target, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface GuidePageProps {
   onNavigate?: (screen: string) => void;

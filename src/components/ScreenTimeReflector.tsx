@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { FamilyMember, ReflectionEntry } from '../App';
-import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
 import { formatDate } from './ui/utils';
 import { VisualRegulationBar } from './reflection/VisualRegulationBar';
 import { ChoiceCard } from './reflection/ChoiceCard';
 import { FEEL_OPTIONS, getNeedOptions, getNextOptions } from './reflection/ReflectionChoices';
+import { Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ScreenTimeReflectorProps {
   familyMembers: FamilyMember[];
@@ -17,6 +17,102 @@ interface ScreenTimeReflectorProps {
 }
 
 type ReflectionStep = 'member-select' | 'regulate' | 'feel' | 'need' | 'next' | 'success';
+
+interface ReflectionListProps {
+  reflectionEntries: ReflectionEntry[];
+  familyMembers: FamilyMember[];
+  onDeleteReflectionEntry?: (id: string) => void;
+}
+
+function ReflectionList({ reflectionEntries, familyMembers, onDeleteReflectionEntry }: ReflectionListProps) {
+  const [currentPage, setCurrentPage] = useState(0);
+  const entriesPerPage = 10;
+  
+  // Sort entries by date (newest first)
+  const sortedEntries = [...reflectionEntries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  const totalPages = Math.ceil(sortedEntries.length / entriesPerPage);
+  const startIndex = currentPage * entriesPerPage;
+  const endIndex = startIndex + entriesPerPage;
+  const currentEntries = sortedEntries.slice(startIndex, endIndex);
+
+  return (
+    <div>
+      <div className="space-y-4">
+        {currentEntries.map(entry => {
+          const member = familyMembers.find(m => m.id === entry.memberId);
+          
+          return (
+            <Card key={entry.id} className="p-6">
+              <div className="flex items-start space-x-4">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: member?.color || '#F3F4F6' }}
+                >
+                  <FamilyMemberIcon avatar={member?.avatar || 'mother'} className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  {/* New format for Feel→Need→Next */}
+                  {entry.feelChoice ? (
+                    <div className="space-y-2">
+                      <div className="text-sm text-gray-500">Family felt: <span className="text-gray-700 font-medium">{entry.feelChoice.replace('-', ' ')}</span></div>
+                      <div className="text-sm text-gray-500">Needed: <span className="text-gray-700 font-medium">{entry.needChoice.replace('-', ' ')}</span></div>
+                      <div className="text-sm text-gray-500">Next step: <span className="text-gray-700 font-medium">{entry.nextChoice.replace('-', ' ')}</span></div>
+                    </div>
+                  ) : (
+                    /* Legacy format */
+                    <div>
+                      <div className="text-sm text-gray-600 mb-1">{entry.prompt}</div>
+                      <div className="text-base">{entry.response}</div>
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-400 mt-2">
+                    {member?.name} • {formatDate(entry.date)}
+                  </div>
+                </div>
+                {onDeleteReflectionEntry && (
+                  <button
+                    onClick={() => onDeleteReflectionEntry(entry.id)}
+                    className="text-gray-400 hover:text-red-500 transition-colors p-2"
+                    title="Delete reflection"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+      
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+            disabled={currentPage === 0}
+            className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Previous</span>
+          </button>
+          
+          <span className="text-sm text-gray-500">
+            Page {currentPage + 1} of {totalPages} ({sortedEntries.length} total)
+          </span>
+          
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+            disabled={currentPage === totalPages - 1}
+            className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span>Next</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ScreenTimeReflector({ 
   familyMembers, 
@@ -86,26 +182,6 @@ export function ScreenTimeReflector({
     }, 3000);
   };
 
-  const handleBack = () => {
-    switch (currentStep) {
-      case 'regulate':
-        setCurrentStep('member-select');
-        setSelectedMember(null);
-        break;
-      case 'feel':
-        setCurrentStep('regulate');
-        setRegulationActive(true);
-        break;
-      case 'need':
-        setCurrentStep('feel');
-        setSelections(prev => ({ ...prev, need: '', next: '' }));
-        break;
-      case 'next':
-        setCurrentStep('need');
-        setSelections(prev => ({ ...prev, next: '' }));
-        break;
-    }
-  };
 
   const getStepTitle = () => {
     switch (currentStep) {
@@ -316,52 +392,11 @@ export function ScreenTimeReflector({
         {currentStep === 'member-select' && reflectionEntries.length > 0 && (
           <div className="mt-10">
             <h3 className="text-2xl mb-6">Recent Family Reflections</h3>
-            <div className="space-y-4">
-              {reflectionEntries.slice(-3).map(entry => {
-                const member = familyMembers.find(m => m.id === entry.memberId);
-                
-                return (
-                  <Card key={entry.id} className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: member?.color || '#F3F4F6' }}
-                      >
-                        <FamilyMemberIcon avatar={member?.avatar || 'mother'} className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        {/* New format for Feel→Need→Next */}
-                        {entry.feelChoice ? (
-                          <div className="space-y-2">
-                            <div className="text-sm text-gray-500">Family felt: <span className="text-gray-700 font-medium">{entry.feelChoice.replace('-', ' ')}</span></div>
-                            <div className="text-sm text-gray-500">Needed: <span className="text-gray-700 font-medium">{entry.needChoice.replace('-', ' ')}</span></div>
-                            <div className="text-sm text-gray-500">Next step: <span className="text-gray-700 font-medium">{entry.nextChoice.replace('-', ' ')}</span></div>
-                          </div>
-                        ) : (
-                          /* Legacy format */
-                          <div>
-                            <div className="text-sm text-gray-600 mb-1">{entry.prompt}</div>
-                            <div className="text-base">{entry.response}</div>
-                          </div>
-                        )}
-                        <div className="text-xs text-gray-400 mt-2">
-                          {member?.name} • {formatDate(entry.date)}
-                        </div>
-                      </div>
-                      {onDeleteReflectionEntry && (
-                        <button
-                          onClick={() => onDeleteReflectionEntry(entry.id)}
-                          className="text-gray-400 hover:text-red-500 transition-colors p-2"
-                          title="Delete reflection"
-                        >
-                          🗑️
-                        </button>
-                      )}
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
+            <ReflectionList 
+              reflectionEntries={reflectionEntries}
+              familyMembers={familyMembers}
+              onDeleteReflectionEntry={onDeleteReflectionEntry}
+            />
           </div>
         )}
       </div>

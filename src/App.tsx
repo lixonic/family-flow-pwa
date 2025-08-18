@@ -12,9 +12,15 @@ import { MilestoneCelebration } from "./components/MilestoneCelebration";
 import { TransitionPrompt } from "./components/TransitionPrompt";
 import { ReadinessAssessment } from "./components/ReadinessAssessment";
 import { GraduationView } from "./components/GraduationView";
+import { MoodResponsiveTheme } from "./components/ui/MoodResponsiveTheme";
 // import { UpdateNotification } from "./components/UpdateNotification"; // Disabled: Updates now silent
 import { useServiceWorkerUpdate } from "./hooks/useServiceWorkerUpdate";
 import { useAppStorage } from "./hooks/useAppStorage";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): void;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 export type FamilyMember = {
   id: string;
@@ -97,9 +103,9 @@ export default function App() {
     },
   });
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [activeMilestones, setActiveMilestones] = useState<GraduationMilestone[]>([]);
-  const [currentTransitionPrompt, setCurrentTransitionPrompt] = useState<{type: string, title: string, message: string, actionText: string} | null>(null);
+  const [currentTransitionPrompt, setCurrentTransitionPrompt] = useState<{type: 'encourage-consistency' | 'suggest-offline' | 'graduation-ready', title: string, message: string, actionText: string} | null>(null);
   const [showReadinessAssessment, setShowReadinessAssessment] = useState(false);
   
   // PWA Update handling
@@ -252,7 +258,7 @@ export default function App() {
     // PWA install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
     window.addEventListener(
@@ -503,16 +509,16 @@ export default function App() {
       totalCheckIns,
       targetDays,
       progressPercentage,
-      nextMilestone,
+      nextMilestone: nextMilestone ? { days: nextMilestone.threshold, title: nextMilestone.title } : undefined,
       readyForGraduation,
       nearGraduation,
-      achievedMilestones: appData.graduationMilestones?.filter(m => m.achieved) || [],
+      achievedMilestones: appData.graduationMilestones?.filter(m => m.achieved).map(m => ({ days: m.threshold, title: m.title })) || [],
     };
   };
 
-  const getTransitionPrompts = () => {
+  const getTransitionPrompts = (): Array<{type: 'encourage-consistency' | 'suggest-offline' | 'graduation-ready', title: string, message: string, actionText: string}> => {
     const progress = getGraduationProgress();
-    const prompts = [];
+    const prompts: Array<{type: 'encourage-consistency' | 'suggest-offline' | 'graduation-ready', title: string, message: string, actionText: string}> = [];
 
     if (progress.totalCheckIns >= 15 && progress.totalCheckIns < 30) {
       prompts.push({
@@ -562,6 +568,10 @@ export default function App() {
     setCurrentScreen("day-entries");
   };
 
+  const handleNavigation = (newScreen: string) => {
+    setCurrentScreen(newScreen);
+  };
+
   const handleBackToDayGlow = () => {
     setSelectedDate(null);
     setCurrentScreen("day-glow");
@@ -571,6 +581,7 @@ export default function App() {
     setShowWelcome(false);
     setCurrentScreen("day-glow");
   };
+
 
   // Graduation UI Handlers
   const handleMilestoneCelebrationComplete = (milestoneId: string) => {
@@ -783,7 +794,7 @@ export default function App() {
             getStreakData={getStreakData}
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
-            onNavigate={setCurrentScreen}
+            onNavigate={handleNavigation}
             graduationProgress={getGraduationProgress()}
           />
         );
@@ -811,7 +822,7 @@ export default function App() {
             getStreakData={getStreakData}
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
-            onNavigate={setCurrentScreen}
+            onNavigate={handleNavigation}
             graduationProgress={getGraduationProgress()}
           />
         );
@@ -822,7 +833,7 @@ export default function App() {
             reflectionEntries={appData.reflectionEntries}
             onAddReflectionEntry={addReflectionEntry}
             onDeleteReflectionEntry={deleteReflectionEntry}
-            onNavigate={setCurrentScreen}
+            onNavigate={handleNavigation}
           />
         );
       case "gratitude":
@@ -832,18 +843,18 @@ export default function App() {
             gratitudeEntries={appData.gratitudeEntries}
             onAddGratitudeEntry={addGratitudeEntry}
             onDeleteGratitudeEntry={deleteGratitudeEntry}
-            onNavigate={setCurrentScreen}
+            onNavigate={handleNavigation}
           />
         );
       case "guide":
         return (
-          <GuidePage onNavigate={setCurrentScreen} />
+          <GuidePage onNavigate={handleNavigation} />
         );
       case "memory":
         return (
           <MemoryCapsule 
             appData={appData} 
-            onNavigate={setCurrentScreen}
+            onNavigate={handleNavigation}
             deferredPrompt={deferredPrompt}
             setDeferredPrompt={setDeferredPrompt}
             onEraseAllData={handleEraseAllData}
@@ -854,7 +865,7 @@ export default function App() {
         return (
           <FamilySync 
             appData={appData} 
-            onNavigate={setCurrentScreen}
+            onNavigate={handleNavigation}
             onImportData={handleImportData}
           />
         );
@@ -863,7 +874,7 @@ export default function App() {
           <GraduationView
             graduationProgress={getGraduationProgress()}
             onStartReadinessAssessment={handleStartReadinessAssessment}
-            onNavigate={setCurrentScreen}
+            onNavigate={handleNavigation}
           />
         );
       default:
@@ -878,7 +889,7 @@ export default function App() {
             getStreakData={getStreakData}
             getDayActivityLevel={getDayActivityLevel}
             onDaySelect={handleDaySelect}
-            onNavigate={setCurrentScreen}
+            onNavigate={handleNavigation}
             graduationProgress={getGraduationProgress()}
           />
         );
@@ -886,54 +897,59 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-red-50">
-      {/* Offline Indicator */}
-      {!isOnline && (
-        <div className="fixed top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 text-lg z-50">
-          📶 You're offline - Your data is saved locally
-        </div>
-      )}
-      
-      {/* Storage Error Indicator */}
-      {storageError && (
-        <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-white text-center py-2 text-sm z-40">
-          ⚠️ {storageError} - Your entries are still being saved
-        </div>
-      )}
+    <MoodResponsiveTheme 
+      familyMembers={appData.familyMembers}
+      moodEntries={appData.moodEntries}
+    >
+      <div className="min-h-screen mesh-gradient-warm">
+        {/* Offline Indicator */}
+        {!isOnline && (
+          <div className="fixed top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 text-lg z-50">
+            📶 You're offline - Your data is saved locally
+          </div>
+        )}
+        
+        {/* Storage Error Indicator */}
+        {storageError && (
+          <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-white text-center py-2 text-sm z-40">
+            ⚠️ {storageError} - Your entries are still being saved
+          </div>
+        )}
 
-      {/* PWA Update Notification - Disabled: Updates now happen silently */}
+        {/* PWA Update Notification - Disabled: Updates now happen silently */}
 
-      {renderCurrentScreen()}
-      {!showWelcome && (
-        <Navigation
-          currentScreen={currentScreen}
-          onNavigate={setCurrentScreen}
-        />
-      )}
+        {renderCurrentScreen()}
+        {!showWelcome && (
+          <Navigation
+            currentScreen={currentScreen}
+            onNavigate={handleNavigation}
+          />
+        )}
 
-      {/* Graduation UI Components */}
-      {activeMilestones.map(milestone => (
-        <MilestoneCelebration
-          key={milestone.id}
-          milestone={milestone}
-          onCelebrationComplete={handleMilestoneCelebrationComplete}
-        />
-      ))}
+        {/* Graduation UI Components */}
+        {activeMilestones.map(milestone => (
+          <MilestoneCelebration
+            key={milestone.id}
+            milestone={milestone}
+            onCelebrationComplete={handleMilestoneCelebrationComplete}
+          />
+        ))}
 
-      {currentTransitionPrompt && (
-        <TransitionPrompt
-          prompt={currentTransitionPrompt}
-          onAction={handleTransitionPromptAction}
-          onDismiss={handleTransitionPromptDismiss}
-        />
-      )}
+        {currentTransitionPrompt && (
+          <TransitionPrompt
+            prompt={currentTransitionPrompt}
+            onAction={handleTransitionPromptAction}
+            onDismiss={handleTransitionPromptDismiss}
+          />
+        )}
 
-      {showReadinessAssessment && (
-        <ReadinessAssessment
-          onComplete={handleReadinessAssessmentComplete}
-          onCancel={handleReadinessAssessmentCancel}
-        />
-      )}
-    </div>
+        {showReadinessAssessment && (
+          <ReadinessAssessment
+            onComplete={handleReadinessAssessmentComplete}
+            onCancel={handleReadinessAssessmentCancel}
+          />
+        )}
+      </div>
+    </MoodResponsiveTheme>
   );
 }

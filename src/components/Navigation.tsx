@@ -1,4 +1,3 @@
-import React from 'react';
 import { Heart, MessageSquare, BookOpen, Wind, Archive } from 'lucide-react';
 
 interface NavigationProps {
@@ -16,9 +15,9 @@ export function Navigation({ currentScreen, onNavigate }: NavigationProps) {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-orange-200 safe-bottom-nav">
-      <div className="max-w-md mx-auto safe-left safe-right">
-        <div className="flex justify-around sm:justify-around py-2 sm:py-3 overflow-x-auto scrollbar-hide">
+    <div className="fixed bottom-0 left-0 right-0 nav-floating glass-nav mx-2 sm:mx-4 mb-4 safe-bottom-nav">
+      <div className="max-w-md mx-auto px-2 sm:px-4">
+        <div className="flex justify-between py-3 gap-1 sm:gap-2">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = currentScreen === item.id;
@@ -28,18 +27,23 @@ export function Navigation({ currentScreen, onNavigate }: NavigationProps) {
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 title={item.tooltip}
-                className={`flex flex-col items-center py-2 px-2 sm:py-3 sm:px-4 rounded-lg transition-colors min-h-[50px] sm:min-h-[60px] flex-shrink-0 relative ${
+                className={`flex flex-col items-center py-2 sm:py-3 px-2 sm:px-4 rounded-xl transition-all duration-300 ease-spring-bounce min-h-[60px] flex-1 max-w-[20%] relative interactive-scale group ${
                   isActive 
                     ? item.highlight 
-                      ? 'text-blue-700 bg-blue-50 border-2 border-blue-200' 
-                      : `${item.color} bg-orange-100`
+                      ? 'text-blue-700' 
+                      : `${item.color}`
                     : item.highlight
-                      ? 'text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-100'
-                      : 'text-gray-400 hover:text-gray-600'
+                      ? 'text-blue-600 hover:text-blue-700'
+                      : 'text-neutral-500 hover:text-neutral-700'
                 }`}
               >
-                <Icon className="w-5 h-5 sm:w-6 sm:h-6 mb-1" />
-                <span className="text-xs sm:text-sm whitespace-nowrap font-medium">{item.label}</span>
+                <Icon className={`w-5 h-5 sm:w-6 sm:h-6 mb-1 transition-transform duration-300 ${
+                  isActive ? 'scale-110' : 'group-hover:scale-105'
+                }`} />
+                <span className="text-[10px] sm:text-xs whitespace-nowrap font-medium leading-tight">{item.label}</span>
+                {isActive && (
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 sm:w-8 h-1 bg-current rounded-full"></div>
+                )}
               </button>
             );
           })}
