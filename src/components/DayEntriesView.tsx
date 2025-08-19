@@ -1,6 +1,7 @@
 import { FamilyMember, MoodEntry, ReflectionEntry, GratitudeEntry } from '../App';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
+import { InitialAvatar } from './ui/InitialAvatar';
 import { formatDate, formatDateWithWeekday } from './ui/utils';
 import { Trash2, ArrowLeft, Calendar, MessageSquare, Heart, Clock } from 'lucide-react';
 
@@ -129,12 +130,18 @@ export function DayEntriesView({
             <div key={member.id} className="mb-8">
               {/* Member header */}
               <div className="flex items-center mb-4">
-                <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
-                  style={{ backgroundColor: member.color }}
-                >
-                  <FamilyMemberIcon avatar={member.avatar} className="w-5 h-5" />
-                </div>
+                {member.avatarColor ? (
+                  <div className="mr-3">
+                    <InitialAvatar name={member.name} backgroundColor={member.avatarColor} size="md" />
+                  </div>
+                ) : (
+                  <div 
+                    className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
+                    style={{ backgroundColor: member.color }}
+                  >
+                    <FamilyMemberIcon avatar={member.avatar} name={member.name} avatarColor={member.avatarColor} className="w-5 h-5" />
+                  </div>
+                )}
                 <div>
                   <h3 className="text-lg font-medium">{member.name}</h3>
                   <p className="text-sm text-gray-500">

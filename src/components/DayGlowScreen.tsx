@@ -5,6 +5,7 @@ import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
+import { InitialAvatar, AVATAR_COLORS } from './ui/InitialAvatar';
 import { FamilyConnectionViz } from './ui/FamilyConnectionViz';
 import { formatDate } from './ui/utils';
 import { Plus, Edit2, Trash2, Check, X, User, ChevronRight } from 'lucide-react';
@@ -166,6 +167,7 @@ export function DayGlowScreen({
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberAvatar, setNewMemberAvatar] = useState('parent1');
+  const [newMemberAvatarColor, setNewMemberAvatarColor] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [editingName, setEditingName] = useState('');
   const [showCooldownBanner, setShowCooldownBanner] = useState(false);
@@ -268,6 +270,7 @@ export function DayGlowScreen({
       const memberData = {
         name: memberName,
         avatar: newMemberAvatar,
+        avatarColor: newMemberAvatarColor,
         color: MEMBER_COLORS[colorIndex]
       };
       
@@ -280,6 +283,7 @@ export function DayGlowScreen({
         // Clear form
         setNewMemberName('');
         setNewMemberAvatar('parent1');
+        setNewMemberAvatarColor('');
         setSelectedCategory('');
         
         // Show success message
@@ -383,31 +387,9 @@ export function DayGlowScreen({
       <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
         {showCooldownBanner && <CooldownBanner />}
         
-        {/* Confetti animation */}
+        {/* Gentle celebration glow */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(15)].map((_, i) => {
-            const isTopHalf = i < 8;
-            const leftPos = Math.random() * 100;
-            const topPos = isTopHalf 
-              ? Math.random() * 30  // Top 30% of screen
-              : 70 + Math.random() * 30; // Bottom 30% of screen
-            
-            return (
-              <div
-                key={i}
-                className="absolute animate-bounce"
-                style={{
-                  left: `${leftPos}%`,
-                  top: `${topPos}%`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  animationDuration: `${1 + Math.random()}s`,
-                  fontSize: `${16 + Math.random() * 24}px`,
-                }}
-              >
-                {['😊', '❤️', '✨', '🌟', '🎉', '💖', '🌈', '☀️', '🦋', '🌸'][Math.floor(Math.random() * 10)]}
-              </div>
-            );
-          })}
+          <div className="absolute inset-0 bg-gradient-radial from-orange-100/20 via-transparent to-transparent animate-pulse-gentle opacity-50" />
         </div>
         
         <div className="text-center z-10 max-w-md mx-auto">
@@ -455,28 +437,9 @@ export function DayGlowScreen({
   if (showProfileAdded) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-        {/* Success confetti animation */}
+        {/* Gentle celebration glow */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(12)].map((_, i) => {
-            const leftPos = Math.random() * 100;
-            const topPos = Math.random() * 100;
-            
-            return (
-              <div
-                key={i}
-                className="absolute animate-bounce"
-                style={{
-                  left: `${leftPos}%`,
-                  top: `${topPos}%`,
-                  animationDelay: `${Math.random() * 1.5}s`,
-                  animationDuration: `${1 + Math.random() * 0.5}s`,
-                  fontSize: `${18 + Math.random() * 16}px`,
-                }}
-              >
-                {['👤', '✨', '🎉', '💫', '🌟', '🎊', '👥', '💖'][Math.floor(Math.random() * 8)]}
-              </div>
-            );
-          })}
+          <div className="absolute inset-0 bg-gradient-radial from-orange-100/20 via-transparent to-transparent animate-pulse-gentle opacity-50" />
         </div>
         
         <div className="text-center z-10">
@@ -688,7 +651,11 @@ export function DayGlowScreen({
                     title={todayEntry ? `Tap to see how ${member.name} is doing` : `Tap to check in as ${member.name}`}
                   >
                     {/* Uniform vertical layout for all screen sizes */}
-                    <FamilyMemberIcon avatar={member.avatar} className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3" showBackground={true} />
+                    {member.avatarColor ? (
+                      <InitialAvatar name={member.name} backgroundColor={member.avatarColor} size="md" className="mb-2 sm:mb-3" />
+                    ) : (
+                      <FamilyMemberIcon avatar={member.avatar} name={member.name} avatarColor={member.avatarColor} className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3" showBackground={true} />
+                    )}
                     <div className="text-base sm:text-lg font-medium text-center">{member.name}</div>
                     {!todayEntry && (
                       <div className="text-xs sm:text-xs text-black mt-1 opacity-70">
@@ -811,59 +778,49 @@ export function DayGlowScreen({
                     </div>
                   )}
 
-                  {/* Step 3: Avatar Selection */}
+                  {/* Step 3: Color Selection */}
                   {newMemberName.trim() && selectedCategory && (
                     <div className="space-y-6 animate-in fade-in duration-300">
                       <div className="text-center">
                         <button
                           onClick={() => {
                             setSelectedCategory('');
-                            setNewMemberAvatar('parent1');
+                            setNewMemberAvatarColor('');
                           }}
                           className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center justify-center w-full"
                         >
                           ← Back to categories
                         </button>
                         
-                        <h4 className="text-xl mb-2">Choose a style for {newMemberName.trim()}</h4>
+                        <h4 className="text-xl mb-2">Choose a color for {newMemberName.trim()}</h4>
                         <div className="flex justify-center mb-6">
-                          <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center">
-                            <FamilyMemberIcon avatar={newMemberAvatar} className="w-16 h-16" />
+                          <div className="w-20 h-20">
+                            <InitialAvatar 
+                              name={newMemberName.trim()} 
+                              backgroundColor={newMemberAvatarColor || AVATAR_COLORS[0]} 
+                              size="lg" 
+                            />
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        {getAvatarsByCategory(selectedCategory).map((option, index) => (
+                      <div className="grid grid-cols-4 gap-4">
+                        {AVATAR_COLORS.map((color, index) => (
                           <button
-                            key={option.id}
-                            onClick={() => setNewMemberAvatar(option.id)}
-                            className={`p-6 rounded-xl border-2 transition-all duration-200 flex flex-col items-center hover:scale-105 ${
-                              newMemberAvatar === option.id 
+                            key={color}
+                            onClick={() => setNewMemberAvatarColor(color)}
+                            className={`p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center hover:scale-105 ${
+                              newMemberAvatarColor === color 
                                 ? 'border-orange-400 bg-orange-100 shadow-md' 
                                 : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50'
                             }`}
                           >
-                            <FamilyMemberIcon avatar={option.id} className="w-14 h-14 mb-3" showBackground={false} />
-                            <span className="text-sm text-gray-700 text-center">
-                              {index === 0 && selectedCategory === 'Parent' && 'Blonde hair'}
-                              {index === 1 && selectedCategory === 'Parent' && 'Brown hair'}
-                              {index === 2 && selectedCategory === 'Parent' && 'Silver hair'}
-                              {index === 3 && selectedCategory === 'Parent' && 'Blonde hair'}
-                              {index === 4 && selectedCategory === 'Parent' && 'Brown hair'}
-                              {index === 5 && selectedCategory === 'Parent' && 'Silver hair'}
-                              {index === 0 && selectedCategory === 'Guardian' && 'Style 1'}
-                              {index === 1 && selectedCategory === 'Guardian' && 'Curly hair'}
-                              {index === 2 && selectedCategory === 'Guardian' && 'Silver hair'}
-                              {index === 0 && selectedCategory === 'Teen' && 'Graduate'}
-                              {index === 1 && selectedCategory === 'Teen' && 'Graduate'}
-                              {index === 2 && selectedCategory === 'Teen' && 'Graduate'}
-                              {index === 0 && selectedCategory === 'Child' && 'Baby'}
-                              {index === 1 && selectedCategory === 'Child' && 'Boy'}
-                              {index === 2 && selectedCategory === 'Child' && 'Girl'}
-                              {index === 0 && selectedCategory === 'Extended Family' && 'Grandmother'}
-                              {index === 1 && selectedCategory === 'Extended Family' && 'Grandfather'}
-                              {index === 2 && selectedCategory === 'Extended Family' && 'Grandparent'}
+                            <div 
+                              className="w-12 h-12 rounded-full mb-2"
+                              style={{ backgroundColor: color }}
+                            />
+                            <span className="text-xs text-gray-700 text-center">
+                              {['Orange', 'Teal', 'Blue', 'Mint', 'Yellow', 'Plum', 'Seafoam', 'Gold'][index]}
                             </span>
                           </button>
                         ))}
@@ -872,10 +829,10 @@ export function DayGlowScreen({
                   )}
 
                   {/* Step 4: Confirmation Button */}
-                  {selectedCategory && (
+                  {selectedCategory && newMemberAvatarColor && (
                     <Button
                       onClick={handleAddMember}
-                      disabled={!newMemberName.trim()}
+                      disabled={!newMemberName.trim() || !newMemberAvatarColor}
                       className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-lg py-4 h-auto rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Add {newMemberName.trim()} to Family
@@ -905,12 +862,16 @@ export function DayGlowScreen({
                     <Card key={member.id} className="p-5 hover:shadow-md transition-shadow border-2 border-gray-100 hover:border-orange-200">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                          <div
-                            className="w-14 h-14 rounded-full flex items-center justify-center shadow-sm border-2 border-white"
-                            style={{ backgroundColor: member.color }}
-                          >
-                            <FamilyMemberIcon avatar={member.avatar} className="w-8 h-8" showBackground={false} />
-                          </div>
+                          {member.avatarColor ? (
+                            <InitialAvatar name={member.name} backgroundColor={member.avatarColor} size="lg" />
+                          ) : (
+                            <div
+                              className="w-14 h-14 rounded-full flex items-center justify-center shadow-sm border-2 border-white"
+                              style={{ backgroundColor: member.color }}
+                            >
+                              <FamilyMemberIcon avatar={member.avatar} name={member.name} className="w-8 h-8" showBackground={false} />
+                            </div>
+                          )}
                           <div className="flex-1">
                             {editingMember?.id === member.id ? (
                               <Input
@@ -977,6 +938,7 @@ export function DayGlowScreen({
                     // Reset form state when backing out
                     setNewMemberName('');
                     setNewMemberAvatar('parent1');
+                    setNewMemberAvatarColor('');
                     setSelectedCategory('');
                   }}
                   variant="outline"
@@ -1018,7 +980,11 @@ export function DayGlowScreen({
                   {/* Main content - always visible */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
-                      <FamilyMemberIcon avatar={member.avatar} className="w-8 h-8 flex-shrink-0" showBackground={true} />
+                      {member.avatarColor ? (
+                        <InitialAvatar name={member.name} backgroundColor={member.avatarColor} size="sm" />
+                      ) : (
+                        <FamilyMemberIcon avatar={member.avatar} name={member.name} avatarColor={member.avatarColor} className="w-8 h-8 flex-shrink-0" showBackground={true} />
+                      )}
                       <div className="flex-1 min-w-0">
                         <span className="font-medium text-gray-800 text-lg block truncate">{member.name}</span>
                         {entry ? (

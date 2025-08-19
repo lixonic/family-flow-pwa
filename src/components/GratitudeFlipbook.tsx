@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
+import { InitialAvatar } from './ui/InitialAvatar';
 import { formatDate } from './ui/utils';
 import { Plus, Play, Pause, SkipBack, SkipForward, X, Wind, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -45,7 +46,7 @@ function GratitudeList({ gratitudeEntries, familyMembers, onDeleteGratitudeEntry
                   className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{ backgroundColor: member?.color || '#F3F4F6' }}
                 >
-                  <FamilyMemberIcon avatar={member?.avatar || 'mother'} className="w-5 h-5" />
+                  <FamilyMemberIcon avatar={member?.avatar || 'mother'} name={member?.name || 'Family Member'} avatarColor={member?.avatarColor} className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
                   <div className="text-lg mb-2">{entry.text}</div>
@@ -355,31 +356,9 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
   if (showSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-        {/* Confetti animation */}
+        {/* Gentle celebration glow */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(17)].map((_, i) => {
-            const isTopHalf = i < 9;
-            const leftPos = Math.random() * 100;
-            const topPos = isTopHalf 
-              ? Math.random() * 30  // Top 30% of screen
-              : 70 + Math.random() * 30; // Bottom 30% of screen
-            
-            return (
-              <div
-                key={i}
-                className="absolute animate-bounce"
-                style={{
-                  left: `${leftPos}%`,
-                  top: `${topPos}%`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  animationDuration: `${1 + Math.random()}s`,
-                  fontSize: `${20 + Math.random() * 20}px`,
-                }}
-              >
-                {['🌟', '✨', '🎉', '💫', '🌸', '🎊', '💝', '🦋'][Math.floor(Math.random() * 8)]}
-              </div>
-            );
-          })}
+          <div className="absolute inset-0 bg-gradient-radial from-yellow-100/20 via-transparent to-transparent animate-pulse-gentle opacity-50" />
         </div>
         
         <div className="text-center z-10">
@@ -414,7 +393,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                 className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center"
                 style={{ backgroundColor: member?.color || '#F3F4F6' }}
               >
-                <FamilyMemberIcon avatar={member?.avatar || 'mother'} className="w-8 h-8" />
+                <FamilyMemberIcon avatar={member?.avatar || 'mother'} name={member?.name || 'Family Member'} avatarColor={member?.avatarColor} className="w-8 h-8" />
               </div>
               <h3 className="text-2xl mb-6 text-gray-600">
                 {member?.name} is grateful for...
@@ -633,7 +612,11 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                         style={{ backgroundColor: todayEntry ? '#F0FDF4' : member.color }}
                         disabled={!!todayEntry}
                       >
-                        <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
+                        {member.avatarColor ? (
+                          <InitialAvatar name={member.name} backgroundColor={member.avatarColor} size="lg" className="mb-3" />
+                        ) : (
+                          <FamilyMemberIcon avatar={member.avatar} name={member.name} avatarColor={member.avatarColor} className="w-12 h-12 mb-3" />
+                        )}
                         <div className="text-lg font-medium">{member.name}</div>
                         {todayEntry && (
                           <>
@@ -661,7 +644,7 @@ export function GratitudeFlipbook({ familyMembers, gratitudeEntries, onAddGratit
                     className="w-8 h-8 rounded-full flex items-center justify-center mr-3"
                     style={{ backgroundColor: selectedMember.color }}
                   >
-                    <FamilyMemberIcon avatar={selectedMember.avatar} className="w-4 h-4" />
+                    <FamilyMemberIcon avatar={selectedMember.avatar} name={selectedMember.name} avatarColor={selectedMember.avatarColor} className="w-4 h-4" />
                   </div>
                   <span className="text-2xl">{selectedMember.name}</span>
                 </div>

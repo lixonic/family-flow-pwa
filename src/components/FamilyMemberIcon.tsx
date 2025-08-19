@@ -1,10 +1,24 @@
+import { InitialAvatar } from './ui/InitialAvatar';
+
 interface FamilyMemberIconProps {
   avatar: string;
+  name: string;
+  avatarColor?: string;
   className?: string;
   showBackground?: boolean; // New prop to show circular background for profile distinction
 }
 
-export function FamilyMemberIcon({ avatar, className = "w-6 h-6", showBackground = false }: FamilyMemberIconProps) {
+export function FamilyMemberIcon({ avatar, name, avatarColor, className = "w-6 h-6", showBackground = false }: FamilyMemberIconProps) {
+  // Use new initial avatar system if avatarColor is provided
+  if (avatarColor) {
+    const getSize = () => {
+      if (className.includes('w-12') || className.includes('h-12')) return 'lg';
+      if (className.includes('w-8') || className.includes('h-8')) return 'md';
+      return 'sm';
+    };
+    
+    return <InitialAvatar name={name} backgroundColor={avatarColor} size={getSize()} />;
+  }
   const getEmoji = () => {
     switch (avatar) {
       // Parent/Mother avatars - Blonde, Black, Grey hair

@@ -333,6 +333,27 @@
   animation: fade-in-scale 0.2s var(--spring-bounce);
 }
 
+/* Gentle Celebration Animations */
+@keyframes pulse-gentle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 3s ease-in-out infinite;
+}
+
+/* Radial gradient backgrounds */
+.bg-gradient-radial {
+  background: radial-gradient(circle at center, var(--tw-gradient-stops));
+}
+
 /* Shared Element Transitions */
 .shared-element {
   transition: all 0.4s var(--spring-bounce);

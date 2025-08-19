@@ -26,6 +26,7 @@ export type FamilyMember = {
   id: string;
   name: string;
   avatar: string;
+  avatarColor?: string; // New field for background color
   color: string;
 };
 
@@ -123,9 +124,15 @@ export default function App() {
         const savedData = await loadData();
         
         if (savedData) {
-          // Migrate existing data to include graduation system
+          // Migrate existing data to include graduation system and avatar colors
           const migratedData: AppData = {
             ...savedData,
+            // Migrate family members to include avatarColor
+            familyMembers: savedData.familyMembers.map(member => ({
+              ...member,
+              // Only add avatarColor if it doesn't exist (backward compatibility)
+              avatarColor: member.avatarColor || undefined
+            })),
             graduationMilestones: savedData.graduationMilestones || [
               {
                 id: "milestone-15-days",

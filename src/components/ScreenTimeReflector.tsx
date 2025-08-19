@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FamilyMember, ReflectionEntry } from '../App';
 import { Card } from './ui/card';
 import { FamilyMemberIcon } from './FamilyMemberIcon';
+import { InitialAvatar } from './ui/InitialAvatar';
 import { formatDate } from './ui/utils';
 import { VisualRegulationBar } from './reflection/VisualRegulationBar';
 import { ChoiceCard } from './reflection/ChoiceCard';
@@ -49,7 +50,7 @@ function ReflectionList({ reflectionEntries, familyMembers, onDeleteReflectionEn
                   className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{ backgroundColor: member?.color || '#F3F4F6' }}
                 >
-                  <FamilyMemberIcon avatar={member?.avatar || 'mother'} className="w-5 h-5" />
+                  <FamilyMemberIcon avatar={member?.avatar || 'mother'} name={member?.name || 'Family Member'} avatarColor={member?.avatarColor} className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
                   {/* New format for Feel→Need→Next */}
@@ -212,31 +213,9 @@ export function ScreenTimeReflector({
   if (currentStep === 'success') {
     return (
       <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-        {/* Confetti animation */}
+        {/* Gentle celebration glow */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(20)].map((_, i) => {
-            const isTopHalf = i < 10;
-            const leftPos = Math.random() * 100;
-            const topPos = isTopHalf 
-              ? Math.random() * 30  // Top 30% of screen
-              : 70 + Math.random() * 30; // Bottom 30% of screen
-            
-            return (
-              <div
-                key={i}
-                className="absolute animate-bounce"
-                style={{
-                  left: `${leftPos}%`,
-                  top: `${topPos}%`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  animationDuration: `${1 + Math.random()}s`,
-                  fontSize: `${18 + Math.random() * 22}px`,
-                }}
-              >
-                {['🌿', '💭', '✨', '🌟', '💡', '🎯', '🌸', '💫', '🎉', '🤗'][Math.floor(Math.random() * 10)]}
-              </div>
-            );
-          })}
+          <div className="absolute inset-0 bg-gradient-radial from-pink-100/20 via-transparent to-transparent animate-pulse-gentle opacity-50" />
         </div>
         
         <div className="text-center z-10">
@@ -308,7 +287,11 @@ export function ScreenTimeReflector({
                     style={{ backgroundColor: todayEntry ? '#F0FDF4' : member.color }}
                     disabled={!!todayEntry}
                   >
-                    <FamilyMemberIcon avatar={member.avatar} className="w-12 h-12 mb-3" />
+                    {member.avatarColor ? (
+                      <InitialAvatar name={member.name} backgroundColor={member.avatarColor} size="lg" className="mb-3" />
+                    ) : (
+                      <FamilyMemberIcon avatar={member.avatar} name={member.name} avatarColor={member.avatarColor} className="w-12 h-12 mb-3" />
+                    )}
                     <div className="text-lg font-medium">{member.name}</div>
                     {todayEntry && (
                       <>
