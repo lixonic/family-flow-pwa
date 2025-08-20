@@ -399,6 +399,7 @@ export function DayGlowScreen({
           </h2>
           <p className="text-black text-xl mb-8">{currentMoodResponse?.message || 'Your mood has been saved'}</p>
           
+          
           {/* Family connection options */}
           <div className="space-y-3">
             {familyMembers.length > 1 && (
@@ -473,78 +474,6 @@ export function DayGlowScreen({
         )}
 
 
-        {/* Enhanced Week view with activity levels */}
-        {!showManageMembers && (
-          <div className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg text-black">Last 5 days</h3>
-            <div className="text-sm text-black">
-              {streakData.totalActiveDays} active days total
-            </div>
-          </div>
-          <div className="grid grid-cols-5 gap-4 justify-items-center">
-            {getRecentDays().map((date, index) => {
-              const dayMoods = getDayMoods(date);
-              const isToday = date.toDateString() === today;
-              const activityLevel = getDayActivityLevel(date);
-              
-              return (
-                <div key={index} className="flex flex-col items-center">
-                  <div className={`text-sm mb-2 ${isToday ? 'font-medium text-orange-600' : 'text-black'}`}>
-                    {date.toLocaleDateString('en', { weekday: 'short' })}
-                  </div>
-                  <button
-                    onClick={() => onDaySelect(date)}
-                    className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative bg-white hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
-                    title={`View entries for ${formatDate(date)}`}
-                  >
-                    {dayMoods.length > 0 ? (
-                      <div className="text-xl">
-                        {dayMoods[dayMoods.length - 1].emoji}
-                      </div>
-                    ) : activityLevel !== 'none' ? (
-                      <div className="text-xl">📝</div>
-                    ) : (
-                      <div className={`w-3 h-3 rounded-full ${isToday ? 'bg-orange-400' : 'bg-gray-300'}`}></div>
-                    )}
-                    {dayMoods.length > 1 && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
-                        {dayMoods.length}
-                      </div>
-                    )}
-                    {activityLevel === 'high' && (
-                      <div className="absolute -bottom-1 -right-1 text-xs">⭐</div>
-                    )}
-                  </button>
-                  <div className="text-xs text-black mt-1">
-                    {date.getDate()}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          {/* Activity level legend */}
-          <div className="mt-4 flex justify-center space-x-4 text-xs text-black">
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 rounded-full bg-gray-200"></div>
-              <span>No activity</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 rounded-full bg-orange-200"></div>
-              <span>Light</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 rounded-full bg-orange-400"></div>
-              <span>Active</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 rounded-full bg-gradient-to-br from-orange-400 to-pink-400"></div>
-              <span>High ⭐</span>
-            </div>
-          </div>
-        </div>
-        )}
 
 
         {/* First-time user guidance - only show when no family members */}
@@ -1130,6 +1059,92 @@ export function DayGlowScreen({
           </div>
         )}
 
+
+        {/* Enhanced Week view with activity levels - at bottom of screen */}
+        {!showManageMembers && !selectedMember && familyMembers.length > 0 && !showFamilyView && (
+          <div className="mt-10 mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg text-black">Last 5 days</h3>
+              <div className="text-sm text-black">
+                {streakData.totalActiveDays} active days total
+              </div>
+            </div>
+            <div className="grid grid-cols-5 gap-4 justify-items-center">
+              {getRecentDays().map((date, index) => {
+                const dayMoods = getDayMoods(date);
+                const isToday = date.toDateString() === today;
+                const activityLevel = getDayActivityLevel(date);
+                
+                return (
+                  <div key={index} className="flex flex-col items-center">
+                    <div className={`text-sm mb-2 ${isToday ? 'font-medium text-orange-600' : 'text-black'}`}>
+                      {date.toLocaleDateString('en', { weekday: 'short' })}
+                    </div>
+                    <button
+                      onClick={() => onDaySelect(date)}
+                      className={`w-12 h-12 rounded-full border-2 ${isToday ? 'border-orange-400' : 'border-orange-200'} flex items-center justify-center relative bg-white hover:scale-105 transition-transform cursor-pointer ${dayMoods.length > 0 ? 'hover:border-orange-500' : ''}`}
+                      title={`View entries for ${formatDate(date)}`}
+                    >
+                      {dayMoods.length > 0 ? (
+                        <div className="text-xl">
+                          {dayMoods[dayMoods.length - 1].emoji}
+                        </div>
+                      ) : activityLevel !== 'none' ? (
+                        <div className="text-xl">📝</div>
+                      ) : (
+                        <div className={`w-3 h-3 rounded-full ${isToday ? 'bg-orange-400' : 'bg-gray-300'}`}></div>
+                      )}
+                      {dayMoods.length > 1 && (
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center">
+                          {dayMoods.length}
+                        </div>
+                      )}
+                      {activityLevel === 'high' && (
+                        <div className="absolute -bottom-1 -right-1 text-xs">⭐</div>
+                      )}
+                    </button>
+                    <div className="text-xs text-black mt-1">
+                      {date.getDate()}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Activity level legend */}
+            <div className="mt-4 flex justify-center space-x-4 text-xs text-black">
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 rounded-full bg-gray-200"></div>
+                <span>No activity</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 rounded-full bg-orange-200"></div>
+                <span>Light</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 rounded-full bg-orange-400"></div>
+                <span>Active</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-br from-orange-400 to-pink-400"></div>
+                <span>High ⭐</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Family Connection Journey Button - only show with minimum 1 day of data */}
+        {graduationProgress && !showManageMembers && !selectedMember && moodEntries.length > 0 && (
+          <div className="mt-10 mb-10">
+            <Button
+              onClick={() => _onNavigate?.('graduation')}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"
+            >
+              💝 See Your Family's Connection Journey
+            </Button>
+          </div>
+        )}
+
         {/* Family Connection Visualization - moved to bottom for better UX flow */}
         {!showManageMembers && !selectedMember && familyMembers.length > 1 && (
           <div className="mt-10 mb-8">
@@ -1144,18 +1159,6 @@ export function DayGlowScreen({
                 className="animate-fade-in-scale"
               />
             </Card>
-          </div>
-        )}
-
-        {/* Family Connection Journey Button - only show with minimum 1 day of data */}
-        {graduationProgress && !showManageMembers && !selectedMember && moodEntries.length > 0 && (
-          <div className="mt-10 mb-10">
-            <Button
-              onClick={() => _onNavigate?.('graduation')}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 max-[999px]:text-base max-[999px]:py-3 text-lg py-4 h-auto"
-            >
-              💝 See Your Family's Connection Journey
-            </Button>
           </div>
         )}
       </div>
