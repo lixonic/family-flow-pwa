@@ -694,13 +694,13 @@ export function DayGlowScreen({
                             className="p-6 rounded-xl border-2 border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 hover:scale-105 flex flex-col items-center text-center"
                           >
                             <div className="text-4xl mb-3">
-                              {category === 'Parent' && '👨‍👩‍👧‍👦'}
-                              {category === 'Guardian' && '🧑‍🤝‍🧑'}
-                              {category === 'Teen' && '🎓'}
+                              {category === 'Parent' && '💑'}
+                              {category === 'Guardian' && '👤'}
+                              {category === 'Teen' && '🚶'}
                               {category === 'Child' && '🧒'}
                               {category === 'Extended Family' && '👴👵'}
                             </div>
-                            <span className="text-lg font-medium text-gray-700">{category}</span>
+                            <span className="text-lg font-medium text-gray-700">{category === 'Parent' ? 'Parent/Partner' : category}</span>
                           </button>
                         ))}
                       </div>

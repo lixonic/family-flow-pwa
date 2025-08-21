@@ -55,11 +55,11 @@ export const ScreenTransition: React.FC<ScreenTransitionProps> = ({
 };
 
 // Higher-order component for screen transitions
-export const withScreenTransition = (
-  Component: React.ComponentType<unknown>,
+export const withScreenTransition = <T extends Record<string, unknown>>(
+  Component: React.ComponentType<T>,
   direction?: 'right' | 'left' | 'up' | 'fade' | 'morph'
 ) => {
-  return (props: unknown) => (
+  return (props: T & { screenKey?: string }) => (
     <ScreenTransition 
       transitionKey={props.screenKey || 'default'} 
       direction={direction}
