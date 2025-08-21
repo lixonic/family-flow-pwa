@@ -598,9 +598,9 @@ export function GuidePage({ onNavigate }: GuidePageProps) {
 
         <div className="text-center">
           <p className="text-gray-600 mb-4">
-            Questions or feedback? Contact Helen at{' '}
-            <a href="mailto:helenfrancisthonakkara@gmail.com" className="text-blue-600 hover:text-blue-800">
-              helenfrancisthonakkara@gmail.com
+            Questions or feedback? Contact us at{' '}
+            <a href="mailto:hello@familyflow.space" className="text-blue-600 hover:text-blue-800">
+              hello@familyflow.space
             </a>
           </p>
         </div>
