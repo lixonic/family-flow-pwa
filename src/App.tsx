@@ -13,6 +13,7 @@ import { TransitionPrompt } from "./components/TransitionPrompt";
 import { ReadinessAssessment } from "./components/ReadinessAssessment";
 import { GraduationView } from "./components/GraduationView";
 import { MoodResponsiveTheme } from "./components/ui/MoodResponsiveTheme";
+import { V2EvolutionModal } from "./components/V2EvolutionModal";
 // import { UpdateNotification } from "./components/UpdateNotification"; // Disabled: Updates now silent
 import { useServiceWorkerUpdate } from "./hooks/useServiceWorkerUpdate";
 import { useAppStorage } from "./hooks/useAppStorage";
@@ -108,6 +109,7 @@ export default function App() {
   const [activeMilestones, setActiveMilestones] = useState<GraduationMilestone[]>([]);
   const [currentTransitionPrompt, setCurrentTransitionPrompt] = useState<{type: 'encourage-consistency' | 'suggest-offline' | 'graduation-ready', title: string, message: string, actionText: string} | null>(null);
   const [showReadinessAssessment, setShowReadinessAssessment] = useState(false);
+  const [showV2Modal, setShowV2Modal] = useState(false);
   
   // PWA Update handling
   useServiceWorkerUpdate(); // Silent updates - no UI needed
@@ -247,6 +249,12 @@ export default function App() {
     // Show welcome for new users immediately
     if (!welcomeShown) {
       setShowWelcome(true);
+    }
+
+    // Show V2 modal for existing users every session (except during welcome flow)
+    const v2PermanentlyDismissed = localStorage.getItem('familyFlowV2PermanentlyDismissed');
+    if (welcomeShown && !v2PermanentlyDismissed) {
+      setShowV2Modal(true);
     }
 
     // Ensure page starts at top
@@ -587,6 +595,16 @@ export default function App() {
   const handleWelcomeComplete = () => {
     setShowWelcome(false);
     setCurrentScreen("day-glow");
+  };
+
+  const handleV2ModalClose = () => {
+    setShowV2Modal(false);
+    // No localStorage persistence - modal will show again next session
+  };
+
+  const handleV2ModalPermanentDismiss = () => {
+    setShowV2Modal(false);
+    localStorage.setItem('familyFlowV2PermanentlyDismissed', 'true');
   };
 
 
@@ -956,6 +974,13 @@ export default function App() {
             onCancel={handleReadinessAssessmentCancel}
           />
         )}
+
+        {/* V2 Evolution Announcement Modal */}
+        <V2EvolutionModal
+          isOpen={showV2Modal}
+          onClose={handleV2ModalClose}
+          onPermanentDismiss={handleV2ModalPermanentDismiss}
+        />
       </div>
     </MoodResponsiveTheme>
   );
